@@ -1,3 +1,4 @@
+import os
 from .confighandler import ConfigHandler
 
 class HaproxyUpdate(object):
