@@ -1,6 +1,6 @@
 import os
 import requests
-from basefetcher import BaseFetcher
+from .basefetcher import BaseFetcher
 
 class AwsFetcher(object):
     def __init__(self, **kwargs):
