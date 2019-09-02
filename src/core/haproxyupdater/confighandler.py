@@ -13,37 +13,28 @@ class ConfigHandler(object):
         node_list = kwargs.get("node_list")
         backend_port = kwargs.get("backend_port")
 
-        # load config and templates
-        try:
-            with open(haproxy_config_file) as f:
-                haproxy_config = f.read()
-        except Exception as ex:
-
-            '''
-                log error
-            '''
-
+        could_read, template = ConfigHandler.read_write_file(operation="read", file=template_file)
+        if not could_read:
             return False
-
-        with open(template_file) as f:
-            template = f.read()
 
         node_template = "server node{node_id} {ip}:{port} check"
         
         nodes_str = ""
 
         for node_id, node_ip in enumerate(node_list):
-            haproxy_node = node_template.format(node_id=node_id, ip=node, port=backend_port)
+            haproxy_node = node_template.format(node_id=node_id, ip=node_ip, port=backend_port)
             node_str += (haproxy_node + "\n")
 
         config_from_template = template.format(nodes=node_str)
 
-        with open(haproxy_config_file, "w") as f:
-            f.write(config_from_template)
+        if not ConfigHandler.read_write_file(operation="write", file=haproxy_config_file):
+            return False
+
+        return True
 
     @staticmethod
     def read_write_file(**kwargs):
-        operation = kwargs.get(operation)
+        operation = kwargs.get("operation")
         file = kwargs.get("file")
         if operation == "write":
             content = kwargs.get("content")
