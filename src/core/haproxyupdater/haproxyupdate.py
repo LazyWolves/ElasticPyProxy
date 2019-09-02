@@ -42,7 +42,16 @@ class HaproxyUpdate(object):
             return False
 
     def update_haproxy(self):
-        pass
+        if not self.__sanitise():
+            return False
+
+        updated = ConfigHandler.update_config(haproxy_config_file=self.haproxy_config_file,
+                                        template_file=self.template_file,
+                                        node_list=self.node_list,
+                                        backend_port=self.backend_port
+                                        )
+
+        return updated
 
     def reload_haproxy(self):
         pass
