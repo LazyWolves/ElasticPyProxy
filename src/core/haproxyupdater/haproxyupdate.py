@@ -14,6 +14,7 @@ class HaproxyUpdate(object):
         self.haproxy_binary = kwargs.get("haproxy_binary")
         self.init_file = kwargs.get("init_file")
         self.start_by = kwargs.get("start_by")
+        self.haproxy_socket_file = kwargs.get("haproxy_socket_file")
 
         self.valid_start_by = [
             "binary",
