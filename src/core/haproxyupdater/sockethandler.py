@@ -15,7 +15,7 @@ class SocketHandler(object):
 
             # try connecting to haproxy socket file
             self.socket.connect(self.sock_file)
-        except Exception:
+        except Exception as ex:
 
             '''
                 Log exception
@@ -24,3 +24,25 @@ class SocketHandler(object):
             return False
 
         return True
+
+    def send_command(self, **kwargs):
+        response = None
+        command = kwargs.get("command")
+
+        try:
+            self.socket.send(command)
+            response = ""
+
+            while True:
+                res_buf = self.socket.recv(16)
+                if res_buf:
+                    response += res_buf
+                else:
+                    break
+        except Exception as ex:
+            response = None
+
+        if response == None:
+            return False, response
+
+        return True, response
