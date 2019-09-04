@@ -46,3 +46,6 @@ class SocketHandler(object):
             return False, response
 
         return True, response
+
+    def destroy_socket(self):
+        self.socket.close()
