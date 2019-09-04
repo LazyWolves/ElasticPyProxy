@@ -42,6 +42,9 @@ class HaproxyUpdate(object):
         if self.init_file and not os.path.isfile(self.init_file):
             return False
 
+        if self.haproxy_socket_file and not os.path.isfile(self.haproxy_socket_file):
+            return False
+
     def update_haproxy(self):
         if not self.__sanitise():
             return False
