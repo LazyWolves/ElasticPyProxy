@@ -18,6 +18,23 @@ class RuntimeUpdater(object):
 
         for node in slots:
             node_properties = node.split(",")
-            if len()
+            if len(node_properties) > 80 and node_properties[0] == backend_name:
+                node_name = node_properties[1]
+                if node_name == "BACKEND":
+                    continue
+                node_state = node_properties[17]
+                node_addr = node_properties[73].split(":")[0]
+
+                if node_state == "MAINT":
+                    inactive_nodes.append(node_name)
+                else:
+                    active_nodes[node_addr] = node_name
+
+        nodes = {
+            "active": active_nodes,
+            "inactive_nodes": inactive_nodes
+        }
+
+        return True, nodes
             
 
