@@ -38,9 +38,43 @@ class RuntimeUpdater(object):
         return True, nodes
 
     @staticmethod
-    def update_runtime_util(haproxy_sock, node_ips, nodes):
+    def update_runtime_util(haproxy_sock, node_ips, nodes, backend_name, port):
         active_nodes = nodes.get("active_nodes")
         inactive_nodes = nodes.get("inactive_nodes")
+
+        SET_ADDR = "set server {backend_name}/{node_name} addr {addr} port {port}\n"
+        MAKE_READY = "set server {backend_name}/{node_name} state ready\n"
+        MAKE_MAINT = "set server {backend_name}/{node_name} state maint\n"
+
+        for new_node_ip in node_ips:
+            if active_nodes.get("new_node_ip"):
+                del active_nodes["new_node_ip"]
+            else:
+                if len(inactive_nodes) > 0:
+                    node_to_use = inactive_nodes.pop(0)
+                    command_status, _ = haproxy_sock.send_command(SET_ADDR.format(backend_name=backend_name, node_name=node_to_use, addr=new_node_ip, port=port))
+                    if not command_status:
+
+                        '''
+                            Log error
+                        '''
+                    command_status, _ = haproxy_sock.send_command(MAKE_READY.format(backend_name=backend_name, node_name=node_to_use))
+                    if not command_status:
+
+                        '''
+                            Log error
+                        '''
+                else:
+
+                    '''
+                        Log issue
+                    '''
+                    return False
+
+        for remaining_node in active_nodes:
+            SocketHandler.send_command(REMOVE.format(backend_name=backend_name, node_name=remaining_node))
+
+        return True
 
     @staticmethod
     def update_haproxy_runtime(**kwargs):
@@ -61,7 +95,7 @@ class RuntimeUpdater(object):
         if not got_status:
             return False
 
-        updated = RuntimeUpdater.update_runtime_util(socketHandler, node_ips, nodes)
+        updated = RuntimeUpdater.update_runtime_util(socketHandler, node_ips, nodes, backend_name, port)
 
         if not updated:
             return False
