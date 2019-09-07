@@ -1,5 +1,6 @@
 import os
 from .confighandler import ConfigHandler
+from .runtimeupdater import RuntimeUpdater
 
 class HaproxyUpdate(object):
     def __init__(self, **kwargs):
@@ -63,6 +64,28 @@ class HaproxyUpdate(object):
                                         )
 
         return updated
+
+    def __update_haproxy_by_runtime(self):
+        updated, stats = RuntimeUpdater.update_haproxy_runtime(node_ips=self.node_list,
+                                                        port=self.backend_port,
+                                                        sock_file=self.haproxy_socket_file,
+                                                        node_name=self.backend_name)
+
+        if not updated:
+            return False
+
+        updated = ConfigHandler.update_config(haproxy_config_file=self.haproxy_config_file,
+                                            template_file=self.template_file,
+                                            node_list=self.node_list,
+                                            backend_port=self.backend_port,
+                                            inactive_nodes_count=stats.get("inactive_nodes_count"))
+
+        if not updated:
+            '''
+                Log error, runtime updation succeeded but config file could not be updated
+            '''
+
+        return True
 
     def reload_haproxy(self):
         pass
