@@ -46,9 +46,17 @@ class RuntimeUpdater(object):
         MAKE_READY = "set server {backend_name}/{node_name} state ready\n"
         MAKE_MAINT = "set server {backend_name}/{node_name} state maint\n"
 
+        for active_node in active_nodes:
+            if active_node not in node_ips:
+                command_status, _ = SocketHandler.send_command(MAKE_MAINT.format(backend_name=backend_name, node_name=active_node))
+                if command_status:
+                    inactive_nodes.append(active_node)
+
+                del active_nodes[active_node]
+
         for new_node_ip in node_ips:
-            if active_nodes.get("new_node_ip"):
-                del active_nodes["new_node_ip"]
+            if active_nodes.get(new_node_ip):
+                continue
             else:
                 if len(inactive_nodes) > 0:
                     node_to_use = inactive_nodes.pop(0)
@@ -67,14 +75,11 @@ class RuntimeUpdater(object):
                 else:
 
                     '''
-                        Log issue
+                        Log error
                     '''
 
-        for remaining_node in active_nodes:
-            SocketHandler.send_command(MAKE_MAINT.format(backend_name=backend_name, node_name=remaining_node))
-
         stats = {
-            "inactive_nodes_count": len(inactive_nodes) + len(active_nodes),
+            "inactive_nodes_count": len(inactive_nodes),
             "nodes": node_ips
         }
 
