@@ -18,6 +18,7 @@ class HaproxyUpdate(object):
         self.haproxy_socket_file = kwargs.get("haproxy_socket_file")
         self.backend_name = kwargs.get("backend_name")
         self.update_type = kwargs.get("update_type")
+        self.node_slots = kwargs.get("node_slots")
 
         self.valid_start_by = [
             "binary",
@@ -51,6 +52,12 @@ class HaproxyUpdate(object):
             return False
 
         if self.haproxy_socket_file and not os.path.isfile(self.haproxy_socket_file):
+            return False
+
+        if not self.backend_name:
+            return False
+
+        if self.node_slots and self.node_slots <= 0:
             return False
 
     def update_haproxy(self):
