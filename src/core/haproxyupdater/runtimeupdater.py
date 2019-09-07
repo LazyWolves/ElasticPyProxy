@@ -69,12 +69,16 @@ class RuntimeUpdater(object):
                     '''
                         Log issue
                     '''
-                    return False
 
         for remaining_node in active_nodes:
             SocketHandler.send_command(REMOVE.format(backend_name=backend_name, node_name=remaining_node))
 
-        return True
+        stats = {
+            "inactive_nodes_count": len(inactive_nodes) + len(active_nodes),
+            "nodes": node_ips
+        }
+
+        return True, stats
 
     @staticmethod
     def update_haproxy_runtime(**kwargs):
@@ -88,16 +92,16 @@ class RuntimeUpdater(object):
         socket_created = socketHandler.create_socket()
 
         if not socket_created:SocketHandler
-            return False
+            return False, None
 
         got_status, nodes = RuntimeUpdater.__get_haproxy_stats(socketHandler, backend_name)
 
         if not got_status:
-            return False
+            return False, None
 
-        updated = RuntimeUpdater.update_runtime_util(socketHandler, node_ips, nodes, backend_name, port)
+        updated, stats = RuntimeUpdater.update_runtime_util(socketHandler, node_ips, nodes, backend_name, port)
 
         if not updated:
-            return False
+            return False, None
 
-        return True
+        return True, stats
