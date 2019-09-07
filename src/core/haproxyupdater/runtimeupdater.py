@@ -91,7 +91,7 @@ class RuntimeUpdater(object):
 
         socket_created = socketHandler.create_socket()
 
-        if not socket_created:SocketHandler
+        if not socket_created:SocketHandler:
             return False, None
 
         got_status, nodes = RuntimeUpdater.__get_haproxy_stats(socketHandler, backend_name)
