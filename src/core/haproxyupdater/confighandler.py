@@ -39,7 +39,14 @@ class ConfigHandler(object):
             nodes_str += (inactive_nodes + "\n")
 
         else:
-            pass
+            for node_id, node_ip in enumerate(node_list):
+                haproxy_node = node_template.format(node_id=node_id+1, ip=node_ip, port=backend_port)
+                node_str += (haproxy_node + "\n")
+
+            inactive_nodes_count = node_slots - len(node_list)
+            inactive_nodes = inactive_nodes_template.format(count=inactive_nodes_count)
+            node_str += (inactive_nodes + "\n")
+
 
         config_from_template = template.format(nodes=nodes_str)
 
