@@ -15,11 +15,18 @@ class HaproxyUpdate(object):
         self.init_file = kwargs.get("init_file")
         self.start_by = kwargs.get("start_by")
         self.haproxy_socket_file = kwargs.get("haproxy_socket_file")
+        self.backend_name = kwargs.get("backend_name")
+        self.update_type = kwargs.get("update_type")
 
         self.valid_start_by = [
             "binary",
             "systemd",
             "init"
+        ]
+
+        self.valid_update_types = [
+            "update_by_config",
+            "update_by_runtime"
         ]
 
     def __sanitise(self):

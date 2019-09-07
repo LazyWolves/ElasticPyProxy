@@ -71,7 +71,7 @@ class RuntimeUpdater(object):
                     '''
 
         for remaining_node in active_nodes:
-            SocketHandler.send_command(REMOVE.format(backend_name=backend_name, node_name=remaining_node))
+            SocketHandler.send_command(MAKE_MAINT.format(backend_name=backend_name, node_name=remaining_node))
 
         stats = {
             "inactive_nodes_count": len(inactive_nodes) + len(active_nodes),
@@ -91,7 +91,7 @@ class RuntimeUpdater(object):
 
         socket_created = socketHandler.create_socket()
 
-        if not socket_created:SocketHandler:
+        if not socket_created:
             return False, None
 
         got_status, nodes = RuntimeUpdater.__get_haproxy_stats(socketHandler, backend_name)
