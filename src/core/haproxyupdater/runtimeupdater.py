@@ -46,13 +46,18 @@ class RuntimeUpdater(object):
         MAKE_READY = "set server {backend_name}/{node_name} state ready\n"
         MAKE_MAINT = "set server {backend_name}/{node_name} state maint\n"
 
+        unused_active_nodes = []
+
         for active_node in active_nodes:
             if active_node not in node_ips:
-                command_status, _ = SocketHandler.send_command(MAKE_MAINT.format(backend_name=backend_name, node_name=active_node))
+                command_status, _ = SocketHandler.send_command(MAKE_MAINT.format(backend_name=backend_name, node_name=active_nodes[active_node]))
                 if command_status:
-                    inactive_nodes.append(active_node)
+                    inactive_nodes.append(active_nodes[active_node])
 
-                del active_nodes[active_node]
+                unused_active_nodes.append(active_node)
+
+        for unused_active_node in unused_active_nodes:
+            del active_nodes[unused_active_node]
 
         for new_node_ip in node_ips:
             if active_nodes.get(new_node_ip):
