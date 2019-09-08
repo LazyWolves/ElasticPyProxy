@@ -17,14 +17,16 @@ class HaproxyReloader(object):
         elif start_by == "binary":
             binary = kwargs.get("haproxy_binary")
             haproxy_config_file = kwargs.get("haproxy_config_file")
+            sock_file = kwargs.get("sock_file")
+            pid_file = kwargs.get("pid_file")
 
-            reloaded = HaproxyReloader.__reload_by_binary(binary, haproxy_config_file)
+            reloaded = HaproxyReloader.__reload_by_binary(binary, haproxy_config_file, sock_file, pid_file)
 
             return reloaded
 
     @staticmethod
     def __reload_by_systemd(service_name):
-        command = "systemctl reload {}".format(service_name)
+        command = "systemctl reload {service_name}".format(service_name=service_name)
 
         executed = HaproxyReloader.__execute_shell(command)
 
@@ -36,8 +38,22 @@ class HaproxyReloader(object):
         return executed
 
     @staticmethod
-    def __reload_by_binary(service_name, haproxy_config_file):
-        pass
+    def __reload_by_binary(binary, haproxy_config_file, sock_file, pid_file):
+        command_template = "{binary} -W -q -D -f {haproxy_config_file} -p {pid_file} -x {sock_file} -sf $(cat {pid_file})"
+
+        command = command_template.format(binary=binary,
+                                        haproxy_config_file=haproxy_config_file,
+                                        pid_file=pid_file,
+                                        sock_file=sock_file)
+
+        executed = HaproxyReloader.__execute_shell(command)
+
+        '''
+            If any error has occurred, then it has already been logged.
+            Return status
+        '''
+
+        return executed
 
     @staticmethod
     def __execute_shell(command):
