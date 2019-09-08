@@ -29,6 +29,10 @@ class BotoHandler(object):
         return client
 
     @staticmethod
+    def get_instance_ips_for_asg(**kwargs):
+        pass
+
+    @staticmethod
     def __get_instance_ids_for_asg(boto_client, asg_name):
         response = boto_client.describe_auto_scaling_groups(
             AutoScalingGroupNames=[
