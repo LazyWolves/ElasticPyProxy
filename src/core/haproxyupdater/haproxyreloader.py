@@ -24,7 +24,16 @@ class HaproxyReloader(object):
 
     @staticmethod
     def __reload_by_systemd(service_name):
-        pass
+        command = "systemctl reload {}".format(service_name)
+
+        executed = HaproxyReloader.__execute_shell(command)
+
+        '''
+            If any error has occurred, then it has already been logged.
+            Return status
+        '''
+
+        return executed
 
     @staticmethod
     def __reload_by_binary(service_name, haproxy_config_file):
