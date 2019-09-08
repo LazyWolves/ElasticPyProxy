@@ -29,7 +29,7 @@ class BotoHandler(object):
         return client
 
     @staticmethod
-    def get_instance_ids_for_asg(boto_client, asg_name):
+    def __get_instance_ids_for_asg(boto_client, asg_name):
         response = boto_client.describe_auto_scaling_groups(
             AutoScalingGroupNames=[
                 asg_name
@@ -46,5 +46,21 @@ class BotoHandler(object):
         return instance_ids
 
     @staticmethod
-    def instance_ips(boto_client, instance_ids):
-        pass
+    def __instance_ips(boto_client, instance_ids, ip_type):
+        response = boto_client.describe_auto_scaling_instances(
+            InstanceIds=instance_ids
+        )
+
+        instances = response.get("Reservations").get("Instances")
+
+        if ip_type == "private":
+            ip_key = "PrivateIpAddress"
+        else:
+            ip_key = "PublicIpAddress"
+
+        instance_ips = []
+
+        for instance in instances:
+            instance_ips.append(instance.get(ip_key))
+
+        return instance_ips
