@@ -1,6 +1,6 @@
 import boto3
 
-class boto3(object):
+class BotoHandler(object):
     
     @staticmethod
     def get_auto_scaling_client(**kwargs):
