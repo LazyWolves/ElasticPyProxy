@@ -19,6 +19,7 @@ class HaproxyUpdate(object):
         self.backend_name = kwargs.get("backend_name")
         self.update_type = kwargs.get("update_type")
         self.node_slots = kwargs.get("node_slots")
+        self.service_name = kwargs.get("service_name")
 
         self.valid_start_by = [
             "binary",
