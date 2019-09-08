@@ -42,3 +42,9 @@ class BotoHandler(object):
 
         for instance in instances:
             instance_ids.append(instance.get("InstanceId"))
+
+        return instance_ids
+
+    @staticmethod
+    def instance_ips(boto_client, instance_ids):
+        pass
