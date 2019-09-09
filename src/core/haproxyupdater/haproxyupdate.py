@@ -1,6 +1,7 @@
 import os
 from .confighandler import ConfigHandler
 from .runtimeupdater import RuntimeUpdater
+from .haproxyreloader import HaproxyReloader
 
 class HaproxyUpdate(object):
     def __init__(self, **kwargs):
@@ -71,7 +72,9 @@ class HaproxyUpdate(object):
                                         backend_port=self.backend_port
                                         )
 
-        return updated
+        reloaded = HaproxyReloader.reload_haproxy(start_by=self.start_by)
+
+        return reloaded
 
     def __update_haproxy_by_runtime(self):
         updated, stats = RuntimeUpdater.update_haproxy_runtime(node_ips=self.node_list,
