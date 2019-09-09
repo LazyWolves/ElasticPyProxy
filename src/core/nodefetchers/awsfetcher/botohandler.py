@@ -30,7 +30,15 @@ class BotoHandler(object):
 
     @staticmethod
     def get_instance_ips_for_asg(**kwargs):
-        pass
+        asg_client = kwargs.get("asg_client")
+        ec2_client = kwargs.get("ec2_client")
+        asg_name = kwargs.get("asg_name")
+        ip_type = kwargs.get("ip_type")
+
+        asg_instance_ids = BotoHandler.__get_instance_ids_for_asg(asg_client, asg_name)
+        asg_instance_ips = BotoHandler.__get_instance_ips(ec2_client, asg_instance_ids, ip_type)
+
+        return asg_instance_ips
 
     @staticmethod
     def __get_instance_ids_for_asg(boto_client, asg_name):
@@ -50,7 +58,7 @@ class BotoHandler(object):
         return instance_ids
 
     @staticmethod
-    def __instance_ips(boto_client, instance_ids, ip_type):
+    def __get_instance_ips(boto_client, instance_ids, ip_type):
         response = boto_client.describe_auto_scaling_instances(
             InstanceIds=instance_ids
         )
