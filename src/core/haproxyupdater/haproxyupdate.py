@@ -97,6 +97,3 @@ class HaproxyUpdate(object):
             '''
 
         return True
-
-    def reload_haproxy(self):
-        pass
