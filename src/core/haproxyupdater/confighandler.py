@@ -39,16 +39,19 @@ class ConfigHandler(object):
             nodes_str += (inactive_nodes + "\n")
 
         else:
-            for node_id, node_ip in enumerate(node_list):
-                haproxy_node = node_template.format(node_id=node_id+1, ip=node_ip, port=backend_port)
-                node_str += (haproxy_node + "\n")
-
             inactive_nodes_count = node_slots - len(node_list)
+            node_id = inactive_nodes_count + 1
+
+            for node_ip in node_list:
+                haproxy_node = node_template.format(node_id=node_id, ip=node_ip, port=backend_port)
+                nodes_str += (haproxy_node + "\n")
+                node_id += 1
+
             inactive_nodes = inactive_nodes_template.format(count=inactive_nodes_count)
-            node_str += (inactive_nodes + "\n")
+            nodes_str += (inactive_nodes + "\n")
 
         template = Template(template)
-        config_from_template = template.render({"nodes": node_str})
+        config_from_template = template.render({"nodes": nodes_str})
 
         could_write, _ = ConfigHandler.read_write_file(operation="write", file=haproxy_config_file, content=config_from_template)
 

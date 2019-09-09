@@ -76,7 +76,7 @@ class HaproxyUpdate(object):
 
         return reloaded
 
-    def __update_haproxy_by_runtime(self):
+    def update_haproxy_by_runtime(self):
         updated, stats = RuntimeUpdater.update_haproxy_runtime(node_ips=self.node_list,
                                                         port=self.backend_port,
                                                         sock_file=self.haproxy_socket_file,
@@ -97,3 +97,19 @@ class HaproxyUpdate(object):
             '''
 
         return True
+
+if __name__ == "__main__":
+    hup = HaproxyUpdate(
+        haproxy_config_file="/etc/haproxy/haproxy.cfg",
+        template_file="/home/deep/elasticpyproxy/etc/haproxy.cofig.template",
+        backend_port=6003,
+        node_list=["10.42.0.197"],
+        haproxy_binary="/usr/sbin/haproxy_binary",
+        start_by="systemd",
+        haproxy_socket_file="/var/run/haproxy/haproxy.sock",
+        backend_name="haproxynode",
+        service_name="haproxy"
+    )
+
+    res = hup.update_haproxy_by_runtime()
+    print (res)

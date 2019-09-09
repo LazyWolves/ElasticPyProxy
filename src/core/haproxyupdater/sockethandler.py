@@ -7,16 +7,15 @@ class SocketHandler(object):
         # get the desired params
         self.sock_file = kwargs.get("sock_file")
 
-    def create_socket(self):
-        self.socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        self.socket.settimeout(10)
-
+    def connect_socket(self):
         try:
 
             # try connecting to haproxy socket file
+            self.socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            self.socket.settimeout(10)
             self.socket.connect(self.sock_file)
         except Exception as ex:
-
+            print (ex)
             '''
                 Log exception
             '''
@@ -27,20 +26,29 @@ class SocketHandler(object):
 
     def send_command(self, **kwargs):
         response = None
-        command = kwargs.get("command")
+        command = kwargs.get("command").encode()
+
+        connected = self.connect_socket()
+
+        if not connected:
+            return False, None
 
         try:
+            # send command
             self.socket.send(command)
             response = ""
 
             while True:
                 res_buf = self.socket.recv(16)
                 if res_buf:
-                    response += res_buf
+                    response += res_buf.decode()
                 else:
                     break
         except Exception as ex:
+            print (ex)
             response = None
+
+        self.destroy_socket()
 
         if response == None:
             return False, response

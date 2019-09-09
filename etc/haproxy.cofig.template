@@ -47,7 +47,7 @@ listen haproxynode
 	http-request set-header X-CLIENT-IP %[src]
 	http-request add-header X-Forwarded-Proto https if {{ ssl_fc }}
 	option httpchk HEAD / HTTP/1.1\r\nHost:localhost
-	{nodes}
+	{{nodes}}
 
 listen stats
     bind :32700
