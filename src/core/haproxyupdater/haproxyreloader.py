@@ -46,6 +46,8 @@ class HaproxyReloader(object):
                                         pid_file=pid_file,
                                         sock_file=sock_file)
 
+        print (command)
+
         executed = HaproxyReloader.__execute_shell(command)
 
         '''

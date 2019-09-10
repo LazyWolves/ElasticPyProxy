@@ -17,6 +17,7 @@ class HaproxyUpdate(object):
         self.init_file = kwargs.get("init_file")
         self.start_by = kwargs.get("start_by")
         self.haproxy_socket_file = kwargs.get("haproxy_socket_file")
+        self.pid_file = kwargs.get("pid_file")
         self.backend_name = kwargs.get("backend_name")
         self.update_type = kwargs.get("update_type")
         self.node_slots = kwargs.get("node_slots")
@@ -85,7 +86,12 @@ class HaproxyUpdate(object):
                                         node_slots=self.node_slots
                                         )
 
-        reloaded = HaproxyReloader.reload_haproxy(start_by=self.start_by, service_name=self.service_name)
+        reloaded = HaproxyReloader.reload_haproxy(start_by=self.start_by,
+                                                haproxy_config_file=self.haproxy_config_file,
+                                                service_name=self.service_name,
+                                                haproxy_binary=self.haproxy_binary,
+                                                pid_file=self.pid_file
+                                                )
 
         return reloaded
 
@@ -118,11 +124,12 @@ if __name__ == "__main__":
         backend_port=6003,
         node_list=["127.0.0.1"],
         haproxy_binary="/usr/sbin/haproxy",
-        start_by="systemd",
+        start_by="binary",
         haproxy_socket_file="/var/run/haproxy/haproxy.sock",
         backend_name="haproxynode",
         service_name="haproxy",
-        node_slots=6
+        node_slots=6,
+        pid_file="/run/haproxy.pid"
     )
 
     res = hup.update_haproxy()
