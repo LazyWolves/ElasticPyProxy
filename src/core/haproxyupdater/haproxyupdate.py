@@ -53,7 +53,7 @@ class HaproxyUpdate(object):
         if self.init_file and not os.path.isfile(self.init_file):
             return False
 
-        if self.haproxy_socket_file and not os.path.isfile(self.haproxy_socket_file):
+        if self.haproxy_socket_file and not os.path.exists(self.haproxy_socket_file):
             return False
 
         if not self.backend_name:
@@ -62,21 +62,34 @@ class HaproxyUpdate(object):
         if self.node_slots and self.node_slots <= 0:
             return False
 
+        return True
+
     def update_haproxy(self):
         if not self.__sanitise():
             return False
 
+        if self.update_type == "update_by_runtime":
+            updated = self.__update_haproxy_by_runtime()
+
+        else:
+            updated = self.__update_haproxy_by_config_reload()
+
+        return updated
+
+    def __update_haproxy_by_config_reload(self):
+
         updated = ConfigHandler.update_config(haproxy_config_file=self.haproxy_config_file,
                                         template_file=self.template_file,
                                         node_list=self.node_list,
-                                        backend_port=self.backend_port
+                                        backend_port=self.backend_port,
+                                        node_slots=self.node_slots
                                         )
 
-        reloaded = HaproxyReloader.reload_haproxy(start_by=self.start_by)
+        reloaded = HaproxyReloader.reload_haproxy(start_by=self.start_by, service_name=self.service_name)
 
         return reloaded
 
-    def update_haproxy_by_runtime(self):
+    def __update_haproxy_by_runtime(self):
         updated, stats = RuntimeUpdater.update_haproxy_runtime(node_ips=self.node_list,
                                                         port=self.backend_port,
                                                         sock_file=self.haproxy_socket_file,
@@ -103,13 +116,14 @@ if __name__ == "__main__":
         haproxy_config_file="/etc/haproxy/haproxy.cfg",
         template_file="/home/deep/elasticpyproxy/etc/haproxy.cofig.template",
         backend_port=6003,
-        node_list=["10.42.0.197"],
-        haproxy_binary="/usr/sbin/haproxy_binary",
+        node_list=["127.0.0.1"],
+        haproxy_binary="/usr/sbin/haproxy",
         start_by="systemd",
         haproxy_socket_file="/var/run/haproxy/haproxy.sock",
         backend_name="haproxynode",
-        service_name="haproxy"
+        service_name="haproxy",
+        node_slots=6
     )
 
-    res = hup.update_haproxy_by_runtime()
+    res = hup.update_haproxy()
     print (res)

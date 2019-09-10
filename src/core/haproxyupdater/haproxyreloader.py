@@ -62,6 +62,8 @@ class HaproxyReloader(object):
         output, errors = proc.communicate()
         proc_exit_code = proc.returncode
 
+        print (output)
+
         if proc_exit_code != 0:
 
             '''
