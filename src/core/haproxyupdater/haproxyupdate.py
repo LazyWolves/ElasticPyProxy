@@ -14,7 +14,6 @@ class HaproxyUpdate(object):
         self.backend_port = kwargs.get("backend_port")
         self.node_list = kwargs.get("node_list")
         self.haproxy_binary = kwargs.get("haproxy_binary")
-        self.init_file = kwargs.get("init_file")
         self.start_by = kwargs.get("start_by")
         self.haproxy_socket_file = kwargs.get("haproxy_socket_file")
         self.pid_file = kwargs.get("pid_file")
@@ -48,20 +47,53 @@ class HaproxyUpdate(object):
         if self.backend_port < 0 or self.backend_port > 65536:
             return False
 
-        if self.haproxy_binary and not os.path.isfile(self.haproxy_binary):
-            return False
-
-        if self.init_file and not os.path.isfile(self.init_file):
-            return False
-
-        if self.haproxy_socket_file and not os.path.exists(self.haproxy_socket_file):
-            return False
-
         if not self.backend_name:
             return False
 
         if self.node_slots and self.node_slots <= 0:
             return False
+
+        if not self.update_type:
+            return False
+
+        if self.update_type not in self.valid_update_types:
+            return False
+
+        if not self.node_slots:
+            return False
+
+        if self.node_slots <=0:
+            return False
+
+        if not self.node_list:
+            return False
+
+        if self.haproxy_socket_file and not os.path.exists(self.haproxy_socket_file):
+            return False
+
+        if self.update_type == "update_by_config":
+            if not self.start_by:
+                return False
+
+            if not self.start_by in self.valid_start_by:
+                return False
+
+            if self.start_by == "systemd":
+                if not self.service_name:
+                    return False
+
+            if self.start_by == "binary":
+                if not self.haproxy_binary:
+                    return False
+
+                if not os.path.isfile(self.haproxy_binary):
+                    return False
+
+                if not self.pid_file:
+                    return False
+
+                if not os.path.isfile(self.pid_file):
+                    return False
 
         return True
 
@@ -122,14 +154,15 @@ if __name__ == "__main__":
         haproxy_config_file="/etc/haproxy/haproxy.cfg",
         template_file="/home/deep/elasticpyproxy/etc/haproxy.cofig.template",
         backend_port=6003,
-        node_list=["127.0.0.1"],
+        node_list=["10.42.0.197"],
         haproxy_binary="/usr/sbin/haproxy",
         start_by="binary",
         haproxy_socket_file="/var/run/haproxy/haproxy.sock",
         backend_name="haproxynode",
         service_name="haproxy",
         node_slots=6,
-        pid_file="/run/haproxy.pid"
+        pid_file="/run/haproxy.pid",
+        update_type="update_by_config"
     )
 
     res = hup.update_haproxy()
