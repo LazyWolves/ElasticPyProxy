@@ -18,3 +18,9 @@ def drive():
 
     if options.config:
         CONFIG_FILE = options.config
+
+    config = _load_config()
+
+    if not __sanitize_config(config):
+
+        exit(2)
