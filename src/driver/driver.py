@@ -38,26 +38,30 @@ def __load_config():
 
     return config
 
-def __clear_existing_lock(lock_dir):
-    lock_file = os.path.join(lock_dir, LOCK_FILE)
-
-    try:
-        if os.path.exists(lock_file):
-            os.unlink(lock_file)
-        return True
-    except Exception as e:
-
-        '''
-            Unable to clear stale lock. Log issue. Send false. Stale locks muct be removed
-            or else runs wont take place
-        '''
-        return False
-
 def __can_aquire_lock(lock_dir):
     lock_file = os.path.join(lock_dir, LOCK_FILE)
 
     if os.path.exists(lock_file):
         return True
+
+def __aquire_lock(lock_dir):
+    lock_file = os.path.join(lock_dir, LOCK_FILE)
+    try:
+        if not os.path.exists(lock_file):
+            with open(lock_file, "w") as lock_file:
+                lock_file.write(os.getpid())
+        return True
+    except Exception as ex:
+        return False
+
+def __release_lock(lock_dir):
+    lock_file = os.path.join(lock_dir, LOCK_FILE)
+    try:
+        if os.path.exists(lock_file):
+            os.unlink(lock_file)
+        return True
+    except Exception as ex:
+        return False
 
 def __sanitize_config(config):
 
