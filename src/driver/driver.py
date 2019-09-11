@@ -39,9 +39,7 @@ def __load_config():
     return config
 
 def __can_aquire_lock(lock_dir):
-    lock_file = os.path.join(lock_dir, LOCK_FILE)
-
-    if os.path.exists(lock_file):
+    if os.path.exists(lock_dir):
         return True
 
 def __aquire_lock(lock_dir):
@@ -50,7 +48,8 @@ def __aquire_lock(lock_dir):
         if not os.path.exists(lock_file):
             with open(lock_file, "w") as lock_file:
                 lock_file.write(os.getpid())
-        return True
+            return True
+        return False
     except Exception as ex:
         return False
 
