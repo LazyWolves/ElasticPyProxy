@@ -19,8 +19,25 @@ def drive():
     if options.config:
         CONFIG_FILE = options.config
 
-    config = _load_config()
+    config = __load_config()
 
     if not __sanitize_config(config):
 
         exit(2)
+
+def __load_config():
+    parser = SafeConfigParser()
+    parser.read(CONFIG_FILE)
+
+    config = {}
+
+    for section in parser.sections():
+        config[section] = {}
+        for name, value in parser.items(section):
+            config[section][name] = value
+
+    return config
+
+def __sanitize_config(config):
+
+    return True
