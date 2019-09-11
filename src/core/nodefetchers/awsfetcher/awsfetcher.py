@@ -30,8 +30,8 @@ class AwsFetcher(object):
         return asg_instance_ips
 
 if __name__ == "__main__":
-    asgf = AwsFetcher(aws_access_key_id="AKIATWERX3OYUZYP4UIY",
-                      aws_secret_access_key="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",
+    asgf = AwsFetcher(aws_access_key_id="",
+                      aws_secret_access_key="",
                       asg_name="test-auto",
                       ip_type="public")
 
