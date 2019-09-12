@@ -4,7 +4,9 @@ def get_orchestrator_handler(config):
     orchestrator = config.get("orchestrator")
 
     if orchestrator.lower() == "aws":
-        aws_handler = prepare_aws_handler(config.get(orchestrator))
+        handler = prepare_aws_handler(config.get(orchestrator))
+
+    return handler
 
 def prepare_aws_handler(config):
     aws_access_key_id = config.get("aws_access_key_id")
