@@ -11,8 +11,14 @@ def bootstrap(**kwargs):
     orchestratorHandler = get_orchestrator_handler(config)
     asg_ips = orchestratorHandler.fetch()
 
-    haproxyupdater = HaproxyUpdate(haproxy_config_file=haproxy_config.get("haproxy_config_file"),
-                                   template_file=haproxy_config.get("template_file"),
-                                   )
+    haproxyupdater = HaproxyUpdate(**haproxy_config)
+    haproxyupdater.update_node_list(asg_ips)
+    updated = haproxyupdater.update_haproxy_by_config_reload(update_only=True)
+
+    if updated:
+        running = start_if_not_running(config.get("pid_file"))
+        return running
+
+    return updated_and_reloaded
 
     

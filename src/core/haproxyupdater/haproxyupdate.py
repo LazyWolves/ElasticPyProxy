@@ -112,7 +112,7 @@ class HaproxyUpdate(object):
 
         return updated
 
-    def update_haproxy_by_config_reload(self):
+    def update_haproxy_by_config_reload(self, update_only=False):
 
         updated = ConfigHandler.update_config(haproxy_config_file=self.haproxy_config_file,
                                         template_file=self.template_file,
@@ -120,6 +120,9 @@ class HaproxyUpdate(object):
                                         backend_port=self.backend_port,
                                         node_slots=self.node_slots
                                         )
+
+        if update_only:
+            return updated
 
         reloaded = HaproxyReloader.reload_haproxy(start_by=self.start_by,
                                                 haproxy_config_file=self.haproxy_config_file,
