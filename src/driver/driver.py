@@ -1,5 +1,3 @@
-from src.core.haproxyupdater.haproxyupdate import HaproxyUpdate
-from src.core.nodefetchers.awsfetcher.awsfetcher import AwsFetcher
 from configparser import SafeConfigParser
 import time
 import optparse
