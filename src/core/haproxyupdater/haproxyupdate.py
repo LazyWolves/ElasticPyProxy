@@ -97,6 +97,9 @@ class HaproxyUpdate(object):
 
         return True
 
+    def update_node_list(self, node_list):
+        self.node_list = node_list
+
     def update_haproxy(self):
         if not self.__sanitise():
             return False
