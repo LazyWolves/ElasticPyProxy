@@ -16,9 +16,12 @@ def bootstrap(**kwargs):
     updated = haproxyupdater.update_haproxy_by_config_reload(update_only=True)
 
     if updated:
-        running = start_if_not_running(config.get("pid_file"))
+        running = start_if_not_running(config)
         return running
 
-    return updated_and_reloaded
+    return updated
+
+def start_if_not_running(config):
+    return True
 
     
