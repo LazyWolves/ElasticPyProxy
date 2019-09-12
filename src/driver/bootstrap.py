@@ -17,9 +17,9 @@ def bootstrap(**kwargs):
 
     if updated:
         running = start_if_not_running(config)
-        return running
+        return running, haproxyupdater, orchestratorHandler
 
-    return updated
+    return updated, haproxyupdater, orchestratorHandler
 
 def start_if_not_running(config):
     return True
