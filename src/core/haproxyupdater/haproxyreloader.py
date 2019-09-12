@@ -10,7 +10,7 @@ class HaproxyReloader(object):
         if start_by == "systemd":
             service_name = kwargs.get("service_name")
 
-            reloaded = HaproxyReloader.__reload_by_systemd(service_name)
+            reloaded = HaproxyReloader.__systemd_handler(service_name, "reload")
 
             return reloaded
 
@@ -25,7 +25,13 @@ class HaproxyReloader(object):
             return reloaded
 
     @staticmethod
-    def __reload_by_systemd(service_name):
+    def start_by_systemd(service_name):
+        started = HaproxyReloader.__systemd_handler(service_name, "start")
+
+        return started
+
+    @staticmethod
+    def __systemd_handler(service_name, operation):
         command = "systemctl reload {service_name}".format(service_name=service_name)
 
         executed = HaproxyReloader.__execute_shell(command)
