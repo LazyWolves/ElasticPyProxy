@@ -105,11 +105,11 @@ class HaproxyUpdate(object):
             updated = self.__update_haproxy_by_runtime()
 
         else:
-            updated = self.__update_haproxy_by_config_reload()
+            updated = self.update_haproxy_by_config_reload()
 
         return updated
 
-    def __update_haproxy_by_config_reload(self):
+    def update_haproxy_by_config_reload(self):
 
         updated = ConfigHandler.update_config(haproxy_config_file=self.haproxy_config_file,
                                         template_file=self.template_file,
