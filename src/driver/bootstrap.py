@@ -16,11 +16,10 @@ def bootstrap(**kwargs):
     asg_ips = orchestratorHandler.fetch()
 
     haproxyupdater = HaproxyUpdate(**haproxy_config)
-    haproxyupdater.update_node_list(asg_ips)
     updated = haproxyupdater.update_haproxy_by_config_reload(update_only=True)
 
     if updated:
-        running = __start_if_not_running(config)
+        running = __start_if_not_running_else_reload(config)
         return running, haproxyupdater, orchestratorHandler
 
     return updated, haproxyupdater, orchestratorHandler
@@ -53,12 +52,12 @@ def __is_haproxy_running(config):
 
     return True, None
 
-def __start_if_not_running(config):
+def __start_if_not_running_else_reload(config):
     
     is_haproxy_running, error = __is_haproxy_running(config)
 
-    if is_haproxy_running:
-        pass
+    if not is_haproxy_running and config.get("start_by") == "systemd":
+        started = HaproxyReloader.start_by_systemd(config.get("service_name"))
+        return started
 
-    return True
-
+    HaproxyReloader.reload_haproxy(**config)
