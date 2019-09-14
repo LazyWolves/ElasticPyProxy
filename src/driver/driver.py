@@ -49,6 +49,12 @@ def drive():
             time.sleep(SLEEP_BEFORE_NEXT_LOCK_ATTEMPT)
             continue
 
+        asg_ips = orchestratorHandler.fetch()
+        haproxyupdater.update_node_list(asg_ips)
+        updated = haproxyupdater.update_haproxy()
+        lock_released = __release_lock(config.get("lock_dir"))
+        time.sleep(SLEEP_BEFORE_NEXT_RUN)
+
 def __load_config():
     parser = SafeConfigParser()
     parser.read(CONFIG_FILE)

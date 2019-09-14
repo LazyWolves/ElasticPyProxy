@@ -16,6 +16,7 @@ def bootstrap(**kwargs):
     asg_ips = orchestratorHandler.fetch()
 
     haproxyupdater = HaproxyUpdate(**haproxy_config)
+    haproxyupdater.update_node_list(asg_ips)
     updated = haproxyupdater.update_haproxy_by_config_reload(update_only=True)
 
     if updated:
