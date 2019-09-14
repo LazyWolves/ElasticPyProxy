@@ -20,6 +20,8 @@ def drive():
         CONFIG_FILE = options.config
 
     config = __load_config()
+    print (config)
+    exit(0)
 
     SLEEP_BEFORE_NEXT_RUN = config.get("sleep_before_next_run", default_params.get("SLEEP_BEFORE_NEXT_RUN"))
     SLEEP_BEFORE_NEXT_LOCK_ATTEMPT = config.get("sleep_before_next_lock_attempt", default_params.get("SLEEP_BEFORE_NEXT_LOCK_ATTEMPT"))
@@ -95,3 +97,6 @@ def __release_lock(lock_dir):
 def __sanitize_config(config):
 
     return True
+
+if __name__ == "__main__":
+    drive()

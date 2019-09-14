@@ -11,7 +11,7 @@ class HaproxyUpdate(object):
         '''
         self.haproxy_config_file = kwargs.get("haproxy_config_file")
         self.template_file = kwargs.get("template_file")
-        self.backend_port = kwargs.get("backend_port")
+        self.backend_port = int(kwargs.get("backend_port"))
         self.node_list = kwargs.get("node_list")
         self.haproxy_binary = kwargs.get("haproxy_binary")
         self.start_by = kwargs.get("start_by")
@@ -19,7 +19,7 @@ class HaproxyUpdate(object):
         self.pid_file = kwargs.get("pid_file")
         self.backend_name = kwargs.get("backend_name")
         self.update_type = kwargs.get("update_type")
-        self.node_slots = kwargs.get("node_slots")
+        self.node_slots = int(kwargs.get("node_slots"))
         self.service_name = kwargs.get("service_name")
 
         self.valid_start_by = [
