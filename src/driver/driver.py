@@ -31,6 +31,7 @@ def drive():
     while True:
         lock_aquired = __aquire_lock(config.get("lock_dir"))
         if not lock_aquired:
+            time.sleep(SLEEP_BEFORE_NEXT_LOCK_ATTEMPT)
             continue
 
 def __load_config():
