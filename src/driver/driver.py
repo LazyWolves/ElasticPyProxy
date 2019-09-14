@@ -2,9 +2,10 @@ from configparser import SafeConfigParser
 import time
 import optparse
 import os
+from .defaultparams import default_params
 
-CONFIG_FILE = "ep2.config"
-LOCK_FILE = "ep2.lock"
+CONFIG_FILE = default_params.get("CONFIG_FILE")
+LOCK_FILE = default_params.get("LOCK_FILE")
 
 def drive():
     global CONFIG_FILE
@@ -19,9 +20,18 @@ def drive():
 
     config = __load_config()
 
+    SLEEP_BEFORE_NEXT_RUN = config.get("sleep_before_next_run", default_params.get("SLEEP_BEFORE_NEXT_RUN"))
+    SLEEP_BEFORE_NEXT_LOCK_ATTEMPT = config.get("sleep_before_next_lock_attempt", default_params.get("SLEEP_BEFORE_NEXT_LOCK_ATTEMPT"))
+
     if not __sanitize_config(config):
 
         exit(2)
+
+    # Begin with state loop
+    while True:
+        lock_aquired = __aquire_lock(config.get("lock_dir"))
+        if not lock_aquired:
+            continue
 
 def __load_config():
     parser = SafeConfigParser()
@@ -37,7 +47,7 @@ def __load_config():
     return config
 
 def __can_aquire_lock(lock_dir):
-    if os.path.exists(lock_dir):
+    if not os.path.exists(lock_dir):
         return True
 
 def __aquire_lock(lock_dir):
