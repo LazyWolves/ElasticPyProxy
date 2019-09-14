@@ -3,6 +3,7 @@ import time
 import optparse
 import os
 from .defaultparams import default_params
+from .bootstrap import bootstrap
 
 CONFIG_FILE = default_params.get("CONFIG_FILE")
 LOCK_FILE = default_params.get("LOCK_FILE")
@@ -26,6 +27,20 @@ def drive():
     if not __sanitize_config(config):
 
         exit(2)
+
+    running, haproxyupdater, orchestratorHandler = bootstrap(config=config)
+
+    if not running:
+
+        '''
+            Error has already been logged. Exit with status code 2
+        '''
+        exit(2)
+
+    '''
+        After this point, Haproxy should be running with the lastest IPs
+        fetched from the orchestrator.
+    '''
 
     # Begin with state loop
     while True:
