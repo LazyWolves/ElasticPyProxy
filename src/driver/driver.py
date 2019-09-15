@@ -10,6 +10,7 @@ LOCK_FILE = default_params.get("LOCK_FILE")
 
 def drive():
     global CONFIG_FILE
+    global LOCK_FILE
 
     # parse args
     parser = optparse.OptionParser()
@@ -20,9 +21,10 @@ def drive():
         CONFIG_FILE = options.config
 
     config = __load_config()
+    haproxy_config = config.get("haproxy")
 
-    SLEEP_BEFORE_NEXT_RUN = config.get("sleep_before_next_run", default_params.get("SLEEP_BEFORE_NEXT_RUN"))
-    SLEEP_BEFORE_NEXT_LOCK_ATTEMPT = config.get("sleep_before_next_lock_attempt", default_params.get("SLEEP_BEFORE_NEXT_LOCK_ATTEMPT"))
+    SLEEP_BEFORE_NEXT_RUN = int(haproxy_config.get("sleep_before_next_run", default_params.get("SLEEP_BEFORE_NEXT_RUN")))
+    SLEEP_BEFORE_NEXT_LOCK_ATTEMPT = int(haproxy_config.get("sleep_before_next_lock_attempt", default_params.get("SLEEP_BEFORE_NEXT_LOCK_ATTEMPT")))
 
     if not __sanitize_config(config):
 
@@ -43,17 +45,27 @@ def drive():
     '''
 
     # Begin with state loop
+    print ("Entering state loop...")
+    i = 1
     while True:
-        lock_aquired = __aquire_lock(config.get("lock_dir"))
+        print ("run " + str(i))
+        lock_aquired = __aquire_lock(haproxy_config.get("lock_dir"))
         if not lock_aquired:
+            print ("asasasas")
             time.sleep(SLEEP_BEFORE_NEXT_LOCK_ATTEMPT)
             continue
 
         asg_ips = orchestratorHandler.fetch()
+        print (asg_ips)
         haproxyupdater.update_node_list(asg_ips)
         updated = haproxyupdater.update_haproxy()
-        lock_released = __release_lock(config.get("lock_dir"))
+        print (updated)
+        lock_released = __release_lock(haproxy_config.get("lock_dir"))
         time.sleep(SLEEP_BEFORE_NEXT_RUN)
+        i += 1
+
+def __setup_logging():
+    pass
 
 def __load_config():
     parser = SafeConfigParser()
@@ -77,10 +89,11 @@ def __aquire_lock(lock_dir):
     try:
         if not os.path.exists(lock_file):
             with open(lock_file, "w") as lock_file:
-                lock_file.write(os.getpid())
+                lock_file.write(str(os.getpid()))
             return True
         return False
     except Exception as ex:
+        print (ex)
         return False
 
 def __release_lock(lock_dir):
@@ -90,6 +103,7 @@ def __release_lock(lock_dir):
             os.unlink(lock_file)
         return True
     except Exception as ex:
+        print (ex)
         return False
 
 def __sanitize_config(config):
