@@ -4,6 +4,7 @@ import optparse
 import os
 from .defaultparams import default_params
 from .bootstrap import bootstrap
+import logging
 
 CONFIG_FILE = default_params.get("CONFIG_FILE")
 LOCK_FILE = default_params.get("LOCK_FILE")
@@ -25,6 +26,9 @@ def drive():
 
     SLEEP_BEFORE_NEXT_RUN = int(haproxy_config.get("sleep_before_next_run", default_params.get("SLEEP_BEFORE_NEXT_RUN")))
     SLEEP_BEFORE_NEXT_LOCK_ATTEMPT = int(haproxy_config.get("sleep_before_next_lock_attempt", default_params.get("SLEEP_BEFORE_NEXT_LOCK_ATTEMPT")))
+    LOG_DIR = haproxy_config.get("log_dir", default_params.get("LOG_DIR"))
+
+    logger = __setup_logging(LOG_DIR)
 
     if not __sanitize_config(config):
 
@@ -64,8 +68,17 @@ def drive():
         time.sleep(SLEEP_BEFORE_NEXT_RUN)
         i += 1
 
-def __setup_logging():
-    pass
+def __setup_logging(log_dir):
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    logger_handler = logging.FileHandler(log_dir)
+    logger_handler.setLevel(logging.DEBUG)
+    logger_formatter = logging.Formatter(fmt='%(asctime)s %(levelname)-8s %(message)s',
+                            datefmt='%Y-%m-%d %H:%M:%S')
+    logger_handler.setFormatter(logger_formatter)
+    logger.addHandler(logger_handler)
+
+    return logger
 
 def __load_config():
     parser = SafeConfigParser()
