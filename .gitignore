@@ -1,4 +1,4 @@
 notes
 **/__pycache__/
-./etc/elasticpyproxy.conf
-./etc/haproxy.config.template
+etc/elasticpyproxy.conf
+etc/haproxy.config.template
