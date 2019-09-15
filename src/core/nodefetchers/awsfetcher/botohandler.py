@@ -75,6 +75,7 @@ class BotoHandler(object):
 
         for reservation in response.get("Reservations"):
             instance_ip = reservation.get("Instances")[0].get(ip_key)
-            instance_ips.append(instance_ip)
+            if instance_ip:
+                instance_ips.append(instance_ip)
 
         return instance_ips
