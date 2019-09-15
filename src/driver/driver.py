@@ -53,17 +53,11 @@ def drive():
     i = 1
     while True:
         print ("run " + str(i))
-        lock_aquired = __aquire_lock(haproxy_config.get("lock_dir"))
-        if not lock_aquired:
-            time.sleep(SLEEP_BEFORE_NEXT_LOCK_ATTEMPT)
-            continue
-
         asg_ips = orchestratorHandler.fetch()
         print (asg_ips)
         haproxyupdater.update_node_list(asg_ips)
         updated = haproxyupdater.update_haproxy()
         print (updated)
-        lock_released = __release_lock(haproxy_config.get("lock_dir"))
         time.sleep(SLEEP_BEFORE_NEXT_RUN)
         i += 1
 
