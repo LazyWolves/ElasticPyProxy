@@ -6,6 +6,7 @@ class SocketHandler(object):
 
         # get the desired params
         self.sock_file = kwargs.get("sock_file")
+        self.logger = kwargs.get("logger")
 
     def connect_socket(self):
         try:

@@ -8,22 +8,23 @@ COULD_NOT_READ_PID_FILE = "COULD_NOT_READ_PID_FILE"
 
 def bootstrap(**kwargs):
     config = kwargs.get("config")
+    logger = kwargs.get("logger")
     haproxy_config = config.get("haproxy")
 
-    orchestratorHandler = get_orchestrator_handler(config)
+    orchestratorHandler = get_orchestrator_handler(config, logger=logger)
     asg_ips = orchestratorHandler.fetch()
 
-    haproxyupdater = HaproxyUpdate(**haproxy_config)
+    haproxyupdater = HaproxyUpdate(**haproxy_config, logger=logger)
     haproxyupdater.update_node_list(asg_ips)
     updated = haproxyupdater.update_haproxy_by_config_reload(update_only=True)
 
     if updated:
-        running = __start_if_not_running_else_reload(haproxy_config)
+        running = __start_if_not_running_else_reload(haproxy_config, logger=logger)
         return running, haproxyupdater, orchestratorHandler
 
     return updated, haproxyupdater, orchestratorHandler
 
-def __is_haproxy_running(config):
+def __is_haproxy_running(config, logger=None):
     pid_file = config.get("pid_file")
     if not os.path.exists(pid_file):
         return False, None
@@ -53,11 +54,9 @@ def __is_haproxy_running(config):
 
     return True, None
 
-def __start_if_not_running_else_reload(config):
+def __start_if_not_running_else_reload(config, logger=None):
     
-    is_haproxy_running, error = __is_haproxy_running(config)
-
-    print (is_haproxy_running)
+    is_haproxy_running, error = __is_haproxy_running(config, logger=logger)
 
     if not is_haproxy_running and config.get("start_by") == "systemd":
         started = HaproxyReloader.start_by_systemd(config.get("service_name"))

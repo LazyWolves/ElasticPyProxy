@@ -21,6 +21,7 @@ class HaproxyUpdate(object):
         self.update_type = kwargs.get("update_type")
         self.node_slots = int(kwargs.get("node_slots"))
         self.service_name = kwargs.get("service_name")
+        self.logger = kwargs.get("logger")
 
         self.valid_start_by = [
             "binary",
@@ -137,7 +138,8 @@ class HaproxyUpdate(object):
         updated, stats = RuntimeUpdater.update_haproxy_runtime(node_ips=self.node_list,
                                                         port=self.backend_port,
                                                         sock_file=self.haproxy_socket_file,
-                                                        node_name=self.backend_name)
+                                                        node_name=self.backend_name,
+                                                        logger=self.logger)
 
         if not updated:
             return False

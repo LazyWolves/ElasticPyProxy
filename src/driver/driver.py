@@ -34,7 +34,7 @@ def drive():
 
         exit(2)
 
-    running, haproxyupdater, orchestratorHandler = bootstrap(config=config)
+    running, haproxyupdater, orchestratorHandler = bootstrap(config=config, logger=logger)
 
     if not running:
 

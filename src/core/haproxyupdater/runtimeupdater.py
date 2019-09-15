@@ -96,8 +96,9 @@ class RuntimeUpdater(object):
         port = kwargs.get("port")
         sock_file = kwargs.get("sock_file")
         backend_name = kwargs.get("node_name")
+        logger = kwargs.get("logger")
 
-        socketHandler = SocketHandler(sock_file=sock_file)
+        socketHandler = SocketHandler(sock_file=sock_file, logger=logger)
 
         got_status, nodes = RuntimeUpdater.__get_haproxy_stats(socketHandler, backend_name)
 
