@@ -2,6 +2,7 @@ from src.core.haproxyupdater.haproxyupdate import HaproxyUpdate
 from src.core.nodefetchers.awsfetcher.awsfetcher import AwsFetcher
 from src.core.nodefetchers.orchestrator import get_orchestrator_handler
 from src.core.haproxyupdater.haproxyreloader import HaproxyReloader
+from .drivercache import DriverCache
 import os
 
 COULD_NOT_READ_PID_FILE = "COULD_NOT_READ_PID_FILE"
@@ -15,13 +16,15 @@ def bootstrap(**kwargs):
     orchestratorHandler = get_orchestrator_handler(config, logger=logger)
     asg_ips = orchestratorHandler.fetch()
 
+    driverCache = DriverCache(set(asg_ips))
+
     haproxyupdater = HaproxyUpdate(**haproxy_config, logger=logger)
     haproxyupdater.update_node_list(asg_ips)
     updated = haproxyupdater.update_haproxy_by_config_reload(update_only=True)
 
     if updated:
         running = __start_if_not_running_else_reload(haproxy_config, logger=logger)
-        return running, haproxyupdater, orchestratorHandler
+        return running, haproxyupdater, orchestratorHandler, driverCache
 
     logger.critical("Haproxy config update at botstrap failed")
 

@@ -34,7 +34,7 @@ def drive():
 
         exit(2)
 
-    running, haproxyupdater, orchestratorHandler = bootstrap(config=config, logger=logger)
+    running, haproxyupdater, orchestratorHandler, driverCache = bootstrap(config=config, logger=logger)
 
     if not running:
 
@@ -55,9 +55,14 @@ def drive():
         print ("run " + str(i))
         asg_ips = orchestratorHandler.fetch()
         print (asg_ips)
-        haproxyupdater.update_node_list(asg_ips)
-        updated = haproxyupdater.update_haproxy()
-        print (updated)
+        should_update = driverCache.need_to_update(set(asg_ips))
+        if should_update:
+            logger.info("Backends changed. Proceeding to update haproxy")
+            haproxyupdater.update_node_list(asg_ips)
+            updated = haproxyupdater.update_haproxy()
+            print (updated)
+        else:
+            logger.info("Backedns not changed. Skipping update")
         time.sleep(SLEEP_BEFORE_NEXT_RUN)
         i += 1
 
