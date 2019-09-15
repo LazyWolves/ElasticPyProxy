@@ -129,7 +129,8 @@ class HaproxyUpdate(object):
                                                 haproxy_config_file=self.haproxy_config_file,
                                                 service_name=self.service_name,
                                                 haproxy_binary=self.haproxy_binary,
-                                                pid_file=self.pid_file
+                                                pid_file=self.pid_file,
+                                                logger=self.logger
                                                 )
 
         return reloaded
