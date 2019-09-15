@@ -32,7 +32,7 @@ class HaproxyReloader(object):
 
     @staticmethod
     def __systemd_handler(service_name, operation):
-        command = "systemctl reload {service_name}".format(service_name=service_name)
+        command = "systemctl {operation} {service_name}".format(service_name=service_name, operation=operation)
 
         executed = HaproxyReloader.__execute_shell(command)
 

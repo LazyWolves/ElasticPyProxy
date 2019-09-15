@@ -77,6 +77,7 @@ class ConfigHandler(object):
                     f.write(content)
                     return True, None
         except Exception as ex:
+            print (ex)
 
             '''
                 Log exception

@@ -10,8 +10,6 @@ def bootstrap(**kwargs):
     config = kwargs.get("config")
     haproxy_config = config.get("haproxy")
 
-    orchestrator = haproxy_config.get("orchestrator")
-
     orchestratorHandler = get_orchestrator_handler(config)
     asg_ips = orchestratorHandler.fetch()
 
@@ -20,7 +18,7 @@ def bootstrap(**kwargs):
     updated = haproxyupdater.update_haproxy_by_config_reload(update_only=True)
 
     if updated:
-        running = __start_if_not_running_else_reload(config)
+        running = __start_if_not_running_else_reload(haproxy_config)
         return running, haproxyupdater, orchestratorHandler
 
     return updated, haproxyupdater, orchestratorHandler
@@ -44,10 +42,12 @@ def __is_haproxy_running(config):
 
     try:
         os.kill(pid, 0)
-    except OSError:
+    except OSError as ex:
         '''
             Haproxy is not running, log
         '''
+
+        print (ex)
 
         return False, None
 
@@ -57,8 +57,9 @@ def __start_if_not_running_else_reload(config):
     
     is_haproxy_running, error = __is_haproxy_running(config)
 
+    print (is_haproxy_running)
+
     if not is_haproxy_running and config.get("start_by") == "systemd":
         started = HaproxyReloader.start_by_systemd(config.get("service_name"))
-        return started
 
-    HaproxyReloader.reload_haproxy(**config)
+    return HaproxyReloader.reload_haproxy(**config)

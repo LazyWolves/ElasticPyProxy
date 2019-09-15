@@ -1,7 +1,7 @@
 from .awsfetcher.awsfetcher import AwsFetcher
 
 def get_orchestrator_handler(config):
-    orchestrator = config.get("orchestrator")
+    orchestrator = config.get("haproxy").get("orchestrator")
 
     if orchestrator.lower() == "aws":
         handler = prepare_aws_handler(config.get(orchestrator))
