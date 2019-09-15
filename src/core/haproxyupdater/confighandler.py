@@ -16,10 +16,13 @@ class ConfigHandler(object):
         backend_port = kwargs.get("backend_port")
         inactive_nodes_count = kwargs.get("inactive_nodes_count")
         node_slots = kwargs.get("node_slots")
+        logger = kwargs.get("logger")
 
-        could_read, template = ConfigHandler.read_write_file(operation="read", file=template_file)
+        could_read, template = ConfigHandler.read_write_file(operation="read", file=template_file, logger=logger)
 
         if not could_read:
+
+            logger.critical("Could not read template file : {}".format(template_file))
             return False
 
         node_template = "    server node{node_id} {ip}:{port} check"
@@ -56,6 +59,8 @@ class ConfigHandler(object):
         could_write, _ = ConfigHandler.read_write_file(operation="write", file=haproxy_config_file, content=config_from_template)
 
         if not could_write:
+
+            logger.critical("Failed to update haproxy config file : {}".format(haproxy_config_file))
             return False
 
         return True
@@ -64,6 +69,7 @@ class ConfigHandler(object):
     def read_write_file(**kwargs):
         operation = kwargs.get("operation")
         file = kwargs.get("file")
+        logger = kwargs.get("logger")
 
         if operation == "write":
             content = kwargs.get("content")
@@ -77,11 +83,11 @@ class ConfigHandler(object):
                     f.write(content)
                     return True, None
         except Exception as ex:
-            print (ex)
 
             '''
                 Log exception
             '''
+            logger.critical("Encountered following read/write exception : {}".format(str(ex)))
             return False, None
 
         return False, None

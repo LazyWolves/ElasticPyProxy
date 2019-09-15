@@ -20,7 +20,7 @@ class SocketHandler(object):
             '''
                 Log exception
             '''
-            self.logger.critical("Unable to connect to haproxy socket file. Encountered following exception \n {}".format(str(ex)))
+            self.logger.critical("Unable to connect to haproxy socket file. Encountered following exception : {}".format(str(ex)))
 
             return False
 
@@ -51,7 +51,7 @@ class SocketHandler(object):
             '''
                 Log error
             '''
-            self.logger.critical("Issue in send/receive with haproxy socket. \n Encountered following exception {}".format(str(ex)))
+            self.logger.critical("Issue in send/receive with haproxy socket. Encountered following exception : {}".format(str(ex)))
             response = None
 
         self.destroy_socket()

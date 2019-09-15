@@ -148,7 +148,8 @@ class HaproxyUpdate(object):
                                             template_file=self.template_file,
                                             node_list=self.node_list,
                                             backend_port=self.backend_port,
-                                            inactive_nodes_count=stats.get("inactive_nodes_count"))
+                                            inactive_nodes_count=stats.get("inactive_nodes_count",
+                                            logger=self.logger))
 
         if not updated:
             '''
