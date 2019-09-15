@@ -16,10 +16,11 @@ class SocketHandler(object):
             self.socket.settimeout(10)
             self.socket.connect(self.sock_file)
         except Exception as ex:
-            print (ex)
+
             '''
                 Log exception
             '''
+            self.logger.critical("Unable to connect to haproxy socket file. Encountered following exception \n {}".format(str(ex)))
 
             return False
 
@@ -46,7 +47,11 @@ class SocketHandler(object):
                 else:
                     break
         except Exception as ex:
-            print (ex)
+
+            '''
+                Log error
+            '''
+            self.logger.critical("Issue in send/receive with haproxy socket. \n Encountered following exception {}".format(str(ex)))
             response = None
 
         self.destroy_socket()

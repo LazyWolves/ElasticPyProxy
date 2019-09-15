@@ -5,11 +5,13 @@ from .sockethandler import SocketHandler
 class RuntimeUpdater(object):
 
     @staticmethod
-    def __get_haproxy_stats(haproxy_sock, backend_name):
+    def __get_haproxy_stats(haproxy_sock, backend_name, logger=None):
 
         SHOW_STATUS = "show stat\n"
         has_stat, stats = haproxy_sock.send_command(command=SHOW_STATUS)
         if not has_stat:
+
+            logger.critical("Failed to fetch haproxy status")
             return False, None
         
         slots = stats.split("\n")
@@ -38,7 +40,7 @@ class RuntimeUpdater(object):
         return True, nodes
 
     @staticmethod
-    def update_runtime_util(haproxy_sock, node_ips, nodes, backend_name, port):
+    def update_runtime_util(haproxy_sock, node_ips, nodes, backend_name, port, logger=None):
         active_nodes = nodes.get("active_nodes")
         inactive_nodes = nodes.get("inactive_nodes")
 
@@ -53,6 +55,9 @@ class RuntimeUpdater(object):
                 command_status, _ = haproxy_sock.send_command(command=MAKE_MAINT.format(backend_name=backend_name, node_name=active_nodes[active_node]))
                 if command_status:
                     inactive_nodes.append(active_nodes[active_node])
+                    logger.info("Removed node:{server}/ip:{ip} from active backend pool".format(server=active_nodes[active_node], ip=active_node))
+                else:
+                    logger.critical("Failed removing node:{server}/ip:{ip}".format(server=active_nodes[active_node], ip=active_node))
 
                 unused_active_nodes.append(active_node)
 
@@ -65,23 +70,32 @@ class RuntimeUpdater(object):
             else:
                 if len(inactive_nodes) > 0:
                     node_to_use = inactive_nodes.pop(0)
+                    logger.info("Using inactive node:{node} for ip:{ip}".format(node=node_to_use, ip=new_node_ip))
+
                     command_status, _ = haproxy_sock.send_command(command=SET_ADDR.format(backend_name=backend_name, node_name=node_to_use, addr=new_node_ip, port=port))
                     if not command_status:
 
                         '''
                             Log error
                         '''
+                        logger.critical("Failed to change {node} backend addr to ip:{ip}".format(node=node_to_use, ip=new_node_ip))
+                    else :
+                        logger.info("Successfully changed {node} backend addr to ip:{ip}".format(node=node_to_use, ip=new_node_ip))
                     command_status, _ = haproxy_sock.send_command(command=MAKE_READY.format(backend_name=backend_name, node_name=node_to_use))
                     if not command_status:
 
                         '''
                             Log error
                         '''
+                        logger.critical("Failed to activate node:{node}".format(node=node_to_use))
+                    else:
+                        logger.info("Sucessfully activated node:{node}".format(node=node_to_use))
                 else:
 
                     '''
                         Log error
                     '''
+                    logger.critical("Insufficient nodes in inactive pool. Please increase node_slots and retsart ep2")
 
         stats = {
             "inactive_nodes_count": len(inactive_nodes),
@@ -100,12 +114,12 @@ class RuntimeUpdater(object):
 
         socketHandler = SocketHandler(sock_file=sock_file, logger=logger)
 
-        got_status, nodes = RuntimeUpdater.__get_haproxy_stats(socketHandler, backend_name)
+        got_status, nodes = RuntimeUpdater.__get_haproxy_stats(socketHandler, backend_name, logger=logger)
 
         if not got_status:
             return False, None
 
-        updated, stats = RuntimeUpdater.update_runtime_util(socketHandler, node_ips, nodes, backend_name, port)
+        updated, stats = RuntimeUpdater.update_runtime_util(socketHandler, node_ips, nodes, backend_name, port, logger)
         if not updated:
             return False, None
 
