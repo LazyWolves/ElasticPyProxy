@@ -66,6 +66,7 @@ class RuntimeUpdater(object):
 
         for new_node_ip in node_ips:
             if active_nodes.get(new_node_ip):
+                print ("skipping " + str(new_node_ip))
                 continue
             else:
                 if len(inactive_nodes) > 0:

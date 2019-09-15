@@ -66,8 +66,6 @@ class BotoHandler(object):
             InstanceIds=instance_ids
         )
 
-        instances = response.get("Reservations")[0].get("Instances")
-
         if ip_type == "private":
             ip_key = "PrivateIpAddress"
         else:
@@ -75,7 +73,8 @@ class BotoHandler(object):
 
         instance_ips = []
 
-        for instance in instances:
-            instance_ips.append(instance.get(ip_key))
+        for reservation in response.get("Reservations"):
+            instance_ip = reservation.get("Instances")[0].get(ip_key)
+            instance_ips.append(instance_ip)
 
         return instance_ips
