@@ -10,6 +10,7 @@ def bootstrap(**kwargs):
     config = kwargs.get("config")
     logger = kwargs.get("logger")
     haproxy_config = config.get("haproxy")
+    logger = kwargs.get("logger")
 
     orchestratorHandler = get_orchestrator_handler(config, logger=logger)
     asg_ips = orchestratorHandler.fetch()
@@ -22,11 +23,15 @@ def bootstrap(**kwargs):
         running = __start_if_not_running_else_reload(haproxy_config, logger=logger)
         return running, haproxyupdater, orchestratorHandler
 
+    logger.critical("Haproxy config update at botstrap failed")
+
     return updated, haproxyupdater, orchestratorHandler
 
 def __is_haproxy_running(config, logger=None):
     pid_file = config.get("pid_file")
     if not os.path.exists(pid_file):
+
+        logger.warning("Haproxy pid file not found. Attempt to start haproxy will be made")
         return False, None
 
     error = None
@@ -39,6 +44,7 @@ def __is_haproxy_running(config, logger=None):
             Log exception
         '''
 
+        logger.warning("Could not access haproxy pid file. Attempt to start haproxy will be made")
         return False
 
     try:
@@ -48,6 +54,7 @@ def __is_haproxy_running(config, logger=None):
             Haproxy is not running, log
         '''
 
+        logger.info("Haproxy is not running")
         print (ex)
 
         return False, None
