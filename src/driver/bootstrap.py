@@ -55,7 +55,6 @@ def __is_haproxy_running(config, logger=None):
         '''
 
         logger.info("Haproxy is not running")
-        print (ex)
 
         return False, None
 
@@ -66,6 +65,6 @@ def __start_if_not_running_else_reload(config, logger=None):
     is_haproxy_running, error = __is_haproxy_running(config, logger=logger)
 
     if not is_haproxy_running and config.get("start_by") == "systemd":
-        started = HaproxyReloader.start_by_systemd(config.get("service_name"))
+        started = HaproxyReloader.start_by_systemd(config.get("service_name"), logger)
 
-    return HaproxyReloader.reload_haproxy(**config)
+    return HaproxyReloader.reload_haproxy(**config, logger=logger)

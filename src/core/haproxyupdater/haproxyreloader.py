@@ -28,7 +28,7 @@ class HaproxyReloader(object):
     @staticmethod
     def start_by_systemd(service_name, logger=None):
         logger.info("Starting haproxy via systemd")
-        started = HaproxyReloader.__systemd_handler(service_name, "start")
+        started = HaproxyReloader.__systemd_handler(service_name, "start", logger)
 
         return started
 
