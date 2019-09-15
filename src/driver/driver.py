@@ -64,9 +64,9 @@ def __load_config():
     config = {}
 
     for section in parser.sections():
-        config[section] = {}
+        config[section.lower()] = {}
         for name, value in parser.items(section):
-            config[section][name] = value
+            config[section.lower()][name] = value
 
     return config
 
