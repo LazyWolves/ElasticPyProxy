@@ -119,7 +119,8 @@ class HaproxyUpdate(object):
                                         template_file=self.template_file,
                                         node_list=self.node_list,
                                         backend_port=self.backend_port,
-                                        node_slots=self.node_slots
+                                        node_slots=self.node_slots,
+                                        logger=self.logger
                                         )
 
         if update_only:
