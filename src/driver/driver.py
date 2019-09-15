@@ -55,7 +55,6 @@ def drive():
         print ("run " + str(i))
         lock_aquired = __aquire_lock(haproxy_config.get("lock_dir"))
         if not lock_aquired:
-            print ("asasasas")
             time.sleep(SLEEP_BEFORE_NEXT_LOCK_ATTEMPT)
             continue
 

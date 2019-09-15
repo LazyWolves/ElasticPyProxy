@@ -63,6 +63,8 @@ class ConfigHandler(object):
             logger.critical("Failed to update haproxy config file : {}".format(haproxy_config_file))
             return False
 
+        logger.info("Successfully updated haproxy config")
+
         return True
 
     @staticmethod
