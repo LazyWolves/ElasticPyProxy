@@ -8,11 +8,20 @@ class BotoHandler(object):
         aws_secret_access_key = kwargs.get("aws_secret_access_key")
         logger = kwargs.get("logger")
 
-        client = boto3.client(
-            "autoscaling",
-            aws_access_key_id=aws_access_key_id,
-            aws_secret_access_key=aws_secret_access_key
-        )
+        client = None
+
+        try:
+            client = boto3.client(
+                "autoscaling",
+                aws_access_key_id=aws_access_key_id,
+                aws_secret_access_key=aws_secret_access_key
+            )
+        except Exception as ex:
+
+            '''
+                Log the exception
+            '''
+            logger.critical("Boto client creation failure for autoscaling with error : {}".format(str(ex)))
 
         return client
 
@@ -22,11 +31,20 @@ class BotoHandler(object):
         aws_secret_access_key = kwargs.get("aws_secret_access_key")
         logger = kwargs.get("logger")
 
-        client = boto3.client(
-            "ec2",
-            aws_access_key_id=aws_access_key_id,
-            aws_secret_access_key=aws_secret_access_key
-        )
+        client = None
+
+        try:
+            client = boto3.client(
+                "ec2",
+                aws_access_key_id=aws_access_key_id,
+                aws_secret_access_key=aws_secret_access_key
+            )
+        except Exception as ex:
+
+            '''
+                Log the exception
+            '''
+            logger.critical("Boto client creation failure for autoscaling with error : {}".format(str(ex)))
 
         return client
 
