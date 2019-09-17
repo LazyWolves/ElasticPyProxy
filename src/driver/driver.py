@@ -54,15 +54,18 @@ def drive():
     while True:
         print ("run " + str(i))
         asg_ips = orchestratorHandler.fetch()
-        print (asg_ips)
-        should_update = driverCache.need_to_update(set(asg_ips))
-        if should_update:
-            logger.info("Backends changed. Proceeding to update haproxy")
-            haproxyupdater.update_node_list(asg_ips)
-            updated = haproxyupdater.update_haproxy()
-            print (updated)
+        if asg_ips != None:
+            print (asg_ips)
+            should_update = driverCache.need_to_update(set(asg_ips))
+            if should_update:
+                logger.info("Backends changed. Proceeding to update haproxy")
+                haproxyupdater.update_node_list(asg_ips)
+                updated = haproxyupdater.update_haproxy()
+                print (updated)
+            else:
+                logger.info("Backends not changed. Skipping update")
         else:
-            logger.info("Backedns not changed. Skipping update")
+            logger.critical("No backends found. Skippin run")
         time.sleep(SLEEP_BEFORE_NEXT_RUN)
         i += 1
 
