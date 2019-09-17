@@ -63,11 +63,15 @@ class BotoHandler(object):
 
     @staticmethod
     def __get_instance_ids_for_asg(boto_client, asg_name, logger=None):
-        response = boto_client.describe_auto_scaling_groups(
-            AutoScalingGroupNames=[
-                asg_name,
-            ]
-        )
+        try:
+            response = boto_client.describe_auto_scaling_groups(
+                AutoScalingGroupNames=[
+                    asg_name,
+                ]
+            )
+        except Exception as ex:
+            logger.critical("Failed to get instance ids for ASG with error : {}".format(str(ex)))
+            return None
 
         instances = response.get("AutoScalingGroups")[0]["Instances"]
 
@@ -80,9 +84,13 @@ class BotoHandler(object):
 
     @staticmethod
     def __get_instance_ips(boto_client, instance_ids, ip_type, logger=None):
-        response = boto_client.describe_instances(
-            InstanceIds=instance_ids
-        )
+        try:
+            response = boto_client.describe_instances(
+                InstanceIds=instance_ids
+            )
+        except Exception as ex:
+            logger.critical("Failed to get instance ids for ASG with error : {}".format(str(ex)))
+            return None
 
         if ip_type == "private":
             ip_key = "PrivateIpAddress"
