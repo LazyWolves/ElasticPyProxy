@@ -22,6 +22,8 @@ class AwsFetcher(object):
         return True
 
     def fetch(self):
+        if self.asg_boto_client == None or self.ec2_boto_client == None:
+            return None
         asg_instance_ips = BotoHandler.get_instance_ips_for_asg(asg_client=self.asg_boto_client,
                                                                 ec2_client=self.ec2_boto_client,
                                                                 asg_name=self.asg_name,
