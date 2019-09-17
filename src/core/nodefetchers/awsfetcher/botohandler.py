@@ -57,6 +57,8 @@ class BotoHandler(object):
         logger = kwargs.get("logger")
 
         asg_instance_ids = BotoHandler.__get_instance_ids_for_asg(asg_client, asg_name, logger)
+        if not asg_instance_ids:
+            return None
         asg_instance_ips = BotoHandler.__get_instance_ips(ec2_client, asg_instance_ids, ip_type, logger)
 
         return asg_instance_ips
@@ -79,6 +81,9 @@ class BotoHandler(object):
 
         for instance in instances:
             instance_ids.append(instance.get("InstanceId"))
+
+        if len(instance_ids) == 0:
+            return None
 
         return instance_ids
 
