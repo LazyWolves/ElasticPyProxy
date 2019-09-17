@@ -16,6 +16,14 @@ def bootstrap(**kwargs):
     orchestratorHandler = get_orchestrator_handler(config, logger=logger)
     asg_ips = orchestratorHandler.fetch()
 
+    if asg_ips == None or len(asg_ips) == 0:
+
+        '''
+            This is critical. Bootstrap cannnot work with 0 backends. EP2 must abort run
+        '''
+        logger.critical("No backends available. Bootstrap cannot proceed with 0 backends. Terminating EP2")
+        exit (2)
+
     driverCache = DriverCache(set(asg_ips))
 
     haproxyupdater = HaproxyUpdate(**haproxy_config, logger=logger)
