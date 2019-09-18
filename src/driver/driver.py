@@ -26,9 +26,9 @@ def drive():
 
     SLEEP_BEFORE_NEXT_RUN = int(haproxy_config.get("sleep_before_next_run", default_params.get("SLEEP_BEFORE_NEXT_RUN")))
     SLEEP_BEFORE_NEXT_LOCK_ATTEMPT = int(haproxy_config.get("sleep_before_next_lock_attempt", default_params.get("SLEEP_BEFORE_NEXT_LOCK_ATTEMPT")))
-    LOG_DIR = haproxy_config.get("log_dir", default_params.get("LOG_DIR"))
+    LOG_FILE = haproxy_config.get("log_file", default_params.get("LOG_FILE"))
 
-    logger = __setup_logging(LOG_DIR)
+    logger = __setup_logging(LOG_FILE)
 
     if not __sanitize_config(config):
 
@@ -69,10 +69,10 @@ def drive():
         time.sleep(SLEEP_BEFORE_NEXT_RUN)
         i += 1
 
-def __setup_logging(log_dir):
+def __setup_logging(log_file):
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
-    logger_handler = logging.FileHandler(log_dir)
+    logger_handler = logging.FileHandler(log_file)
     logger_handler.setLevel(logging.DEBUG)
     logger_formatter = logging.Formatter(fmt='%(asctime)s %(levelname)-8s %(message)s',
                             datefmt='%Y-%m-%d %H:%M:%S')

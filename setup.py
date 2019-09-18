@@ -1,5 +1,6 @@
 # setup.py
 from setuptools import setup
+import setuptools
 
 
 def readme():
@@ -28,7 +29,7 @@ setup(name='elasticpyproxy-1.0-djmgit',
       author='Deepjyoti Mondal',
       author_email='djmdeveloper060796@gmail.com',
       license='GPL',
-      packages=['src'],
+      packages=setuptools.find_packages(),
       install_requires=get_dependencies(),
       entry_points={
           'console_scripts': ['ep2=src.driver.driver:drive'],
