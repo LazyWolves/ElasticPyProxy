@@ -9,13 +9,18 @@ class AwsFetcher(object):
         self.aws_secret_access_key = kwargs.get("aws_secret_access_key")
         self.asg_name = kwargs.get("asg_name")
         self.ip_type = kwargs.get("ip_type")
-        logger = kwargs.get("logger")
+        self.region_name = kwargs.get("region_name")
+        self.logger = kwargs.get("logger")
 
         self.asg_boto_client = BotoHandler.get_auto_scaling_client(aws_access_key_id=self.aws_access_key_id,
-                                                                   aws_secret_access_key=self.aws_secret_access_key
+                                                                   aws_secret_access_key=self.aws_secret_access_key,
+                                                                   region_name=self.region_name
+                                                                   logger=self.logger
                                                                 )
         self.ec2_boto_client = BotoHandler.get_ec2_client(aws_access_key_id=self.aws_access_key_id,
-                                                          aws_secret_access_key=self.aws_secret_access_key
+                                                          aws_secret_access_key=self.aws_secret_access_key,
+                                                          region_name=self.region_name,
+                                                          logger=self.logger
                                                         )
 
     def __check_response(self):

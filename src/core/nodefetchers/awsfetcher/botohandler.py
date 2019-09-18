@@ -7,12 +7,14 @@ class BotoHandler(object):
         aws_access_key_id = kwargs.get("aws_access_key_id")
         aws_secret_access_key = kwargs.get("aws_secret_access_key")
         logger = kwargs.get("logger")
+        region_name = kwargs.get("region_name")
 
         client = None
 
         try:
             client = boto3.client(
                 "autoscaling",
+                region_name=region_name,
                 aws_access_key_id=aws_access_key_id,
                 aws_secret_access_key=aws_secret_access_key
             )
@@ -30,12 +32,14 @@ class BotoHandler(object):
         aws_access_key_id = kwargs.get("aws_access_key_id")
         aws_secret_access_key = kwargs.get("aws_secret_access_key")
         logger = kwargs.get("logger")
+        region_name = kwargs.get("region_name")
 
         client = None
 
         try:
             client = boto3.client(
                 "ec2",
+                region_name=region_name,
                 aws_access_key_id=aws_access_key_id,
                 aws_secret_access_key=aws_secret_access_key
             )
