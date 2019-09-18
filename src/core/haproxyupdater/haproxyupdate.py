@@ -115,6 +115,14 @@ class HaproxyUpdate(object):
 
     def update_haproxy_by_config_reload(self, update_only=False):
 
+        '''
+            When update is done by config reload and not runtime make node_slots equal
+            length of node_ips
+        '''
+
+        if self.update_type == "update_by_config":
+            self.node_slots = len(self.node_list)
+
         updated = ConfigHandler.update_config(haproxy_config_file=self.haproxy_config_file,
                                         template_file=self.template_file,
                                         node_list=self.node_list,

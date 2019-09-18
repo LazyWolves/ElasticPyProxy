@@ -50,8 +50,9 @@ class ConfigHandler(object):
                 nodes_str += (haproxy_node + "\n")
                 node_id += 1
 
-            inactive_nodes = inactive_nodes_template.format(count=inactive_nodes_count)
-            nodes_str += (inactive_nodes + "\n")
+            if inactive_nodes_count != 0:
+                inactive_nodes = inactive_nodes_template.format(count=inactive_nodes_count)
+                nodes_str += (inactive_nodes + "\n")
 
         template = Template(template)
         config_from_template = template.render({"nodes": nodes_str})
