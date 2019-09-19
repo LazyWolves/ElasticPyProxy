@@ -1,7 +1,16 @@
 # setup.py
 from setuptools import setup
 import setuptools
+import os
 
+LOG_DIR = "/var/log/ep2"
+CONFIG_DIR = "/etc/ep2"
+
+CONFIG_FILE = "ep2.conf"
+TEMPLATE_FILE = "haproxy.cfg.template"
+
+def pre_setup():
+  pass
 
 def readme():
     return "EP2"
