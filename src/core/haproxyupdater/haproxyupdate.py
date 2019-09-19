@@ -139,6 +139,7 @@ class HaproxyUpdate(object):
                                                 service_name=self.service_name,
                                                 haproxy_binary=self.haproxy_binary,
                                                 pid_file=self.pid_file,
+                                                haproxy_socket_file=self.haproxy_socket_file,
                                                 logger=self.logger
                                                 )
 

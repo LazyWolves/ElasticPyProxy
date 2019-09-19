@@ -18,7 +18,7 @@ class HaproxyReloader(object):
         elif start_by == "binary":
             binary = kwargs.get("haproxy_binary")
             haproxy_config_file = kwargs.get("haproxy_config_file")
-            sock_file = kwargs.get("sock_file")
+            sock_file = kwargs.get("haproxy_socket_file")
             pid_file = kwargs.get("pid_file")
 
             reloaded = HaproxyReloader.__reload_by_binary(binary, haproxy_config_file, sock_file, pid_file, logger)
