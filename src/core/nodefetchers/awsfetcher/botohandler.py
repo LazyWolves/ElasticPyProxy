@@ -109,8 +109,9 @@ class BotoHandler(object):
         instance_ips = []
 
         for reservation in response.get("Reservations"):
-            instance_ip = reservation.get("Instances")[0].get(ip_key)
-            if instance_ip:
-                instance_ips.append(instance_ip)
+            for instance in reservation.get("Instances"):
+                instance_ip = instance.get(ip_key)
+                if instance_ip:
+                    instance_ips.append(instance_ip)
 
         return instance_ips
