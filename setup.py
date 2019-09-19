@@ -10,7 +10,12 @@ CONFIG_FILE = "ep2.conf"
 TEMPLATE_FILE = "haproxy.cfg.template"
 
 def pre_setup():
-  pass
+  if not os.path.exists(LOG_DIR):
+    os.mkdir(LOG_DIR)
+
+  if not os.path.exists(CONFIG_DIR):
+    os.mkdir(CONFIG_DIR)
+
 
 def readme():
     return "EP2"
