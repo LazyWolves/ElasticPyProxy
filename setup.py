@@ -1,10 +1,12 @@
 # setup.py
 from setuptools import setup
 import setuptools
+import shutil
 import os
 
 LOG_DIR = "/var/log/ep2"
 CONFIG_DIR = "/etc/ep2"
+SAMPLE_CONFIG_DIR = "etc"
 
 CONFIG_FILE = "ep2.conf"
 TEMPLATE_FILE = "haproxy.cfg.template"
@@ -16,6 +18,13 @@ def pre_setup():
   if not os.path.exists(CONFIG_DIR):
     os.mkdir(CONFIG_DIR)
 
+  base_path = os.path.dirname(os.path.realpath(__file__))
+
+  source_config = os.path.join(base_path, SAMPLE_CONFIG_DIR, CONFIG_FILE)
+  source_template = os.path.join(base_path, SAMPLE_CONFIG_DIR, TEMPLATE_FILE)
+
+  shutil.copy(source_config, os.path.join(CONFIG_DIR, CONFIG_DIR))
+  shutil.copy(source_template, os.path.join(CONFIG_DIR, TEMPLATE_FILE))
 
 def readme():
     return "EP2"
@@ -50,3 +59,6 @@ setup(name='elasticpyproxy-1.0-djmgit',
       },
       include_package_data=True,
       zip_safe=False)
+
+if __name__ == "__main__":
+  pre_setup()
