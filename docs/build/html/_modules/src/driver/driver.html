@@ -1,0 +1,276 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>src.driver.driver &#8212; ElasticPyProxy 1.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for src.driver.driver</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: driver</span>
+<span class="sd">   :synopsis: Main entry point for ep2</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">configparser</span> <span class="k">import</span> <span class="n">SafeConfigParser</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">optparse</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">.defaultparams</span> <span class="k">import</span> <span class="n">default_params</span>
+<span class="kn">from</span> <span class="nn">.bootstrap</span> <span class="k">import</span> <span class="n">bootstrap</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">CONFIG_FILE</span> <span class="o">=</span> <span class="n">default_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;config&quot;</span><span class="p">)</span>
+<span class="n">LOCK_FILE</span> <span class="o">=</span> <span class="n">default_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lock_file&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="drive"><a class="viewcode-back" href="../../../index.html#src.driver.driver.drive">[docs]</a><span class="k">def</span> <span class="nf">drive</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        **Method for starting ep2**</span>
+
+<span class="sd">        This is the entry method which starts ep2 controller. It calls bootstrap module</span>
+<span class="sd">        for bootstrapping ep2, reads ep2 config, initialises haproxy and starts the</span>
+<span class="sd">        **poll-update-repeat loop**</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">CONFIG_FILE</span>
+    <span class="k">global</span> <span class="n">LOCK_FILE</span>
+
+    <span class="c1"># parse args</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">optparse</span><span class="o">.</span><span class="n">OptionParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_option</span><span class="p">(</span><span class="s1">&#39;-f&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Config file&quot;</span><span class="p">)</span>
+    <span class="n">options</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="c1"># if config file available as argument, then use it</span>
+    <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">config</span><span class="p">:</span>
+        <span class="n">CONFIG_FILE</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">config</span>
+
+    <span class="c1"># parse the config and create a dictionary</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">__load_config</span><span class="p">()</span>
+    <span class="n">haproxy_config</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;haproxy&quot;</span><span class="p">)</span>
+
+    <span class="c1"># load values/defaults</span>
+    <span class="n">SLEEP_BEFORE_NEXT_RUN</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">haproxy_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sleep_before_next_run&quot;</span><span class="p">,</span> <span class="n">default_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sleep_before_next_run&quot;</span><span class="p">)))</span>
+    <span class="n">SLEEP_BEFORE_NEXT_LOCK_ATTEMPT</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">haproxy_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sleep_before_next_lock_attempt&quot;</span><span class="p">,</span> <span class="n">default_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sleep_before_next_lock_attempt&quot;</span><span class="p">)))</span>
+    <span class="n">LOG_FILE</span> <span class="o">=</span> <span class="n">haproxy_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_file&quot;</span><span class="p">,</span> <span class="n">default_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_file&quot;</span><span class="p">))</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">__setup_logging</span><span class="p">(</span><span class="n">LOG_FILE</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">__sanitize_config</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+
+       <span class="c1"># if configs fail sanity checks then exit ep2. Issue should have been logged already</span>
+        <span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># bootstrap the controller</span>
+    <span class="n">running</span><span class="p">,</span> <span class="n">haproxyupdater</span><span class="p">,</span> <span class="n">orchestratorHandler</span><span class="p">,</span> <span class="n">driverCache</span> <span class="o">=</span> <span class="n">bootstrap</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">running</span><span class="p">:</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Error has already been logged. Exit with status code 2</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        After this point, Haproxy should be running with the lastest IPs</span>
+<span class="sd">        fetched from the orchestrator. Now we can begin with the poll-update-repeat</span>
+<span class="sd">        loop for updating backends fetched from ochestrator</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Entering state loop...&quot;</span><span class="p">)</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;run &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+
+        <span class="c1"># Fetch backend IPs from orchestrator handler</span>
+        <span class="n">asg_ips</span> <span class="o">=</span> <span class="n">orchestratorHandler</span><span class="o">.</span><span class="n">fetch</span><span class="p">()</span>
+
+        <span class="c1"># Proceed with updation only if IPs are not none</span>
+        <span class="k">if</span> <span class="n">asg_ips</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="p">(</span><span class="n">asg_ips</span><span class="p">)</span>
+
+            <span class="c1"># check if update is actually neccessary. Compare with cache</span>
+            <span class="n">should_update</span> <span class="o">=</span> <span class="n">driverCache</span><span class="o">.</span><span class="n">need_to_update</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">asg_ips</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">should_update</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Backends changed. Proceeding to update haproxy&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Inform the haproxyupdater about the new nodes</span>
+                <span class="n">haproxyupdater</span><span class="o">.</span><span class="n">update_node_list</span><span class="p">(</span><span class="n">asg_ips</span><span class="p">)</span>
+
+                <span class="c1"># Update haproxy</span>
+                <span class="n">updated</span> <span class="o">=</span> <span class="n">haproxyupdater</span><span class="o">.</span><span class="n">update_haproxy</span><span class="p">()</span>
+                <span class="nb">print</span> <span class="p">(</span><span class="n">updated</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Backends not changed. Skipping update&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;No backends found. Skippin run&quot;</span><span class="p">)</span>
+
+        <span class="c1"># sleep for configured time before the next run</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">SLEEP_BEFORE_NEXT_RUN</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+<span class="k">def</span> <span class="nf">__setup_logging</span><span class="p">(</span><span class="n">log_file</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        **Method for setting up logging**</span>
+
+<span class="sd">        Here the logging for EP2 controller is setup with desired format</span>
+<span class="sd">        and path.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="n">logger_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">log_file</span><span class="p">)</span>
+    <span class="n">logger_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="n">logger_formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> </span><span class="si">%(levelname)-8s</span><span class="s1"> </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
+                            <span class="n">datefmt</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
+    <span class="n">logger_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">logger_formatter</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logger_handler</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">logger</span>
+
+<span class="k">def</span> <span class="nf">__load_config</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        **Method for loading config**</span>
+
+<span class="sd">        Configfile is read and parsed. The keys and values are converted into</span>
+<span class="sd">        dictionary format. There are separate sections for haproxy and orechestrator.</span>
+<span class="sd">        Accordingly the dictionary is made.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">SafeConfigParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">CONFIG_FILE</span><span class="p">)</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">parser</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
+        <span class="n">config</span><span class="p">[</span><span class="n">section</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">parser</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">section</span><span class="p">):</span>
+            <span class="n">config</span><span class="p">[</span><span class="n">section</span><span class="o">.</span><span class="n">lower</span><span class="p">()][</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">return</span> <span class="n">config</span>
+
+<span class="k">def</span> <span class="nf">__can_aquire_lock</span><span class="p">(</span><span class="n">lock_dir</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">lock_dir</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+<span class="k">def</span> <span class="nf">__aquire_lock</span><span class="p">(</span><span class="n">lock_dir</span><span class="p">):</span>
+    <span class="n">lock_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lock_dir</span><span class="p">,</span> <span class="n">LOCK_FILE</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">lock_file</span><span class="p">):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">lock_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">lock_file</span><span class="p">:</span>
+                <span class="n">lock_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()))</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+<span class="k">def</span> <span class="nf">__release_lock</span><span class="p">(</span><span class="n">lock_dir</span><span class="p">):</span>
+    <span class="n">lock_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lock_dir</span><span class="p">,</span> <span class="n">LOCK_FILE</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">lock_file</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">lock_file</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+<span class="k">def</span> <span class="nf">__sanitize_config</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        **Method for checking config sanity**</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="kc">True</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">drive</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">ElasticPyProxy</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Deepjyoti Mondal.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

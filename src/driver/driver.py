@@ -101,6 +101,14 @@ def drive():
         i += 1
 
 def __setup_logging(log_file):
+    """
+        **Method for setting up logging**
+
+        Here the logging for EP2 controller is setup with desired format
+        and path.
+
+    """
+
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
     logger_handler = logging.FileHandler(log_file)
@@ -113,6 +121,14 @@ def __setup_logging(log_file):
     return logger
 
 def __load_config():
+    """
+        **Method for loading config**
+
+        Configfile is read and parsed. The keys and values are converted into
+        dictionary format. There are separate sections for haproxy and orechestrator.
+        Accordingly the dictionary is made.
+    """
+
     parser = SafeConfigParser()
     parser.read(CONFIG_FILE)
 
@@ -152,6 +168,10 @@ def __release_lock(lock_dir):
         return False
 
 def __sanitize_config(config):
+    """
+        **Method for checking config sanity**
+
+    """
 
     return True
 

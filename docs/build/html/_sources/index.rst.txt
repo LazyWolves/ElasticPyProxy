@@ -1,26 +1,21 @@
-onfiguration of Project Environment
-*************************************
+.. ElasticPyProxy documentation master file, created by
+   sphinx-quickstart on Sun Sep 22 00:06:26 2019.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
 
-This is an API that manages a list of teachers using Python3, Flask, and SQLAlchemy.
-lkshlahdlsadlksajd
-adlsajlasjdlsajdlsajd
+Welcome to ElasticPyProxy's documentation!
+==========================================
 
-
-Documentation for the Code
-**************************
+ElasticPyProxy Code Documentation
+******************************************
 .. toctree::
-   :maxdepth: 10
+   :maxdepth: 2
    :caption: Contents:
 
-Driver api ajkjdlsjdlkdasdddddddddddddddddddddddddddddddddmain
-===================
-.. automodule:: driver.driver
-   :members:
-
-Driver adksajldajsdlsajkdsdsldassssssssssssssssssssssssssssssssspi driver cache
-===================
-.. automodule:: driver.drivercache
-   :members:
+Driver (Main entry point for ElasticPyProxy)
+***********************************************
+.. automodule:: src.driver.driver
+    :members:
 
 Indices and tables
 ==================
