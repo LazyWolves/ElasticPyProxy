@@ -37,10 +37,26 @@
 </div>
 <div class="section" id="module-src.driver.bootstrap">
 <span id="src-driver-bootstrap-module"></span><h2>src.driver.bootstrap module<a class="headerlink" href="#module-src.driver.bootstrap" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<span class="target" id="module-bootstrap"></span><dl class="function">
 <dt id="src.driver.bootstrap.bootstrap">
 <code class="sig-prename descclassname">src.driver.bootstrap.</code><code class="sig-name descname">bootstrap</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/driver/bootstrap.html#bootstrap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.driver.bootstrap.bootstrap" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Method to bootstrap EP2 controller</p>
+<p>This method bootstraps EP2 Ot creates the neccessary objects and returns it
+to the driver.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>object</em>) – kwargs must contains config dictionary, logger object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether bootstrap updater was successfull or not
+src.core.haproxyupdater.haproxyupdate.HaproxyUPdate: Object for updating haproxy config
+src.core.nodefetchers.basefetcher: Object for fetching backends</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="section" id="module-src.driver.defaultparams">

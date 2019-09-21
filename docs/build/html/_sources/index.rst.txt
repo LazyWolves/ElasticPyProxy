@@ -22,6 +22,11 @@ drivercache : Cache layer for EP2
 .. automodule:: src.driver.drivercache
     :members:
 
+bootstrap : Bootstrapper for ep2
+***********************************************
+.. automodule:: src.driver.bootstrap
+    :members:
+
 Indices and tables
 ==================
 

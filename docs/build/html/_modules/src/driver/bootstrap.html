@@ -31,7 +31,13 @@
           <div class="body" role="main">
             
   <h1>Source code for src.driver.bootstrap</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">src.core.haproxyupdater.haproxyupdate</span> <span class="k">import</span> <span class="n">HaproxyUpdate</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: bootstrap</span>
+<span class="sd">   :synopsis: Bootstrap EP2 controller</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">src.core.haproxyupdater.haproxyupdate</span> <span class="k">import</span> <span class="n">HaproxyUpdate</span>
 <span class="kn">from</span> <span class="nn">src.core.nodefetchers.awsfetcher.awsfetcher</span> <span class="k">import</span> <span class="n">AwsFetcher</span>
 <span class="kn">from</span> <span class="nn">src.core.nodefetchers.orchestrator</span> <span class="k">import</span> <span class="n">get_orchestrator_handler</span>
 <span class="kn">from</span> <span class="nn">src.core.haproxyupdater.haproxyreloader</span> <span class="k">import</span> <span class="n">HaproxyReloader</span>
@@ -41,6 +47,20 @@
 <span class="n">COULD_NOT_READ_PID_FILE</span> <span class="o">=</span> <span class="s2">&quot;COULD_NOT_READ_PID_FILE&quot;</span>
 
 <div class="viewcode-block" id="bootstrap"><a class="viewcode-back" href="../../../src.driver.html#src.driver.bootstrap.bootstrap">[docs]</a><span class="k">def</span> <span class="nf">bootstrap</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Method to bootstrap EP2 controller</span>
+
+<span class="sd">    This method bootstraps EP2 Ot creates the neccessary objects and returns it</span>
+<span class="sd">    to the driver.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        **kwargs (object) : kwargs must contains config dictionary, logger object.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: Whether bootstrap updater was successfull or not</span>
+<span class="sd">        src.core.haproxyupdater.haproxyupdate.HaproxyUPdate: Object for updating haproxy config</span>
+<span class="sd">        src.core.nodefetchers.basefetcher: Object for fetching backends</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">config</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;config&quot;</span><span class="p">)</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logger&quot;</span><span class="p">)</span>
     <span class="n">haproxy_config</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;haproxy&quot;</span><span class="p">)</span>

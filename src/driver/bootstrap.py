@@ -1,3 +1,9 @@
+"""
+.. module:: bootstrap
+   :synopsis: Bootstrap EP2 controller
+
+"""
+
 from src.core.haproxyupdater.haproxyupdate import HaproxyUpdate
 from src.core.nodefetchers.awsfetcher.awsfetcher import AwsFetcher
 from src.core.nodefetchers.orchestrator import get_orchestrator_handler
@@ -8,6 +14,20 @@ import os
 COULD_NOT_READ_PID_FILE = "COULD_NOT_READ_PID_FILE"
 
 def bootstrap(**kwargs):
+    """Method to bootstrap EP2 controller
+
+    This method bootstraps EP2 Ot creates the neccessary objects and returns it
+    to the driver.
+
+    Args:
+        **kwargs (object) : kwargs must contains config dictionary, logger object.
+
+    Returns:
+        bool: Whether bootstrap updater was successfull or not
+        src.core.haproxyupdater.haproxyupdate.HaproxyUPdate: Object for updating haproxy config
+        src.core.nodefetchers.basefetcher: Object for fetching backends
+    """
+
     config = kwargs.get("config")
     logger = kwargs.get("logger")
     haproxy_config = config.get("haproxy")
