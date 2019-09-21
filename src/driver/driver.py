@@ -49,6 +49,7 @@ def drive():
 
     if not __sanitize_config(config):
 
+       # if configs fail sanity checks then exit ep2. Issue should have been logged already
         exit(2)
 
     # bootstrap the controller
@@ -71,19 +72,31 @@ def drive():
     i = 1
     while True:
         print ("run " + str(i))
+
+        # Fetch backend IPs from orchestrator handler
         asg_ips = orchestratorHandler.fetch()
+
+        # Proceed with updation only if IPs are not none
         if asg_ips != None:
             print (asg_ips)
+
+            # check if update is actually neccessary. Compare with cache
             should_update = driverCache.need_to_update(set(asg_ips))
             if should_update:
                 logger.info("Backends changed. Proceeding to update haproxy")
+
+                # Inform the haproxyupdater about the new nodes
                 haproxyupdater.update_node_list(asg_ips)
+
+                # Update haproxy
                 updated = haproxyupdater.update_haproxy()
                 print (updated)
             else:
                 logger.info("Backends not changed. Skipping update")
         else:
             logger.critical("No backends found. Skippin run")
+
+        # sleep for configured time before the next run
         time.sleep(SLEEP_BEFORE_NEXT_RUN)
         i += 1
 
