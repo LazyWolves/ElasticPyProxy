@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>src.driver package &#8212; ElasticPyProxy 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="src-driver-package">
+<h1>src.driver package<a class="headerlink" href="#src-driver-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-src.driver.bootstrap">
+<span id="src-driver-bootstrap-module"></span><h2>src.driver.bootstrap module<a class="headerlink" href="#module-src.driver.bootstrap" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="src.driver.bootstrap.bootstrap">
+<code class="sig-prename descclassname">src.driver.bootstrap.</code><code class="sig-name descname">bootstrap</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/driver/bootstrap.html#bootstrap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.driver.bootstrap.bootstrap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-src.driver.defaultparams">
+<span id="src-driver-defaultparams-module"></span><h2>src.driver.defaultparams module<a class="headerlink" href="#module-src.driver.defaultparams" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-src.driver.driver">
+<span id="src-driver-driver-module"></span><h2>src.driver.driver module<a class="headerlink" href="#module-src.driver.driver" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-driver"></span><dl class="function">
+<dt id="src.driver.driver.drive">
+<code class="sig-prename descclassname">src.driver.driver.</code><code class="sig-name descname">drive</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/driver/driver.html#drive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.driver.driver.drive" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>Method for starting ep2</strong></p>
+<p>This is the entry method which starts ep2 controller. It calls bootstrap module
+for bootstrapping ep2, reads ep2 config, initialises haproxy and starts the
+<strong>poll-update-repeat loop</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Returns nothing</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.driver.drivercache">
+<span id="src-driver-drivercache-module"></span><h2>src.driver.drivercache module<a class="headerlink" href="#module-src.driver.drivercache" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="src.driver.drivercache.DriverCache">
+<em class="property">class </em><code class="sig-prename descclassname">src.driver.drivercache.</code><code class="sig-name descname">DriverCache</code><span class="sig-paren">(</span><em class="sig-param">node_ips</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/driver/drivercache.html#DriverCache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.driver.drivercache.DriverCache" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="src.driver.drivercache.DriverCache.need_to_update">
+<code class="sig-name descname">need_to_update</code><span class="sig-paren">(</span><em class="sig-param">node_ips</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/driver/drivercache.html#DriverCache.need_to_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.driver.drivercache.DriverCache.need_to_update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.driver">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-src.driver" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">ElasticPyProxy</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Deepjyoti Mondal.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/src.driver.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>src.core.haproxyupdater.runtimeupdater &#8212; ElasticPyProxy 1.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for src.core.haproxyupdater.runtimeupdater</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">.sockethandler</span> <span class="k">import</span> <span class="n">SocketHandler</span>
+
+
+<div class="viewcode-block" id="RuntimeUpdater"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.runtimeupdater.RuntimeUpdater">[docs]</a><span class="k">class</span> <span class="nc">RuntimeUpdater</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__get_haproxy_stats</span><span class="p">(</span><span class="n">haproxy_sock</span><span class="p">,</span> <span class="n">backend_name</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="n">SHOW_STATUS</span> <span class="o">=</span> <span class="s2">&quot;show stat</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">has_stat</span><span class="p">,</span> <span class="n">stats</span> <span class="o">=</span> <span class="n">haproxy_sock</span><span class="o">.</span><span class="n">send_command</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="n">SHOW_STATUS</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">has_stat</span><span class="p">:</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Failed to fetch haproxy status&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
+        
+        <span class="n">slots</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">active_nodes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">inactive_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
+            <span class="n">node_properties</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_properties</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">80</span> <span class="ow">and</span> <span class="n">node_properties</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">backend_name</span><span class="p">:</span>
+                <span class="n">node_name</span> <span class="o">=</span> <span class="n">node_properties</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">node_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;backend&quot;</span> <span class="ow">or</span> <span class="n">node_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;frontend&quot;</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">node_state</span> <span class="o">=</span> <span class="n">node_properties</span><span class="p">[</span><span class="mi">17</span><span class="p">]</span>
+                <span class="n">node_addr</span> <span class="o">=</span> <span class="n">node_properties</span><span class="p">[</span><span class="mi">73</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">node_state</span> <span class="o">==</span> <span class="s2">&quot;MAINT&quot;</span><span class="p">:</span>
+                    <span class="n">inactive_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node_name</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">active_nodes</span><span class="p">[</span><span class="n">node_addr</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_name</span>
+
+        <span class="n">nodes</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;active_nodes&quot;</span><span class="p">:</span> <span class="n">active_nodes</span><span class="p">,</span>
+            <span class="s2">&quot;inactive_nodes&quot;</span><span class="p">:</span> <span class="n">inactive_nodes</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">nodes</span>
+
+<div class="viewcode-block" id="RuntimeUpdater.update_runtime_util"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.runtimeupdater.RuntimeUpdater.update_runtime_util">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">update_runtime_util</span><span class="p">(</span><span class="n">haproxy_sock</span><span class="p">,</span> <span class="n">node_ips</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">backend_name</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">active_nodes</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;active_nodes&quot;</span><span class="p">)</span>
+        <span class="n">inactive_nodes</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inactive_nodes&quot;</span><span class="p">)</span>
+
+        <span class="n">SET_ADDR</span> <span class="o">=</span> <span class="s2">&quot;set server </span><span class="si">{backend_name}</span><span class="s2">/</span><span class="si">{node_name}</span><span class="s2"> addr </span><span class="si">{addr}</span><span class="s2"> port </span><span class="si">{port}</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">MAKE_READY</span> <span class="o">=</span> <span class="s2">&quot;set server </span><span class="si">{backend_name}</span><span class="s2">/</span><span class="si">{node_name}</span><span class="s2"> state ready</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">MAKE_MAINT</span> <span class="o">=</span> <span class="s2">&quot;set server </span><span class="si">{backend_name}</span><span class="s2">/</span><span class="si">{node_name}</span><span class="s2"> state maint</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="n">unused_active_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">active_node</span> <span class="ow">in</span> <span class="n">active_nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">active_node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node_ips</span><span class="p">:</span>
+                <span class="n">command_status</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">haproxy_sock</span><span class="o">.</span><span class="n">send_command</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="n">MAKE_MAINT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">backend_name</span><span class="o">=</span><span class="n">backend_name</span><span class="p">,</span> <span class="n">node_name</span><span class="o">=</span><span class="n">active_nodes</span><span class="p">[</span><span class="n">active_node</span><span class="p">]))</span>
+                <span class="k">if</span> <span class="n">command_status</span><span class="p">:</span>
+                    <span class="n">inactive_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">active_nodes</span><span class="p">[</span><span class="n">active_node</span><span class="p">])</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Removed node:</span><span class="si">{server}</span><span class="s2">/ip:</span><span class="si">{ip}</span><span class="s2"> from active backend pool&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">server</span><span class="o">=</span><span class="n">active_nodes</span><span class="p">[</span><span class="n">active_node</span><span class="p">],</span> <span class="n">ip</span><span class="o">=</span><span class="n">active_node</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Failed removing node:</span><span class="si">{server}</span><span class="s2">/ip:</span><span class="si">{ip}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">server</span><span class="o">=</span><span class="n">active_nodes</span><span class="p">[</span><span class="n">active_node</span><span class="p">],</span> <span class="n">ip</span><span class="o">=</span><span class="n">active_node</span><span class="p">))</span>
+
+                <span class="n">unused_active_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">active_node</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">unused_active_node</span> <span class="ow">in</span> <span class="n">unused_active_nodes</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">active_nodes</span><span class="p">[</span><span class="n">unused_active_node</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">new_node_ip</span> <span class="ow">in</span> <span class="n">node_ips</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">active_nodes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">new_node_ip</span><span class="p">):</span>
+                <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;skipping &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">new_node_ip</span><span class="p">))</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inactive_nodes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">node_to_use</span> <span class="o">=</span> <span class="n">inactive_nodes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using inactive node:</span><span class="si">{node}</span><span class="s2"> for ip:</span><span class="si">{ip}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">node_to_use</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="n">new_node_ip</span><span class="p">))</span>
+
+                    <span class="n">command_status</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">haproxy_sock</span><span class="o">.</span><span class="n">send_command</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="n">SET_ADDR</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">backend_name</span><span class="o">=</span><span class="n">backend_name</span><span class="p">,</span> <span class="n">node_name</span><span class="o">=</span><span class="n">node_to_use</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="n">new_node_ip</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">command_status</span><span class="p">:</span>
+
+                        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">                            Log error</span>
+<span class="sd">                        &#39;&#39;&#39;</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Failed to change </span><span class="si">{node}</span><span class="s2"> backend addr to ip:</span><span class="si">{ip}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">node_to_use</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="n">new_node_ip</span><span class="p">))</span>
+                    <span class="k">else</span> <span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Successfully changed </span><span class="si">{node}</span><span class="s2"> backend addr to ip:</span><span class="si">{ip}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">node_to_use</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="n">new_node_ip</span><span class="p">))</span>
+                    <span class="n">command_status</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">haproxy_sock</span><span class="o">.</span><span class="n">send_command</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="n">MAKE_READY</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">backend_name</span><span class="o">=</span><span class="n">backend_name</span><span class="p">,</span> <span class="n">node_name</span><span class="o">=</span><span class="n">node_to_use</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">command_status</span><span class="p">:</span>
+
+                        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">                            Log error</span>
+<span class="sd">                        &#39;&#39;&#39;</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Failed to activate node:</span><span class="si">{node}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">node_to_use</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Sucessfully activated node:</span><span class="si">{node}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">node_to_use</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+
+                    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">                        Log error</span>
+<span class="sd">                    &#39;&#39;&#39;</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Insufficient nodes in inactive pool. Please increase node_slots and retsart ep2&quot;</span><span class="p">)</span>
+
+        <span class="n">stats</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;inactive_nodes_count&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">inactive_nodes</span><span class="p">),</span>
+            <span class="s2">&quot;nodes&quot;</span><span class="p">:</span> <span class="n">node_ips</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">stats</span></div>
+
+<div class="viewcode-block" id="RuntimeUpdater.update_haproxy_runtime"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.runtimeupdater.RuntimeUpdater.update_haproxy_runtime">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">update_haproxy_runtime</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">node_ips</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;node_ips&quot;</span><span class="p">)</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;port&quot;</span><span class="p">)</span>
+        <span class="n">sock_file</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sock_file&quot;</span><span class="p">)</span>
+        <span class="n">backend_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;node_name&quot;</span><span class="p">)</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logger&quot;</span><span class="p">)</span>
+
+        <span class="n">socketHandler</span> <span class="o">=</span> <span class="n">SocketHandler</span><span class="p">(</span><span class="n">sock_file</span><span class="o">=</span><span class="n">sock_file</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
+
+        <span class="n">got_status</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">RuntimeUpdater</span><span class="o">.</span><span class="n">__get_haproxy_stats</span><span class="p">(</span><span class="n">socketHandler</span><span class="p">,</span> <span class="n">backend_name</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">got_status</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
+
+        <span class="n">updated</span><span class="p">,</span> <span class="n">stats</span> <span class="o">=</span> <span class="n">RuntimeUpdater</span><span class="o">.</span><span class="n">update_runtime_util</span><span class="p">(</span><span class="n">socketHandler</span><span class="p">,</span> <span class="n">node_ips</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">backend_name</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">updated</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">stats</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">ElasticPyProxy</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Deepjyoti Mondal.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

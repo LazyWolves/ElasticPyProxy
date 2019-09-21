@@ -9,7 +9,7 @@ Welcome to ElasticPyProxy's documentation!
 ElasticPyProxy Code Documentation
 ******************************************
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 10
    :caption: Contents:
 
 Driver (Main entry point for ElasticPyProxy)

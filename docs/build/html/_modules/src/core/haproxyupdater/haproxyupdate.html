@@ -1,0 +1,286 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>src.core.haproxyupdater.haproxyupdate &#8212; ElasticPyProxy 1.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for src.core.haproxyupdater.haproxyupdate</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">.confighandler</span> <span class="k">import</span> <span class="n">ConfigHandler</span>
+<span class="kn">from</span> <span class="nn">.runtimeupdater</span> <span class="k">import</span> <span class="n">RuntimeUpdater</span>
+<span class="kn">from</span> <span class="nn">.haproxyreloader</span> <span class="k">import</span> <span class="n">HaproxyReloader</span>
+
+<div class="viewcode-block" id="HaproxyUpdate"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate">[docs]</a><span class="k">class</span> <span class="nc">HaproxyUpdate</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Get desired params</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">haproxy_config_file</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;haproxy_config_file&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_file</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;template_file&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backend_port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;backend_port&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_list</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;node_list&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">haproxy_binary</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;haproxy_binary&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_by</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_by&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">haproxy_socket_file</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;haproxy_socket_file&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pid_file</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pid_file&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;backend_name&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_type</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;update_type&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_slots</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;node_slots&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">service_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;service_name&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logger&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">valid_start_by</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;binary&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;systemd&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;init&quot;</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">valid_update_types</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;update_by_config&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;update_by_runtime&quot;</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__sanitise</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Validate all the paths</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">haproxy_config_file</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template_file</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend_port</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend_port</span> <span class="o">&gt;</span> <span class="mi">65536</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_slots</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_slots</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_type</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_update_types</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_slots</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_slots</span> <span class="o">&lt;=</span><span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_list</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">haproxy_socket_file</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">haproxy_socket_file</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_type</span> <span class="o">==</span> <span class="s2">&quot;update_by_config&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_by</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_by</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_start_by</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_by</span> <span class="o">==</span> <span class="s2">&quot;systemd&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">service_name</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_by</span> <span class="o">==</span> <span class="s2">&quot;binary&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">haproxy_binary</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">haproxy_binary</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pid_file</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pid_file</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="HaproxyUpdate.update_node_list"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.update_node_list">[docs]</a>    <span class="k">def</span> <span class="nf">update_node_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_list</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_list</span> <span class="o">=</span> <span class="n">node_list</span></div>
+
+<div class="viewcode-block" id="HaproxyUpdate.update_haproxy"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.update_haproxy">[docs]</a>    <span class="k">def</span> <span class="nf">update_haproxy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sanitise</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_type</span> <span class="o">==</span> <span class="s2">&quot;update_by_runtime&quot;</span><span class="p">:</span>
+            <span class="n">updated</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__update_haproxy_by_runtime</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">updated</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_haproxy_by_config_reload</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">updated</span></div>
+
+<div class="viewcode-block" id="HaproxyUpdate.update_haproxy_by_config_reload"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.update_haproxy_by_config_reload">[docs]</a>    <span class="k">def</span> <span class="nf">update_haproxy_by_config_reload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            When update is done by config reload and not runtime make node_slots equal</span>
+<span class="sd">            length of node_ips</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_type</span> <span class="o">==</span> <span class="s2">&quot;update_by_config&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_slots</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_list</span><span class="p">)</span>
+
+        <span class="n">updated</span> <span class="o">=</span> <span class="n">ConfigHandler</span><span class="o">.</span><span class="n">update_config</span><span class="p">(</span><span class="n">haproxy_config_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">haproxy_config_file</span><span class="p">,</span>
+                                        <span class="n">template_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">template_file</span><span class="p">,</span>
+                                        <span class="n">node_list</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">node_list</span><span class="p">,</span>
+                                        <span class="n">backend_port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_port</span><span class="p">,</span>
+                                        <span class="n">node_slots</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">node_slots</span><span class="p">,</span>
+                                        <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
+                                        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">update_only</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">updated</span>
+
+        <span class="n">reloaded</span> <span class="o">=</span> <span class="n">HaproxyReloader</span><span class="o">.</span><span class="n">reload_haproxy</span><span class="p">(</span><span class="n">start_by</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_by</span><span class="p">,</span>
+                                                <span class="n">haproxy_config_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">haproxy_config_file</span><span class="p">,</span>
+                                                <span class="n">service_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">service_name</span><span class="p">,</span>
+                                                <span class="n">haproxy_binary</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">haproxy_binary</span><span class="p">,</span>
+                                                <span class="n">pid_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pid_file</span><span class="p">,</span>
+                                                <span class="n">haproxy_socket_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">haproxy_socket_file</span><span class="p">,</span>
+                                                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
+                                                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">reloaded</span></div>
+
+    <span class="k">def</span> <span class="nf">__update_haproxy_by_runtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">updated</span><span class="p">,</span> <span class="n">stats</span> <span class="o">=</span> <span class="n">RuntimeUpdater</span><span class="o">.</span><span class="n">update_haproxy_runtime</span><span class="p">(</span><span class="n">node_ips</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">node_list</span><span class="p">,</span>
+                                                        <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_port</span><span class="p">,</span>
+                                                        <span class="n">sock_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">haproxy_socket_file</span><span class="p">,</span>
+                                                        <span class="n">node_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_name</span><span class="p">,</span>
+                                                        <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">updated</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">updated</span> <span class="o">=</span> <span class="n">ConfigHandler</span><span class="o">.</span><span class="n">update_config</span><span class="p">(</span><span class="n">haproxy_config_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">haproxy_config_file</span><span class="p">,</span>
+                                            <span class="n">template_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">template_file</span><span class="p">,</span>
+                                            <span class="n">node_list</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">node_list</span><span class="p">,</span>
+                                            <span class="n">backend_port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_port</span><span class="p">,</span>
+                                            <span class="n">inactive_nodes_count</span><span class="o">=</span><span class="n">stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inactive_nodes_count&quot;</span><span class="p">),</span>
+                                            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">updated</span><span class="p">:</span>
+            <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">                Log error, runtime updation succeeded but config file could not be updated</span>
+<span class="sd">            &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">hup</span> <span class="o">=</span> <span class="n">HaproxyUpdate</span><span class="p">(</span>
+        <span class="n">haproxy_config_file</span><span class="o">=</span><span class="s2">&quot;/etc/haproxy/haproxy.cfg&quot;</span><span class="p">,</span>
+        <span class="n">template_file</span><span class="o">=</span><span class="s2">&quot;/home/deep/elasticpyproxy/etc/haproxy.cofig.template&quot;</span><span class="p">,</span>
+        <span class="n">backend_port</span><span class="o">=</span><span class="mi">6003</span><span class="p">,</span>
+        <span class="n">node_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;10.42.0.197&quot;</span><span class="p">],</span>
+        <span class="n">haproxy_binary</span><span class="o">=</span><span class="s2">&quot;/usr/sbin/haproxy&quot;</span><span class="p">,</span>
+        <span class="n">start_by</span><span class="o">=</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span>
+        <span class="n">haproxy_socket_file</span><span class="o">=</span><span class="s2">&quot;/var/run/haproxy/haproxy.sock&quot;</span><span class="p">,</span>
+        <span class="n">backend_name</span><span class="o">=</span><span class="s2">&quot;haproxynode&quot;</span><span class="p">,</span>
+        <span class="n">service_name</span><span class="o">=</span><span class="s2">&quot;haproxy&quot;</span><span class="p">,</span>
+        <span class="n">node_slots</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+        <span class="n">pid_file</span><span class="o">=</span><span class="s2">&quot;/run/haproxy.pid&quot;</span><span class="p">,</span>
+        <span class="n">update_type</span><span class="o">=</span><span class="s2">&quot;update_by_config&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="n">hup</span><span class="o">.</span><span class="n">update_haproxy</span><span class="p">()</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="n">res</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">ElasticPyProxy</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Deepjyoti Mondal.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

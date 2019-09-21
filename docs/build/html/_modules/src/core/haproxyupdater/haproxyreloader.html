@@ -1,0 +1,183 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>src.core.haproxyupdater.haproxyreloader &#8212; ElasticPyProxy 1.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for src.core.haproxyupdater.haproxyreloader</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+
+<div class="viewcode-block" id="HaproxyReloader"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.haproxyreloader.HaproxyReloader">[docs]</a><span class="k">class</span> <span class="nc">HaproxyReloader</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HaproxyReloader.reload_haproxy"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.haproxyreloader.HaproxyReloader.reload_haproxy">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">reload_haproxy</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">start_by</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_by&quot;</span><span class="p">)</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logger&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">start_by</span> <span class="o">==</span> <span class="s2">&quot;systemd&quot;</span><span class="p">:</span>
+            <span class="n">service_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;service_name&quot;</span><span class="p">)</span>
+
+            <span class="n">reloaded</span> <span class="o">=</span> <span class="n">HaproxyReloader</span><span class="o">.</span><span class="n">__systemd_handler</span><span class="p">(</span><span class="n">service_name</span><span class="p">,</span> <span class="s2">&quot;reload&quot;</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">reloaded</span>
+
+        <span class="k">elif</span> <span class="n">start_by</span> <span class="o">==</span> <span class="s2">&quot;binary&quot;</span><span class="p">:</span>
+            <span class="n">binary</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;haproxy_binary&quot;</span><span class="p">)</span>
+            <span class="n">haproxy_config_file</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;haproxy_config_file&quot;</span><span class="p">)</span>
+            <span class="n">sock_file</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;haproxy_socket_file&quot;</span><span class="p">)</span>
+            <span class="n">pid_file</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pid_file&quot;</span><span class="p">)</span>
+
+            <span class="n">reloaded</span> <span class="o">=</span> <span class="n">HaproxyReloader</span><span class="o">.</span><span class="n">__reload_by_binary</span><span class="p">(</span><span class="n">binary</span><span class="p">,</span> <span class="n">haproxy_config_file</span><span class="p">,</span> <span class="n">sock_file</span><span class="p">,</span> <span class="n">pid_file</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">reloaded</span></div>
+
+<div class="viewcode-block" id="HaproxyReloader.start_by_systemd"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.haproxyreloader.HaproxyReloader.start_by_systemd">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">start_by_systemd</span><span class="p">(</span><span class="n">service_name</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting haproxy via systemd&quot;</span><span class="p">)</span>
+        <span class="n">started</span> <span class="o">=</span> <span class="n">HaproxyReloader</span><span class="o">.</span><span class="n">__systemd_handler</span><span class="p">(</span><span class="n">service_name</span><span class="p">,</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">started</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__systemd_handler</span><span class="p">(</span><span class="n">service_name</span><span class="p">,</span> <span class="n">operation</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reloading haproxy via systemd&quot;</span><span class="p">)</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;systemctl </span><span class="si">{operation}</span><span class="s2"> </span><span class="si">{service_name}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">service_name</span><span class="o">=</span><span class="n">service_name</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">operation</span><span class="p">)</span>
+
+        <span class="n">executed</span> <span class="o">=</span> <span class="n">HaproxyReloader</span><span class="o">.</span><span class="n">__execute_shell</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            If any error has occurred, then it has already been logged.</span>
+<span class="sd">            Return status</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="n">executed</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__reload_by_binary</span><span class="p">(</span><span class="n">binary</span><span class="p">,</span> <span class="n">haproxy_config_file</span><span class="p">,</span> <span class="n">sock_file</span><span class="p">,</span> <span class="n">pid_file</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reloading haproxy via binary&quot;</span><span class="p">)</span>
+        <span class="n">command_template</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{binary}</span><span class="s2"> -W -q -D -f </span><span class="si">{haproxy_config_file}</span><span class="s2"> -p </span><span class="si">{pid_file}</span><span class="s2"> -x </span><span class="si">{sock_file}</span><span class="s2"> -sf $(cat </span><span class="si">{pid_file}</span><span class="s2">)&quot;</span>
+
+        <span class="n">command</span> <span class="o">=</span> <span class="n">command_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">binary</span><span class="o">=</span><span class="n">binary</span><span class="p">,</span>
+                                        <span class="n">haproxy_config_file</span><span class="o">=</span><span class="n">haproxy_config_file</span><span class="p">,</span>
+                                        <span class="n">pid_file</span><span class="o">=</span><span class="n">pid_file</span><span class="p">,</span>
+                                        <span class="n">sock_file</span><span class="o">=</span><span class="n">sock_file</span><span class="p">)</span>
+
+        <span class="n">executed</span> <span class="o">=</span> <span class="n">HaproxyReloader</span><span class="o">.</span><span class="n">__execute_shell</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            If any error has occurred, then it has already been logged.</span>
+<span class="sd">            Return status</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="n">executed</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__execute_shell</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="n">proc</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">universal_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">output</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+        <span class="n">proc_exit_code</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Executing command : </span><span class="si">{command}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="n">command</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">proc_exit_code</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+
+            <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">                Log the error and the exit code</span>
+<span class="sd">            &#39;&#39;&#39;</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Encountered following errors with command : </span><span class="si">{command}</span><span class="s2"> : </span><span class="si">{errors}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="n">command</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="n">errors</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">ElasticPyProxy</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Deepjyoti Mondal.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

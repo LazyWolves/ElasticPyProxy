@@ -23,6 +23,9 @@ def drive():
         for bootstrapping ep2, reads ep2 config, initialises haproxy and starts the
         **poll-update-repeat loop**
 
+        Returns:
+            None: Returns nothing
+
     """
     global CONFIG_FILE
     global LOCK_FILE
@@ -107,6 +110,12 @@ def __setup_logging(log_file):
         Here the logging for EP2 controller is setup with desired format
         and path.
 
+        Args:
+            log_file (str) : Path to log file
+        
+        Returns:
+            logger: logger object for logging logs
+
     """
 
     logger = logging.getLogger(__name__)
@@ -127,6 +136,9 @@ def __load_config():
         Configfile is read and parsed. The keys and values are converted into
         dictionary format. There are separate sections for haproxy and orechestrator.
         Accordingly the dictionary is made.
+
+        Returns:
+            dictionary: A dictionary containing config options
     """
 
     parser = SafeConfigParser()
@@ -170,6 +182,9 @@ def __release_lock(lock_dir):
 def __sanitize_config(config):
     """
         **Method for checking config sanity**
+
+        Returns:
+            bool: Returns whether sanity checks are success or failure
 
     """
 

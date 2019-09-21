@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>src.core.haproxyupdater package &#8212; ElasticPyProxy 1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="src-core-haproxyupdater-package">
+<h1>src.core.haproxyupdater package<a class="headerlink" href="#src-core-haproxyupdater-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-src.core.haproxyupdater.confighandler">
+<span id="src-core-haproxyupdater-confighandler-module"></span><h2>src.core.haproxyupdater.confighandler module<a class="headerlink" href="#module-src.core.haproxyupdater.confighandler" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="src.core.haproxyupdater.confighandler.ConfigHandler">
+<em class="property">class </em><code class="sig-prename descclassname">src.core.haproxyupdater.confighandler.</code><code class="sig-name descname">ConfigHandler</code><a class="reference internal" href="_modules/src/core/haproxyupdater/confighandler.html#ConfigHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.confighandler.ConfigHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="src.core.haproxyupdater.confighandler.ConfigHandler.read_write_file">
+<em class="property">static </em><code class="sig-name descname">read_write_file</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/confighandler.html#ConfigHandler.read_write_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.confighandler.ConfigHandler.read_write_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.core.haproxyupdater.confighandler.ConfigHandler.update_config">
+<em class="property">static </em><code class="sig-name descname">update_config</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/confighandler.html#ConfigHandler.update_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.confighandler.ConfigHandler.update_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.core.haproxyupdater.haproxyreloader">
+<span id="src-core-haproxyupdater-haproxyreloader-module"></span><h2>src.core.haproxyupdater.haproxyreloader module<a class="headerlink" href="#module-src.core.haproxyupdater.haproxyreloader" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="src.core.haproxyupdater.haproxyreloader.HaproxyReloader">
+<em class="property">class </em><code class="sig-prename descclassname">src.core.haproxyupdater.haproxyreloader.</code><code class="sig-name descname">HaproxyReloader</code><a class="reference internal" href="_modules/src/core/haproxyupdater/haproxyreloader.html#HaproxyReloader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.haproxyreloader.HaproxyReloader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="src.core.haproxyupdater.haproxyreloader.HaproxyReloader.reload_haproxy">
+<em class="property">static </em><code class="sig-name descname">reload_haproxy</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/haproxyreloader.html#HaproxyReloader.reload_haproxy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.haproxyreloader.HaproxyReloader.reload_haproxy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.core.haproxyupdater.haproxyreloader.HaproxyReloader.start_by_systemd">
+<em class="property">static </em><code class="sig-name descname">start_by_systemd</code><span class="sig-paren">(</span><em class="sig-param">service_name</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/haproxyreloader.html#HaproxyReloader.start_by_systemd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.haproxyreloader.HaproxyReloader.start_by_systemd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.core.haproxyupdater.haproxyupdate">
+<span id="src-core-haproxyupdater-haproxyupdate-module"></span><h2>src.core.haproxyupdater.haproxyupdate module<a class="headerlink" href="#module-src.core.haproxyupdater.haproxyupdate" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="src.core.haproxyupdater.haproxyupdate.HaproxyUpdate">
+<em class="property">class </em><code class="sig-prename descclassname">src.core.haproxyupdater.haproxyupdate.</code><code class="sig-name descname">HaproxyUpdate</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/haproxyupdate.html#HaproxyUpdate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.update_haproxy">
+<code class="sig-name descname">update_haproxy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/haproxyupdate.html#HaproxyUpdate.update_haproxy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.update_haproxy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.update_haproxy_by_config_reload">
+<code class="sig-name descname">update_haproxy_by_config_reload</code><span class="sig-paren">(</span><em class="sig-param">update_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/haproxyupdate.html#HaproxyUpdate.update_haproxy_by_config_reload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.update_haproxy_by_config_reload" title="Permalink to this definition">¶</a></dt>
+<dd><p>When update is done by config reload and not runtime make node_slots equal
+length of node_ips</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.update_node_list">
+<code class="sig-name descname">update_node_list</code><span class="sig-paren">(</span><em class="sig-param">node_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/haproxyupdate.html#HaproxyUpdate.update_node_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.update_node_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.core.haproxyupdater.runtimeupdater">
+<span id="src-core-haproxyupdater-runtimeupdater-module"></span><h2>src.core.haproxyupdater.runtimeupdater module<a class="headerlink" href="#module-src.core.haproxyupdater.runtimeupdater" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="src.core.haproxyupdater.runtimeupdater.RuntimeUpdater">
+<em class="property">class </em><code class="sig-prename descclassname">src.core.haproxyupdater.runtimeupdater.</code><code class="sig-name descname">RuntimeUpdater</code><a class="reference internal" href="_modules/src/core/haproxyupdater/runtimeupdater.html#RuntimeUpdater"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.runtimeupdater.RuntimeUpdater" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="src.core.haproxyupdater.runtimeupdater.RuntimeUpdater.update_haproxy_runtime">
+<em class="property">static </em><code class="sig-name descname">update_haproxy_runtime</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/runtimeupdater.html#RuntimeUpdater.update_haproxy_runtime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.runtimeupdater.RuntimeUpdater.update_haproxy_runtime" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.core.haproxyupdater.runtimeupdater.RuntimeUpdater.update_runtime_util">
+<em class="property">static </em><code class="sig-name descname">update_runtime_util</code><span class="sig-paren">(</span><em class="sig-param">haproxy_sock</em>, <em class="sig-param">node_ips</em>, <em class="sig-param">nodes</em>, <em class="sig-param">backend_name</em>, <em class="sig-param">port</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/runtimeupdater.html#RuntimeUpdater.update_runtime_util"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.runtimeupdater.RuntimeUpdater.update_runtime_util" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.core.haproxyupdater.sockethandler">
+<span id="src-core-haproxyupdater-sockethandler-module"></span><h2>src.core.haproxyupdater.sockethandler module<a class="headerlink" href="#module-src.core.haproxyupdater.sockethandler" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="src.core.haproxyupdater.sockethandler.SocketHandler">
+<em class="property">class </em><code class="sig-prename descclassname">src.core.haproxyupdater.sockethandler.</code><code class="sig-name descname">SocketHandler</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/sockethandler.html#SocketHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.sockethandler.SocketHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="src.core.haproxyupdater.sockethandler.SocketHandler.connect_socket">
+<code class="sig-name descname">connect_socket</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/sockethandler.html#SocketHandler.connect_socket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.sockethandler.SocketHandler.connect_socket" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.core.haproxyupdater.sockethandler.SocketHandler.destroy_socket">
+<code class="sig-name descname">destroy_socket</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/sockethandler.html#SocketHandler.destroy_socket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.sockethandler.SocketHandler.destroy_socket" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.core.haproxyupdater.sockethandler.SocketHandler.send_command">
+<code class="sig-name descname">send_command</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/sockethandler.html#SocketHandler.send_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.sockethandler.SocketHandler.send_command" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.core.haproxyupdater">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-src.core.haproxyupdater" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">ElasticPyProxy</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Deepjyoti Mondal.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/src.core.haproxyupdater.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

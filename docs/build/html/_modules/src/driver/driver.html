@@ -56,6 +56,9 @@
 <span class="sd">        for bootstrapping ep2, reads ep2 config, initialises haproxy and starts the</span>
 <span class="sd">        **poll-update-repeat loop**</span>
 
+<span class="sd">        Returns:</span>
+<span class="sd">            None: Returns nothing</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">CONFIG_FILE</span>
     <span class="k">global</span> <span class="n">LOCK_FILE</span>
@@ -140,6 +143,12 @@
 <span class="sd">        Here the logging for EP2 controller is setup with desired format</span>
 <span class="sd">        and path.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            log_file (str) : Path to log file</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            logger: logger object for logging logs</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -160,6 +169,9 @@
 <span class="sd">        Configfile is read and parsed. The keys and values are converted into</span>
 <span class="sd">        dictionary format. There are separate sections for haproxy and orechestrator.</span>
 <span class="sd">        Accordingly the dictionary is made.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dictionary: A dictionary containing config options</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">parser</span> <span class="o">=</span> <span class="n">SafeConfigParser</span><span class="p">()</span>
@@ -203,7 +215,10 @@
 <span class="k">def</span> <span class="nf">__sanitize_config</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        **Method for checking config sanity**</span>
-<span class="sd">        </span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: Returns whether sanity checks are success or failure</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="kc">True</span>
