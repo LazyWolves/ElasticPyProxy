@@ -31,13 +31,49 @@
           <div class="body" role="main">
             
   <h1>Source code for src.driver.drivercache</h1><div class="highlight"><pre>
-<div class="viewcode-block" id="DriverCache"><a class="viewcode-back" href="../../../src.driver.html#src.driver.drivercache.DriverCache">[docs]</a><span></span><span class="k">class</span> <span class="nc">DriverCache</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: drivercache</span>
+<span class="sd">   :synopsis: caching layer for ep2</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DriverCache"><a class="viewcode-back" href="../../../src.driver.html#src.driver.drivercache.DriverCache">[docs]</a><span class="k">class</span> <span class="nc">DriverCache</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class to provide caching for ep2</span>
+<span class="sd"> </span>
+<span class="sd">    The backends fetched in a given run is stored in memory.</span>
+<span class="sd">    The backends fetched in next run witll be compared to the ones already</span>
+<span class="sd">    held by this class (node_ips). If there is a mismatch, only then update</span>
+<span class="sd">    will be done</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        node_ips (list) : list of backend IPs</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ips</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Init method</span>
+
+<span class="sd">        Method for initialising drivercache</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            node_ips (list) : list of backend IPs</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">node_ips</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">node_ips</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">node_ips</span> <span class="o">=</span> <span class="n">node_ips</span>
 
 <div class="viewcode-block" id="DriverCache.need_to_update"><a class="viewcode-back" href="../../../src.driver.html#src.driver.drivercache.DriverCache.need_to_update">[docs]</a>    <span class="k">def</span> <span class="nf">need_to_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ips</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Method to check if haproxy needs to be updated</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            node_ips (list) : list of backend IPs</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: Whether to update haproxy or not</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="n">node_ips</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_ips</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 

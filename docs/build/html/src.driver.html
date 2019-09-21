@@ -68,14 +68,36 @@ for bootstrapping ep2, reads ep2 config, initialises haproxy and starts the
 </div>
 <div class="section" id="module-src.driver.drivercache">
 <span id="src-driver-drivercache-module"></span><h2>src.driver.drivercache module<a class="headerlink" href="#module-src.driver.drivercache" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<span class="target" id="module-drivercache"></span><dl class="class">
 <dt id="src.driver.drivercache.DriverCache">
 <em class="property">class </em><code class="sig-prename descclassname">src.driver.drivercache.</code><code class="sig-name descname">DriverCache</code><span class="sig-paren">(</span><em class="sig-param">node_ips</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/driver/drivercache.html#DriverCache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.driver.drivercache.DriverCache" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to provide caching for ep2</p>
+<p>The backends fetched in a given run is stored in memory.
+The backends fetched in next run witll be compared to the ones already
+held by this class (node_ips). If there is a mismatch, only then update
+will be done</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node_ips</strong> (<em>list</em>) – list of backend IPs</p>
+</dd>
+</dl>
 <dl class="method">
 <dt id="src.driver.drivercache.DriverCache.need_to_update">
 <code class="sig-name descname">need_to_update</code><span class="sig-paren">(</span><em class="sig-param">node_ips</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/driver/drivercache.html#DriverCache.need_to_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.driver.drivercache.DriverCache.need_to_update" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Method to check if haproxy needs to be updated</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node_ips</strong> (<em>list</em>) – list of backend IPs</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether to update haproxy or not</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 

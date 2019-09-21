@@ -12,9 +12,14 @@ ElasticPyProxy Code Documentation
    :maxdepth: 10
    :caption: Contents:
 
-Driver (Main entry point for ElasticPyProxy)
+driver (Main entry point for ElasticPyProxy)
 ***********************************************
 .. automodule:: src.driver.driver
+    :members:
+
+drivercache : Cache layer for EP2
+***********************************************
+.. automodule:: src.driver.drivercache
     :members:
 
 Indices and tables
