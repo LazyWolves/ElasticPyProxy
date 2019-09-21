@@ -1,3 +1,9 @@
+"""
+.. module:: driver
+   :synopsis: Main entry point for ep2
+
+"""
+
 from configparser import SafeConfigParser
 import time
 import optparse
@@ -10,6 +16,14 @@ CONFIG_FILE = default_params.get("config")
 LOCK_FILE = default_params.get("lock_file")
 
 def drive():
+    """
+        **Method for starting ep2**
+
+        This is the entry method which starts ep2 controller. It calls bootstrap module
+        for bootstrapping ep2, reads ep2 config, initialises haproxy and starts the
+        **poll-update-repeat loop**
+
+    """
     global CONFIG_FILE
     global LOCK_FILE
 
@@ -18,12 +32,15 @@ def drive():
     parser.add_option('-f', action="store", dest="config", help="Config file")
     options, args = parser.parse_args()
 
+    # if config file available as argument, then use it
     if options.config:
         CONFIG_FILE = options.config
 
+    # parse the config and create a dictionary
     config = __load_config()
     haproxy_config = config.get("haproxy")
 
+    # load values/defaults
     SLEEP_BEFORE_NEXT_RUN = int(haproxy_config.get("sleep_before_next_run", default_params.get("sleep_before_next_run")))
     SLEEP_BEFORE_NEXT_LOCK_ATTEMPT = int(haproxy_config.get("sleep_before_next_lock_attempt", default_params.get("sleep_before_next_lock_attempt")))
     LOG_FILE = haproxy_config.get("log_file", default_params.get("log_file"))
@@ -34,6 +51,7 @@ def drive():
 
         exit(2)
 
+    # bootstrap the controller
     running, haproxyupdater, orchestratorHandler, driverCache = bootstrap(config=config, logger=logger)
 
     if not running:
@@ -45,10 +63,10 @@ def drive():
 
     '''
         After this point, Haproxy should be running with the lastest IPs
-        fetched from the orchestrator.
+        fetched from the orchestrator. Now we can begin with the poll-update-repeat
+        loop for updating backends fetched from ochestrator
     '''
 
-    # Begin with state loop
     print ("Entering state loop...")
     i = 1
     while True:
