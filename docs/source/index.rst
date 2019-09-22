@@ -42,6 +42,11 @@ haproxyreloader : Module for reloading haproxy
 .. automodule:: src.core.haproxyupdater.haproxyreloader
     :members:
 
+runtimeupdater : Module for updating haproxy at runtime
+***********************************************
+.. automodule:: src.core.haproxyupdater.runtimeupdater
+    :members:
+
 Indices and tables
 ==================
 

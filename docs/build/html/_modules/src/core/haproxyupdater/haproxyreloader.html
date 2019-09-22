@@ -31,7 +31,13 @@
           <div class="body" role="main">
             
   <h1>Source code for src.core.haproxyupdater.haproxyreloader</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: haproxyreloader</span>
+<span class="sd">   :synopsis: Module for reloader haproxy</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 
 <div class="viewcode-block" id="HaproxyReloader"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.haproxyreloader.HaproxyReloader">[docs]</a><span class="k">class</span> <span class="nc">HaproxyReloader</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -99,6 +105,9 @@
 
 <span class="sd">            Args:</span>
 <span class="sd">                logger (object) : logger object for logging</span>
+<span class="sd">            </span>
+<span class="sd">            Returns:</span>
+<span class="sd">                bool : Successfully started or not</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting haproxy via systemd&quot;</span><span class="p">)</span>
         <span class="n">started</span> <span class="o">=</span> <span class="n">HaproxyReloader</span><span class="o">.</span><span class="n">__systemd_handler</span><span class="p">(</span><span class="n">service_name</span><span class="p">,</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>

@@ -1,8 +1,30 @@
+"""
+.. module:: sockethandler
+   :synopsis: Module for handling socket operation
+
+"""
+
 import socket
 
 class SocketHandler(object):
 
+    """ Class containing methods for handling socket operation
+
+        This is a generic class for handling all socket operation.
+        All the commands which are to be sent to haproxy and done via methods in
+        this class.
+
+        Args:
+            **kwargs (dictionary) : Dictionary containing params
+    """
+    
     def __init__(self, **kwargs):
+
+        """ Init method for the class
+
+            Args:
+                **kwargs (dictionary) : Dictionary containing params
+        """
 
         # get the desired params
         self.sock_file = kwargs.get("sock_file")
