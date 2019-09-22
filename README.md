@@ -212,7 +212,6 @@ A sample EP2 config file is given below:
   lock_dir = /home/deep/elasticpyproxy/etc
   orchestrator = aws
   sleep_before_next_run = 5
-  sleep_before_next_lock_attempt = 5
   log_file = /var/log/ep2/ep2.log
   
   [AWS]
@@ -221,6 +220,32 @@ A sample EP2 config file is given below:
   asg_name =
   region_name =
 ```
+
+Params involved:
+
+- haproxy_config_file : This is the path to the actual haproxy config file. Usually it is /etc/haproxy/haproxy.cfg
+- template_file : Path to the template file. This is the file that will be populated and used to update the actuall
+                  haproxy config file.
+- backend_port : The port used by backend servers.
+- haproxy_binary : The HAProxy binary file location.
+- start_by : How to start/reload HAProxy. Can be **systemd** or **binary**
+- haproxy_socket_file : Path to HAProxy socket file
+- pid_file : Path to HAProxy socket file
+- backend_name : The name of the HAProxy backend/listener name under which the live backend servers fetched from orchestrator
+                 will be added.
+- update_type : How to update HAProxy. Either **update_by_config** or **udpate_by_runtime**
+- node_slots : Total number of slots for backend servers. As mentioned above, this will be used to calculate inactive servers.
+- service_name : Service name for HAProxy systemd service. Required only when using reload by systemd
+- lock_dir : Path to directory for storing EP2 lock file.
+- orchestrator : The backend orchestrator. As of now it can only be **aws**
+- sleep_before_next_run : Amount of time to wait before next poll-update run
+- log_file : The file to output logs
+
+- aws_access_key_id : aws creds
+- aws_secret_access_key : aws creds
+- asg_name : asg name
+- region_name : aws region name where the asg exists
+
 
 
   
