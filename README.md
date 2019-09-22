@@ -56,5 +56,21 @@ main tasks done by the components present in EP2
   the config file is also updated so that the runtime configuration and the config file on disk remains consistent, but there
   is no need to reload HAProxy.
   
+- Once updation is done, it waits for a configured amount of time before polling for backends again and repeating the same
+  processes.
+  
+  ### Major components of EP2
+  
+  - Backend fetcher : The backend fetcher fetches the live backends from the configured orchestrator. As mentioned earlier
+    for now this is AWS.
+    
+  - HaproxyUpdater : This updates the HAProxy, either by updating config or via socket at runtime.
+  
+  - ConfigHandler : This is used by HaproxyUpdater to handle the HAProxy config updation
+  
+  - RuntimeUpdater : This is used by HaproxyUpdater to update HAProxy at runtime via socket.
+  
+  - HaproxyReloader : This is used to reload HAProxy wither via systemd or via binary.
+  
   
 
