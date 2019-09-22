@@ -73,6 +73,7 @@ class SocketHandler(object):
         response = None
         command = kwargs.get("command").encode()
 
+        # connect to the haproxy socket
         connected = self.connect_socket()
 
         if not connected:
@@ -83,6 +84,7 @@ class SocketHandler(object):
             self.socket.send(command)
             response = ""
 
+            # Get the entire respnse in chunks of 16 bytes
             while True:
                 res_buf = self.socket.recv(16)
                 if res_buf:
