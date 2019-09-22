@@ -36,12 +36,34 @@
 <span class="kn">from</span> <span class="nn">.runtimeupdater</span> <span class="k">import</span> <span class="n">RuntimeUpdater</span>
 <span class="kn">from</span> <span class="nn">.haproxyreloader</span> <span class="k">import</span> <span class="n">HaproxyReloader</span>
 
-<div class="viewcode-block" id="HaproxyUpdate"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate">[docs]</a><span class="k">class</span> <span class="nc">HaproxyUpdate</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="HaproxyUpdate"><a class="viewcode-back" href="../../../../index.html#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate">[docs]</a><span class="k">class</span> <span class="nc">HaproxyUpdate</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Class for handling haproxy update and reload</span>
+
+<span class="sd">        This class contains handlers which controls haproxy uptation and reload.</span>
+<span class="sd">        Haproxy can be updated wither by updating its config file followed by</span>
+<span class="sd">        a reload via systemd or via binary. The other way to reload haproxy is</span>
+<span class="sd">        via the exposed socket. This type of update does not require any reload</span>
+
+<span class="sd">        For updating via runtime haproxy needs to maintain a pool if inactive</span>
+<span class="sd">        backends. When a new live backend comes, we can pull an inactive live backend</span>
+<span class="sd">        and make it live changing its ip to that of the live backend</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs (dictionary) : params in key/value dict format</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">            Get desired params</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Init method for the class</span>
+
+<span class="sd">            Extracts the desired params and stores them as instance variables</span>
+<span class="sd">            Also it sanitisez the params</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                **kwargs (dictionary) : params in key/value dict format</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Extract the desired params</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">haproxy_config_file</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;haproxy_config_file&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">template_file</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;template_file&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backend_port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;backend_port&quot;</span><span class="p">))</span>
@@ -56,11 +78,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">service_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;service_name&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logger&quot;</span><span class="p">)</span>
 
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Valid methods to start haproxy.</span>
+
+<span class="sd">            .. note::</span>
+<span class="sd">                init methods is not supported yet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">valid_start_by</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;binary&quot;</span><span class="p">,</span>
             <span class="s2">&quot;systemd&quot;</span><span class="p">,</span>
             <span class="s2">&quot;init&quot;</span>
         <span class="p">]</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Valid methods to update haproxy</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">valid_update_types</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;update_by_config&quot;</span><span class="p">,</span>
@@ -69,9 +101,11 @@
 
     <span class="k">def</span> <span class="nf">__sanitise</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">            Validate all the paths</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Method to for performing sanity checks on the params</span>
+
+<span class="sd">           This method will check that the params received are inline</span>
+<span class="sd">           with what we desire.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">haproxy_config_file</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
 
@@ -131,10 +165,28 @@
 
         <span class="k">return</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="HaproxyUpdate.update_node_list"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.update_node_list">[docs]</a>    <span class="k">def</span> <span class="nf">update_node_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_list</span><span class="p">):</span>
+<div class="viewcode-block" id="HaproxyUpdate.update_node_list"><a class="viewcode-back" href="../../../../index.html#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.update_node_list">[docs]</a>    <span class="k">def</span> <span class="nf">update_node_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_list</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;Method to update active node list</span>
+
+<span class="sd">           This method will e called to update the list of active backends.</span>
+<span class="sd">           Haproxy needs to be updated and optionally reloaded if this list changes</span>
+
+<span class="sd">           Args:</span>
+<span class="sd">                node_list (list) : List containing IPs/Hostnames of active backends</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">node_list</span> <span class="o">=</span> <span class="n">node_list</span></div>
 
-<div class="viewcode-block" id="HaproxyUpdate.update_haproxy"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.update_haproxy">[docs]</a>    <span class="k">def</span> <span class="nf">update_haproxy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="HaproxyUpdate.update_haproxy"><a class="viewcode-back" href="../../../../index.html#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.update_haproxy">[docs]</a>    <span class="k">def</span> <span class="nf">update_haproxy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; Updates haproxy config</span>
+
+<span class="sd">            This method updates haproxy config with the help of the util methods.</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                bool : Wether haproxy was updated successfully or not.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sanitise</span><span class="p">():</span>
             <span class="k">return</span> <span class="kc">False</span>
 
@@ -146,16 +198,33 @@
 
         <span class="k">return</span> <span class="n">updated</span></div>
 
-<div class="viewcode-block" id="HaproxyUpdate.update_haproxy_by_config_reload"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.update_haproxy_by_config_reload">[docs]</a>    <span class="k">def</span> <span class="nf">update_haproxy_by_config_reload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="HaproxyUpdate.update_haproxy_by_config_reload"><a class="viewcode-back" href="../../../../index.html#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.update_haproxy_by_config_reload">[docs]</a>    <span class="k">def</span> <span class="nf">update_haproxy_by_config_reload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">            When update is done by config reload and not runtime make node_slots equal</span>
-<span class="sd">            length of node_ips</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Method to update haproxy via config reload</span>
+
+<span class="sd">            This method will update haproxy via updating its config and subsequently reloading it.</span>
+<span class="sd">            The actual update will be done by the confighandler module and reload will be</span>
+<span class="sd">            done by haproxyreloader. Optinaly is **upate_only** is set to True then only config</span>
+<span class="sd">            will be updated and reload will not be done.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                update_only (bool) : Whether only update is required or both update and reload is required.</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                bool : Wether successfully updated/reloaded as the case may be</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_type</span> <span class="o">==</span> <span class="s2">&quot;update_by_config&quot;</span><span class="p">:</span>
+
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                If update is to be done via config updation, then total number of backend node</span>
+<span class="sd">                slots will be set to the number of active backends found. This because, for</span>
+<span class="sd">                update via config we do not require any pool of inactive nodes. So number of</span>
+<span class="sd">                slots will be and should be equal to number of active backends.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">node_slots</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_list</span><span class="p">)</span>
 
+        <span class="c1"># update haproxy</span>
         <span class="n">updated</span> <span class="o">=</span> <span class="n">ConfigHandler</span><span class="o">.</span><span class="n">update_config</span><span class="p">(</span><span class="n">haproxy_config_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">haproxy_config_file</span><span class="p">,</span>
                                         <span class="n">template_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">template_file</span><span class="p">,</span>
                                         <span class="n">node_list</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">node_list</span><span class="p">,</span>
@@ -165,8 +234,11 @@
                                         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">update_only</span><span class="p">:</span>
+
+            <span class="c1"># if it was update only, the return</span>
             <span class="k">return</span> <span class="n">updated</span>
 
+        <span class="c1"># Reload haproxy</span>
         <span class="n">reloaded</span> <span class="o">=</span> <span class="n">HaproxyReloader</span><span class="o">.</span><span class="n">reload_haproxy</span><span class="p">(</span><span class="n">start_by</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_by</span><span class="p">,</span>
                                                 <span class="n">haproxy_config_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">haproxy_config_file</span><span class="p">,</span>
                                                 <span class="n">service_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">service_name</span><span class="p">,</span>
@@ -179,6 +251,16 @@
         <span class="k">return</span> <span class="n">reloaded</span></div>
 
     <span class="k">def</span> <span class="nf">__update_haproxy_by_runtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Method to update haproxy via runtime change over unix socket</span>
+
+<span class="sd">            This method updates haproxy via runtime using runtimeupdater module.</span>
+<span class="sd">            Once it is updated over the socket, the changes takes place almost instantly</span>
+<span class="sd">            without any need to reload. Once updating is done, the config file is also</span>
+<span class="sd">            updated so that the runtime config and the actual config on disk stays</span>
+<span class="sd">            consistent. Like this, even if we have to restart haproxy for some reason,</span>
+<span class="sd">            it will start back with its proper configuration and not stale configuration.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">updated</span><span class="p">,</span> <span class="n">stats</span> <span class="o">=</span> <span class="n">RuntimeUpdater</span><span class="o">.</span><span class="n">update_haproxy_runtime</span><span class="p">(</span><span class="n">node_ips</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">node_list</span><span class="p">,</span>
                                                         <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_port</span><span class="p">,</span>
                                                         <span class="n">sock_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">haproxy_socket_file</span><span class="p">,</span>
@@ -188,6 +270,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">updated</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 
+        <span class="c1"># Update the config after updating haproxy</span>
         <span class="n">updated</span> <span class="o">=</span> <span class="n">ConfigHandler</span><span class="o">.</span><span class="n">update_config</span><span class="p">(</span><span class="n">haproxy_config_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">haproxy_config_file</span><span class="p">,</span>
                                             <span class="n">template_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">template_file</span><span class="p">,</span>
                                             <span class="n">node_list</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">node_list</span><span class="p">,</span>

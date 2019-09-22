@@ -27,6 +27,11 @@ bootstrap : Bootstrapper for ep2
 .. automodule:: src.driver.bootstrap
     :members:
 
+haproxyupdate : Module for updating haproxy
+***********************************************
+.. automodule:: src.core.haproxyupdater.haproxyupdate
+    :members:
+
 Indices and tables
 ==================
 
