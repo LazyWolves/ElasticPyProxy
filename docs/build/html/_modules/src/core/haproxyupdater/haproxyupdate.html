@@ -31,12 +31,18 @@
           <div class="body" role="main">
             
   <h1>Source code for src.core.haproxyupdater.haproxyupdate</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: haproxyupdate</span>
+<span class="sd">   :synopsis: Module for updating haproxy</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">.confighandler</span> <span class="k">import</span> <span class="n">ConfigHandler</span>
 <span class="kn">from</span> <span class="nn">.runtimeupdater</span> <span class="k">import</span> <span class="n">RuntimeUpdater</span>
 <span class="kn">from</span> <span class="nn">.haproxyreloader</span> <span class="k">import</span> <span class="n">HaproxyReloader</span>
 
-<div class="viewcode-block" id="HaproxyUpdate"><a class="viewcode-back" href="../../../../index.html#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate">[docs]</a><span class="k">class</span> <span class="nc">HaproxyUpdate</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="HaproxyUpdate"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate">[docs]</a><span class="k">class</span> <span class="nc">HaproxyUpdate</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot; Class for handling haproxy update and reload</span>
 
@@ -165,7 +171,7 @@
 
         <span class="k">return</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="HaproxyUpdate.update_node_list"><a class="viewcode-back" href="../../../../index.html#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.update_node_list">[docs]</a>    <span class="k">def</span> <span class="nf">update_node_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_list</span><span class="p">):</span>
+<div class="viewcode-block" id="HaproxyUpdate.update_node_list"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.update_node_list">[docs]</a>    <span class="k">def</span> <span class="nf">update_node_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_list</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;Method to update active node list</span>
 
@@ -177,7 +183,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">node_list</span> <span class="o">=</span> <span class="n">node_list</span></div>
 
-<div class="viewcode-block" id="HaproxyUpdate.update_haproxy"><a class="viewcode-back" href="../../../../index.html#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.update_haproxy">[docs]</a>    <span class="k">def</span> <span class="nf">update_haproxy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="HaproxyUpdate.update_haproxy"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.update_haproxy">[docs]</a>    <span class="k">def</span> <span class="nf">update_haproxy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot; Updates haproxy config</span>
 
@@ -198,7 +204,7 @@
 
         <span class="k">return</span> <span class="n">updated</span></div>
 
-<div class="viewcode-block" id="HaproxyUpdate.update_haproxy_by_config_reload"><a class="viewcode-back" href="../../../../index.html#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.update_haproxy_by_config_reload">[docs]</a>    <span class="k">def</span> <span class="nf">update_haproxy_by_config_reload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="HaproxyUpdate.update_haproxy_by_config_reload"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.update_haproxy_by_config_reload">[docs]</a>    <span class="k">def</span> <span class="nf">update_haproxy_by_config_reload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot; Method to update haproxy via config reload</span>
 

@@ -32,6 +32,11 @@ haproxyupdate : Module for updating haproxy
 .. automodule:: src.core.haproxyupdater.haproxyupdate
     :members:
 
+confighandler : Module for updating haproxy
+***********************************************
+.. automodule:: src.core.haproxyupdater.confighandler
+    :members:
+
 Indices and tables
 ==================
 

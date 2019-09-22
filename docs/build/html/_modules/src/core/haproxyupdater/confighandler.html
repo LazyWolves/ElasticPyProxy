@@ -31,16 +31,39 @@
           <div class="body" role="main">
             
   <h1>Source code for src.core.haproxyupdater.confighandler</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">jinja2</span> <span class="k">import</span> <span class="n">Template</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: confighandler</span>
+<span class="sd">   :synopsis: Module for updating haproxy config</span>
 
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Config hanfler for handlung haproxy config file</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">jinja2</span> <span class="k">import</span> <span class="n">Template</span>
 
 <div class="viewcode-block" id="ConfigHandler"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.confighandler.ConfigHandler">[docs]</a><span class="k">class</span> <span class="nc">ConfigHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
+    <span class="sd">&quot;&quot;&quot; Class to handler haproxy config file updation</span>
+
+<span class="sd">        This class contains method for updating the haproxy config file</span>
+<span class="sd">        with the provided formatted haproxy config template.</span>
+
+<span class="sd">        The template is first populated with the fetched backends using jinja templating</span>
+<span class="sd">        engine and then the haproxy config file is updated with this formatted template.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs (dictionary) : Dictionary containing params</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="ConfigHandler.update_config"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.confighandler.ConfigHandler.update_config">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">update_config</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; Method for updating haproxy config</span>
+
+<span class="sd">            This is the method which actually updates the haproxy config file</span>
+<span class="sd">            using the provided template file after properly formatting it</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                **kwargs (dictionary) : Dictionary containing params</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         
         <span class="c1"># get desired params</span>
         <span class="n">haproxy_config_file</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;haproxy_config_file&quot;</span><span class="p">)</span>
@@ -51,8 +74,9 @@
         <span class="n">node_slots</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;node_slots&quot;</span><span class="p">)</span>
         <span class="n">logger</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logger&quot;</span><span class="p">)</span>
 
+        <span class="c1"># Try reading the template file</span>
         <span class="n">could_read</span><span class="p">,</span> <span class="n">template</span> <span class="o">=</span> <span class="n">ConfigHandler</span><span class="o">.</span><span class="n">read_write_file</span><span class="p">(</span><span class="n">operation</span><span class="o">=</span><span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">template_file</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
-
+    
         <span class="k">if</span> <span class="ow">not</span> <span class="n">could_read</span><span class="p">:</span>
 
             <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Could not read template file : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">template_file</span><span class="p">))</span>
@@ -64,8 +88,15 @@
         <span class="n">nodes_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">inactive_nodes_count</span> <span class="ow">and</span> <span class="n">inactive_nodes_count</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                .. note::</span>
+<span class="sd">                    if There are inactive nodes and the count is not 0 then we need that many</span>
+<span class="sd">                    disabled nodes in the actual haproxy config.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
             <span class="n">node_id</span> <span class="o">=</span> <span class="n">inactive_nodes_count</span> <span class="o">+</span> <span class="mi">1</span>
 
+            <span class="c1"># for each node in the active node list, for the template string</span>
             <span class="k">for</span> <span class="n">node_ip</span> <span class="ow">in</span> <span class="n">node_list</span><span class="p">:</span>
                 <span class="n">haproxy_node</span> <span class="o">=</span> <span class="n">node_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="n">node_ip</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">backend_port</span><span class="p">)</span>
                 <span class="n">nodes_str</span> <span class="o">+=</span> <span class="p">(</span><span class="n">haproxy_node</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -75,9 +106,16 @@
             <span class="n">nodes_str</span> <span class="o">+=</span> <span class="p">(</span><span class="n">inactive_nodes</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
+
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                .. note::</span>
+<span class="sd">                    If there are no inactive nodes, the we need to calculate the number of incative</span>
+<span class="sd">                    nodes and set the config accordingly.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
             <span class="n">inactive_nodes_count</span> <span class="o">=</span> <span class="n">node_slots</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_list</span><span class="p">)</span>
             <span class="n">node_id</span> <span class="o">=</span> <span class="n">inactive_nodes_count</span> <span class="o">+</span> <span class="mi">1</span>
 
+            <span class="c1"># for each node in the active node list, for the template string</span>
             <span class="k">for</span> <span class="n">node_ip</span> <span class="ow">in</span> <span class="n">node_list</span><span class="p">:</span>
                 <span class="n">haproxy_node</span> <span class="o">=</span> <span class="n">node_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="n">node_ip</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">backend_port</span><span class="p">)</span>
                 <span class="n">nodes_str</span> <span class="o">+=</span> <span class="p">(</span><span class="n">haproxy_node</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -103,6 +141,12 @@
 
 <div class="viewcode-block" id="ConfigHandler.read_write_file"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.confighandler.ConfigHandler.read_write_file">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">read_write_file</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; Method to read and write haproxy config file</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                **kwargs (dictionary) : Dictionary containing params</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">operation</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;operation&quot;</span><span class="p">)</span>
         <span class="n">file</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;file&quot;</span><span class="p">)</span>
         <span class="n">logger</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logger&quot;</span><span class="p">)</span>

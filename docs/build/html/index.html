@@ -118,7 +118,7 @@ src.core.nodefetchers.basefetcher: Object for fetching backends</p>
 </div>
 <div class="section" id="module-src.core.haproxyupdater.haproxyupdate">
 <span id="haproxyupdate-module-for-updating-haproxy"></span><h2>haproxyupdate : Module for updating haproxy<a class="headerlink" href="#module-src.core.haproxyupdater.haproxyupdate" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<span class="target" id="module-haproxyupdate"></span><dl class="class">
 <dt id="src.core.haproxyupdater.haproxyupdate.HaproxyUpdate">
 <em class="property">class </em><code class="sig-prename descclassname">src.core.haproxyupdater.haproxyupdate.</code><code class="sig-name descname">HaproxyUpdate</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/haproxyupdate.html#HaproxyUpdate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for handling haproxy update and reload</p>
@@ -197,6 +197,48 @@ Haproxy needs to be updated and optionally reloaded if this list changes</p>
 <dt id="src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.valid_start_by">
 <code class="sig-name descname">valid_start_by</code><em class="property"> = None</em><a class="headerlink" href="#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate.valid_start_by" title="Permalink to this definition">¶</a></dt>
 <dd><p>Valid methods to update haproxy</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.core.haproxyupdater.confighandler">
+<span id="confighandler-module-for-updating-haproxy"></span><h2>confighandler : Module for updating haproxy<a class="headerlink" href="#module-src.core.haproxyupdater.confighandler" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-confighandler"></span><dl class="class">
+<dt id="src.core.haproxyupdater.confighandler.ConfigHandler">
+<em class="property">class </em><code class="sig-prename descclassname">src.core.haproxyupdater.confighandler.</code><code class="sig-name descname">ConfigHandler</code><a class="reference internal" href="_modules/src/core/haproxyupdater/confighandler.html#ConfigHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.confighandler.ConfigHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to handler haproxy config file updation</p>
+<p>This class contains method for updating the haproxy config file
+with the provided formatted haproxy config template.</p>
+<p>The template is first populated with the fetched backends using jinja templating
+engine and then the haproxy config file is updated with this formatted template.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dictionary</em>) – Dictionary containing params</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="src.core.haproxyupdater.confighandler.ConfigHandler.read_write_file">
+<em class="property">static </em><code class="sig-name descname">read_write_file</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/confighandler.html#ConfigHandler.read_write_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.confighandler.ConfigHandler.read_write_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to read and write haproxy config file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dictionary</em>) – Dictionary containing params</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.core.haproxyupdater.confighandler.ConfigHandler.update_config">
+<em class="property">static </em><code class="sig-name descname">update_config</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/confighandler.html#ConfigHandler.update_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.confighandler.ConfigHandler.update_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for updating haproxy config</p>
+<p>This is the method which actually updates the haproxy config file
+using the provided template file after properly formatting it</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dictionary</em>) – Dictionary containing params</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
