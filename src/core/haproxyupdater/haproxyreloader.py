@@ -3,8 +3,35 @@ import subprocess
 
 class HaproxyReloader(object):
 
+    """ Class for handling haproxy reload
+
+        This class provides methods to reload haproxy, either
+        via systemd or via the binary.
+
+        In order to reload via bianry, the socket file and the PID file
+        should be present as params along with the binary location.
+
+        For systemd, the systemd service name should be provided
+        as param.
+
+        Both reload via systemd and reload via binary are done by execting shell
+        commands via subprocess library
+    """
+
     @staticmethod
     def reload_haproxy(**kwargs):
+
+        """ Method for reloading haproxy
+
+            Method for reloading haproxy. This takes the help of util method to reload
+            haproxy either via systemd or binary.
+
+            Other classes and methods will call this method for updating haporoxy
+            with the required param.
+
+            Args:
+                **kwargs (dictionary) : Dictionary conatining params
+        """
         start_by = kwargs.get("start_by")
         logger = kwargs.get("logger")
 
