@@ -112,4 +112,35 @@ main tasks done by the components present in EP2
   It is worth noting that in this procedure, the value of the **node_slots** param should always be greater than the
   total amount of live servers the orchestrator can contain/spawn at any given time. This should be easily
   figured out from the **min/max** criteria of the orchestrator in use.
+  
+  ### Reloading HAProxy via systemd
+  
+  When updating HAProxy via config, HAProxy has to be reloaded and one such way to reload HAProxy is via **systemd**. For this
+  there should be a properly configured systemd service file such that systemd reload works properly.
+  
+  The command used is the usual systemd command
+  
+  ```
+  systemctl reoad \<haproxy_servicefile_name\>
+  ```
+  
+  The HAProxy systemd service file name should be provided as a EP2 config param.
+  
+  ### Reloading HAProxy via binary
+  
+  The other way to reload haproy is by executing the binary. For this is work the following things must be provided in EP2
+  config :
+  
+  - haproxy_config_file : The haproxy config file
+  - haproxy_binary : The location of the HAProxy binary which is usually ``` /usr/sbin/haproxy```
+  - haproxy_socket_file : The location of the HAProxy unix socket file.
+  - pid_file : The location of the HAProxy PID file which is usually ```/run/haproxy.pid```
+  
+  The command fired is the usual one
+  
+  ```
+     -W -q -D -f {haproxy_config_file} -p {pid_file} -x {sock_file} -sf $(cat {pid_file})
+  ```
+  
+  
 
