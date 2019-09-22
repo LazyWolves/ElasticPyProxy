@@ -72,5 +72,22 @@ main tasks done by the components present in EP2
   
   - HaproxyReloader : This is used to reload HAProxy wither via systemd or via binary.
   
+  ### AWS ASG Backend fetcher
   
+  The **aws asg backend fectcher** or the awsfetcher in short, fetches the available servers in the concerned asg using
+  the boto3 python libaray.
+  
+  It uses the boto3 asg client to get the instance IDs of the available instances in the desired asg and then uses
+  boto3 ec2 client to get the public/private IPs of the available instances.
+  
+  ### Updating HAProxy via config
+  
+  As mentioned above, one of the ways HAProxy can be updated using EP2 is via updating its config direcly. In both the
+  updation methods, EP2 is preconfigured with a template HAProxy config (mentioned below). 
+  
+  Once the current live backend servers are available, EP2 formats the template and populates it with the current live backends.
+  Then it replaces the contents of the actually HAProxy config file with the contents if this formatted template file.
+  After this is done it reloads HAProxy either via **systemd** or via **binary**.
+  
+  Both the path to Haproxy config file and path to the HAProxy template file should be provided in EP2 config.
 
