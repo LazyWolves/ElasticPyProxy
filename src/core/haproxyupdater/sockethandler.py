@@ -31,6 +31,14 @@ class SocketHandler(object):
         self.logger = kwargs.get("logger")
 
     def connect_socket(self):
+
+        """ Method to connect to haproxy unix socket
+
+            This method creates a socket connection to the given haproxy unix socket
+
+            Returns:
+                bool : Successfully created socket connection or not
+        """
         try:
 
             # try connecting to haproxy socket file
@@ -49,6 +57,19 @@ class SocketHandler(object):
         return True
 
     def send_command(self, **kwargs):
+
+        """ Method to send command to haproxy unix socket and get response
+
+            It will first create a socket connection to the haproxy socket
+            and then send the given command and get response.
+
+            Args:
+                **kwargs (dictionary) : Dictionary containing params
+
+            Returns:
+                bool : Successfully sent command or not
+                str : response sent by the haproxy unix socket
+        """
         response = None
         command = kwargs.get("command").encode()
 
