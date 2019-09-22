@@ -145,6 +145,15 @@ class HaproxyUpdate(object):
         self.node_list = node_list
 
     def update_haproxy(self):
+
+        """ Updates haproxy config
+
+            This method updates haproxy config with the help of the util methods.
+
+            Returns:
+                bool : Wether haproxy was updated successfully or not.
+
+        """
         if not self.__sanitise():
             return False
 
@@ -158,14 +167,31 @@ class HaproxyUpdate(object):
 
     def update_haproxy_by_config_reload(self, update_only=False):
 
-        '''
-            When update is done by config reload and not runtime make node_slots equal
-            length of node_ips
-        '''
+        """ Method to update haproxy via config reload
+
+            This method will update haproxy via updating its config and subsequently reloading it.
+            The actual update will be done by the confighandler module and reload will be
+            done by haproxyreloader. Optinaly is **upate_only** is set to True then only config
+            will be updated and reload will not be done.
+
+            Args:
+                update_only (bool) : Whether only update is required or both update and reload is required.
+
+            Returns:
+                bool : Wether successfully updated/reloaded as the case may be
+        """
 
         if self.update_type == "update_by_config":
+
+            """
+                If update is to be done via config updation, then total number of backend node
+                slots will be set to the number of active backends found. This because, for
+                update via config we do not require any pool of inactive nodes. So number of
+                slots will be and should be equal to number of active backends.
+            """
             self.node_slots = len(self.node_list)
 
+        # update haproxy
         updated = ConfigHandler.update_config(haproxy_config_file=self.haproxy_config_file,
                                         template_file=self.template_file,
                                         node_list=self.node_list,
@@ -175,8 +201,11 @@ class HaproxyUpdate(object):
                                         )
 
         if update_only:
+
+            # if it was update only, the return
             return updated
 
+        # Reload haproxy
         reloaded = HaproxyReloader.reload_haproxy(start_by=self.start_by,
                                                 haproxy_config_file=self.haproxy_config_file,
                                                 service_name=self.service_name,
