@@ -36,8 +36,38 @@
 
 <div class="viewcode-block" id="HaproxyReloader"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.haproxyreloader.HaproxyReloader">[docs]</a><span class="k">class</span> <span class="nc">HaproxyReloader</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
+    <span class="sd">&quot;&quot;&quot; Class for handling haproxy reload</span>
+
+<span class="sd">        This class provides methods to reload haproxy, either</span>
+<span class="sd">        via systemd or via the binary.</span>
+
+<span class="sd">        In order to reload via bianry, the socket file and the PID file</span>
+<span class="sd">        should be present as params along with the binary location.</span>
+
+<span class="sd">        For systemd, the systemd service name should be provided</span>
+<span class="sd">        as param.</span>
+
+<span class="sd">        Both reload via systemd and reload via binary are done by execting shell</span>
+<span class="sd">        commands via subprocess library</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="HaproxyReloader.reload_haproxy"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.haproxyreloader.HaproxyReloader.reload_haproxy">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">reload_haproxy</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; Method for reloading haproxy</span>
+
+<span class="sd">            Method for reloading haproxy. This takes the help of util method to reload</span>
+<span class="sd">            haproxy either via systemd or binary.</span>
+
+<span class="sd">            Other classes and methods will call this method for updating haporoxy</span>
+<span class="sd">            with the required param.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                **kwargs (dictionary) : Dictionary conatining params</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                bool : Successfully reloaded or not</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">start_by</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_by&quot;</span><span class="p">)</span>
         <span class="n">logger</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logger&quot;</span><span class="p">)</span>
 
@@ -49,6 +79,8 @@
             <span class="k">return</span> <span class="n">reloaded</span>
 
         <span class="k">elif</span> <span class="n">start_by</span> <span class="o">==</span> <span class="s2">&quot;binary&quot;</span><span class="p">:</span>
+
+            <span class="c1"># get the required params for bianry reload</span>
             <span class="n">binary</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;haproxy_binary&quot;</span><span class="p">)</span>
             <span class="n">haproxy_config_file</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;haproxy_config_file&quot;</span><span class="p">)</span>
             <span class="n">sock_file</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;haproxy_socket_file&quot;</span><span class="p">)</span>
@@ -60,6 +92,14 @@
 
 <div class="viewcode-block" id="HaproxyReloader.start_by_systemd"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.haproxyreloader.HaproxyReloader.start_by_systemd">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">start_by_systemd</span><span class="p">(</span><span class="n">service_name</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; Method for starting haproxy via systemd</span>
+
+<span class="sd">            Starts haproxy via systemd. Executes systemd start as a shell command.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                logger (object) : logger object for logging</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting haproxy via systemd&quot;</span><span class="p">)</span>
         <span class="n">started</span> <span class="o">=</span> <span class="n">HaproxyReloader</span><span class="o">.</span><span class="n">__systemd_handler</span><span class="p">(</span><span class="n">service_name</span><span class="p">,</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
 
@@ -67,6 +107,20 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">__systemd_handler</span><span class="p">(</span><span class="n">service_name</span><span class="p">,</span> <span class="n">operation</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; Systemd handler for executing systemd shell commands</span>
+
+<span class="sd">            Creates the command string and calls __execute_shell method to execute it</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                service_name (string) : name of the haproxy service</span>
+<span class="sd">                operation (string) : name of the operation. For eg: start, reload, stop.</span>
+<span class="sd">                logger (object) : logger object </span>
+<span class="sd">                </span>
+<span class="sd">            Returns:</span>
+<span class="sd">                bool : Successfully executed or not</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reloading haproxy via systemd&quot;</span><span class="p">)</span>
         <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;systemctl </span><span class="si">{operation}</span><span class="s2"> </span><span class="si">{service_name}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">service_name</span><span class="o">=</span><span class="n">service_name</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="n">operation</span><span class="p">)</span>
 
@@ -81,6 +135,22 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">__reload_by_binary</span><span class="p">(</span><span class="n">binary</span><span class="p">,</span> <span class="n">haproxy_config_file</span><span class="p">,</span> <span class="n">sock_file</span><span class="p">,</span> <span class="n">pid_file</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; Method for reloading haproxy via binary</span>
+
+<span class="sd">            Reloads haproxy via binary. Creates the command string for reloading haproxy</span>
+<span class="sd">            and then sends it to __execute_shell command.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                binary (str) : Path to haporoxy binary</span>
+<span class="sd">                haproxy_config_file (str) : Path to haproxy config file</span>
+<span class="sd">                sock_file (str) : Path to haproxy socket file</span>
+<span class="sd">                logger (object) : Logger object</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                Successfully reloaded or not</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reloading haproxy via binary&quot;</span><span class="p">)</span>
         <span class="n">command_template</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{binary}</span><span class="s2"> -W -q -D -f </span><span class="si">{haproxy_config_file}</span><span class="s2"> -p </span><span class="si">{pid_file}</span><span class="s2"> -x </span><span class="si">{sock_file}</span><span class="s2"> -sf $(cat </span><span class="si">{pid_file}</span><span class="s2">)&quot;</span>
 
@@ -101,8 +171,23 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">__execute_shell</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
+        <span class="sd">&quot;&quot;&quot;Method for executing shell commands</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                command (str) : Command needed to executed</span>
+<span class="sd">                logger (object) : Logger object</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                bool : Successfully executed or not</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Execute shell command via subprocess</span>
         <span class="n">proc</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">universal_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Extract both output and error</span>
         <span class="n">output</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+
+        <span class="c1"># get return code</span>
         <span class="n">proc_exit_code</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">returncode</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Executing command : </span><span class="si">{command}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="n">command</span><span class="p">))</span>

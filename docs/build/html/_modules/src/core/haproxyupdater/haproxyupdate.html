@@ -107,10 +107,14 @@
 
     <span class="k">def</span> <span class="nf">__sanitise</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
-        <span class="sd">&quot;&quot;&quot;Method to for performing sanity checks on the params</span>
+        <span class="sd">&quot;&quot;&quot; Method to for performing sanity checks on the params</span>
 
-<span class="sd">           This method will check that the params received are inline</span>
-<span class="sd">           with what we desire.</span>
+<span class="sd">            This method will check that the params received are inline</span>
+<span class="sd">            with what we desire.</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                bool : Result of sanity check</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">haproxy_config_file</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -217,7 +221,7 @@
 <span class="sd">                update_only (bool) : Whether only update is required or both update and reload is required.</span>
 
 <span class="sd">            Returns:</span>
-<span class="sd">                bool : Wether successfully updated/reloaded as the case may be</span>
+<span class="sd">                bool : Whether successfully updated/reloaded as the case may be</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_type</span> <span class="o">==</span> <span class="s2">&quot;update_by_config&quot;</span><span class="p">:</span>
@@ -265,6 +269,9 @@
 <span class="sd">            updated so that the runtime config and the actual config on disk stays</span>
 <span class="sd">            consistent. Like this, even if we have to restart haproxy for some reason,</span>
 <span class="sd">            it will start back with its proper configuration and not stale configuration.</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                bool : Successfully updated or not</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">updated</span><span class="p">,</span> <span class="n">stats</span> <span class="o">=</span> <span class="n">RuntimeUpdater</span><span class="o">.</span><span class="n">update_haproxy_runtime</span><span class="p">(</span><span class="n">node_ips</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">node_list</span><span class="p">,</span>

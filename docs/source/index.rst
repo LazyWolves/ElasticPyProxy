@@ -37,6 +37,11 @@ confighandler : Module for updating haproxy
 .. automodule:: src.core.haproxyupdater.confighandler
     :members:
 
+haproxyreloader : Module for reloading haproxy
+***********************************************
+.. automodule:: src.core.haproxyupdater.haproxyreloader
+    :members:
+
 Indices and tables
 ==================
 

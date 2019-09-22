@@ -1,3 +1,9 @@
+"""
+.. module:: haproxyreloader
+   :synopsis: Module for reloader haproxy
+
+"""
+
 import os
 import subprocess
 
@@ -66,6 +72,9 @@ class HaproxyReloader(object):
 
             Args:
                 logger (object) : logger object for logging
+            
+            Returns:
+                bool : Successfully started or not
         """
         logger.info("Starting haproxy via systemd")
         started = HaproxyReloader.__systemd_handler(service_name, "start", logger)

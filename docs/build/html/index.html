@@ -172,7 +172,7 @@ will be updated and reload will not be done.</p>
 <dd class="field-odd"><p><strong>update_only</strong> (<em>bool</em>) – Whether only update is required or both update and reload is required.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Wether successfully updated/reloaded as the case may be</p>
+<dd class="field-even"><p>Whether successfully updated/reloaded as the case may be</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>bool</p>
@@ -225,6 +225,13 @@ engine and then the haproxy config file is updated with this formatted template.
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>**kwargs</strong> (<em>dictionary</em>) – Dictionary containing params</p>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>successfully updated or not
+str : error string if any</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -237,6 +244,62 @@ using the provided template file after properly formatting it</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>**kwargs</strong> (<em>dictionary</em>) – Dictionary containing params</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Successfully updated or not</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.core.haproxyupdater.haproxyreloader">
+<span id="haproxyreloader-module-for-reloading-haproxy"></span><h2>haproxyreloader : Module for reloading haproxy<a class="headerlink" href="#module-src.core.haproxyupdater.haproxyreloader" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="src.core.haproxyupdater.haproxyreloader.HaproxyReloader">
+<em class="property">class </em><code class="sig-prename descclassname">src.core.haproxyupdater.haproxyreloader.</code><code class="sig-name descname">HaproxyReloader</code><a class="reference internal" href="_modules/src/core/haproxyupdater/haproxyreloader.html#HaproxyReloader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.haproxyreloader.HaproxyReloader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for handling haproxy reload</p>
+<p>This class provides methods to reload haproxy, either
+via systemd or via the binary.</p>
+<p>In order to reload via bianry, the socket file and the PID file
+should be present as params along with the binary location.</p>
+<p>For systemd, the systemd service name should be provided
+as param.</p>
+<p>Both reload via systemd and reload via binary are done by execting shell
+commands via subprocess library</p>
+<dl class="method">
+<dt id="src.core.haproxyupdater.haproxyreloader.HaproxyReloader.reload_haproxy">
+<em class="property">static </em><code class="sig-name descname">reload_haproxy</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/haproxyreloader.html#HaproxyReloader.reload_haproxy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.haproxyreloader.HaproxyReloader.reload_haproxy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for reloading haproxy</p>
+<p>Method for reloading haproxy. This takes the help of util method to reload
+haproxy either via systemd or binary.</p>
+<p>Other classes and methods will call this method for updating haporoxy
+with the required param.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dictionary</em>) – Dictionary conatining params</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Successfully reloaded or not</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.core.haproxyupdater.haproxyreloader.HaproxyReloader.start_by_systemd">
+<em class="property">static </em><code class="sig-name descname">start_by_systemd</code><span class="sig-paren">(</span><em class="sig-param">service_name</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/haproxyreloader.html#HaproxyReloader.start_by_systemd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.haproxyreloader.HaproxyReloader.start_by_systemd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for starting haproxy via systemd</p>
+<p>Starts haproxy via systemd. Executes systemd start as a shell command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>logger</strong> (<em>object</em>) – logger object for logging</p>
 </dd>
 </dl>
 </dd></dl>
