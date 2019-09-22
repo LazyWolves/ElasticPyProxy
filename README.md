@@ -10,8 +10,7 @@ HAProxy backend servers will scale out and in with the ASG of interest. Thus, wh
 instance will get added to haproxy's concerned backend/listener and when the ASG removes a backend, that particular server 
 will also be removed from HAProxy's concerned backend/listener.
 
-In the rest of the documentation, Amazon Autoscaling Group will be refered to as the **orchestrator** and the backend servers will
-be refered to as just **backends**
+In the rest of the documentation, Amazon Autoscaling Group will be refered to as the **orchestrator** and the backend servers will be refered to as just **backends**
 
 ## How EP2 works
 
@@ -90,4 +89,27 @@ main tasks done by the components present in EP2
   After this is done it reloads HAProxy either via **systemd** or via **binary**.
   
   Both the path to Haproxy config file and path to the HAProxy template file should be provided in EP2 config.
+  
+  ### Updating HAProxy at Runtime
+  
+  In this method, HAProxy has to be preconfigured with a number of inactive or disabled backend servers. This is taken care of
+  by the **bootstrapper**. When bootstrap runs, apart from creating the live backend servers it also creates a number of
+  inactive dummy backend servers with dummy address.
+  
+  The number of dummy backend servers to be created is decided by the config param **node_slots**. If the number of live backend
+  servers fetched from the orchestrator is **x**, then the number of dummy inactive servers created is **node_slots - x**.
+  
+  Now whenever a scale in activity happens, that is the orchestrator removes some of the live servers, EP2 finds out which
+  servers are out of service. It marks them as inactive and adds them to the inactive pool.
+  
+  Whenever a new server is spawned up, EP2 picks an inactive server from the pool, changes its address to the address of the
+  newly spawned backend server and marks it as ready. Thus the inactive server now becomes active and it represents the
+  newly spawned backend server.
+  
+  Once the runtime config of HAProxy has been updated, same configuration is replicated in the config file so that it stays at
+  par with the running config of HAProxy.
+  
+  It is worth noting that in this procedure, the value of the **node_slots** param should always be greater than the
+  total amount of live servers the orchestrator can contain/spawn at any given time. This should be easily
+  figured out from the **min/max** criteria of the orchestrator in use.
 
