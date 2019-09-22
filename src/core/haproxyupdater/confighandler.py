@@ -30,6 +30,9 @@ class ConfigHandler(object):
 
             Args:
                 **kwargs (dictionary) : Dictionary containing params
+
+            Returns:
+                bool : Successfully updated or not
         """
         
         # get desired params
@@ -113,6 +116,10 @@ class ConfigHandler(object):
 
             Args:
                 **kwargs (dictionary) : Dictionary containing params
+
+            Returns:
+                bool : successfully updated or not
+                str : error string if any
         """
         operation = kwargs.get("operation")
         file = kwargs.get("file")

@@ -74,10 +74,14 @@ class HaproxyUpdate(object):
 
     def __sanitise(self):
 
-        """Method to for performing sanity checks on the params
+        """ Method to for performing sanity checks on the params
 
-           This method will check that the params received are inline
-           with what we desire.
+            This method will check that the params received are inline
+            with what we desire.
+
+            Returns:
+                bool : Result of sanity check
+
         """
         if not os.path.isfile(self.haproxy_config_file):
             return False
@@ -184,7 +188,7 @@ class HaproxyUpdate(object):
                 update_only (bool) : Whether only update is required or both update and reload is required.
 
             Returns:
-                bool : Wether successfully updated/reloaded as the case may be
+                bool : Whether successfully updated/reloaded as the case may be
         """
 
         if self.update_type == "update_by_config":
@@ -232,6 +236,9 @@ class HaproxyUpdate(object):
             updated so that the runtime config and the actual config on disk stays
             consistent. Like this, even if we have to restart haproxy for some reason,
             it will start back with its proper configuration and not stale configuration.
+
+            Returns:
+                bool : Successfully updated or not
 
         """
         updated, stats = RuntimeUpdater.update_haproxy_runtime(node_ips=self.node_list,
