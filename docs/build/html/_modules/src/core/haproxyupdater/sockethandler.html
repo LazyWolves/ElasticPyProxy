@@ -31,17 +31,47 @@
           <div class="body" role="main">
             
   <h1>Source code for src.core.haproxyupdater.sockethandler</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">socket</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: sockethandler</span>
+<span class="sd">   :synopsis: Module for handling socket operation</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">socket</span>
 
 <div class="viewcode-block" id="SocketHandler"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.sockethandler.SocketHandler">[docs]</a><span class="k">class</span> <span class="nc">SocketHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
+    <span class="sd">&quot;&quot;&quot; Class containing methods for handling socket operation</span>
+
+<span class="sd">        This is a generic class for handling all socket operation.</span>
+<span class="sd">        All the commands which are to be sent to haproxy and done via methods in</span>
+<span class="sd">        this class.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs (dictionary) : Dictionary containing params</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; Init method for the class</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                **kwargs (dictionary) : Dictionary containing params</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># get the desired params</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sock_file</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sock_file&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logger&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SocketHandler.connect_socket"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.sockethandler.SocketHandler.connect_socket">[docs]</a>    <span class="k">def</span> <span class="nf">connect_socket</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; Method to connect to haproxy unix socket</span>
+
+<span class="sd">            This method creates a socket connection to the given haproxy unix socket</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                bool : Successfully created socket connection or not</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
 
             <span class="c1"># try connecting to haproxy socket file</span>
@@ -60,9 +90,23 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="SocketHandler.send_command"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.sockethandler.SocketHandler.send_command">[docs]</a>    <span class="k">def</span> <span class="nf">send_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; Method to send command to haproxy unix socket and get response</span>
+
+<span class="sd">            It will first create a socket connection to the haproxy socket</span>
+<span class="sd">            and then send the given command and get response.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                **kwargs (dictionary) : Dictionary containing params</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                bool : Successfully sent command or not</span>
+<span class="sd">                str : response sent by the haproxy unix socket</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">response</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">command</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;command&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
 
+        <span class="c1"># connect to the haproxy socket</span>
         <span class="n">connected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connect_socket</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">connected</span><span class="p">:</span>
@@ -73,6 +117,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
             <span class="n">response</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
+            <span class="c1"># Get the entire respnse in chunks of 16 bytes</span>
             <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="n">res_buf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">res_buf</span><span class="p">:</span>

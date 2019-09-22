@@ -308,14 +308,33 @@ change its address to that of the live node and enable back that node.</p></li>
 </div>
 <div class="section" id="module-src.core.haproxyupdater.sockethandler">
 <span id="src-core-haproxyupdater-sockethandler-module"></span><h2>src.core.haproxyupdater.sockethandler module<a class="headerlink" href="#module-src.core.haproxyupdater.sockethandler" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<span class="target" id="module-sockethandler"></span><dl class="class">
 <dt id="src.core.haproxyupdater.sockethandler.SocketHandler">
 <em class="property">class </em><code class="sig-prename descclassname">src.core.haproxyupdater.sockethandler.</code><code class="sig-name descname">SocketHandler</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/sockethandler.html#SocketHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.sockethandler.SocketHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class containing methods for handling socket operation</p>
+<p>This is a generic class for handling all socket operation.
+All the commands which are to be sent to haproxy and done via methods in
+this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dictionary</em>) – Dictionary containing params</p>
+</dd>
+</dl>
 <dl class="method">
 <dt id="src.core.haproxyupdater.sockethandler.SocketHandler.connect_socket">
 <code class="sig-name descname">connect_socket</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/sockethandler.html#SocketHandler.connect_socket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.sockethandler.SocketHandler.connect_socket" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Method to connect to haproxy unix socket</p>
+<p>This method creates a socket connection to the given haproxy unix socket</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Successfully created socket connection or not</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="src.core.haproxyupdater.sockethandler.SocketHandler.destroy_socket">
@@ -325,7 +344,22 @@ change its address to that of the live node and enable back that node.</p></li>
 <dl class="method">
 <dt id="src.core.haproxyupdater.sockethandler.SocketHandler.send_command">
 <code class="sig-name descname">send_command</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/sockethandler.html#SocketHandler.send_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.sockethandler.SocketHandler.send_command" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Method to send command to haproxy unix socket and get response</p>
+<p>It will first create a socket connection to the haproxy socket
+and then send the given command and get response.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dictionary</em>) – Dictionary containing params</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Successfully sent command or not
+str : response sent by the haproxy unix socket</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 

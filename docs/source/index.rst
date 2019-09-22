@@ -47,6 +47,11 @@ runtimeupdater : Module for updating haproxy at runtime
 .. automodule:: src.core.haproxyupdater.runtimeupdater
     :members:
 
+sockethandler : Module for handling socket operations
+***********************************************
+.. automodule:: src.core.haproxyupdater.sockethandler
+    :members:
+
 Indices and tables
 ==================
 
