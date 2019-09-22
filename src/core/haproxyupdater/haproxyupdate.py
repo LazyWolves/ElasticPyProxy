@@ -57,6 +57,10 @@ class HaproxyUpdate(object):
             "init"
         ]
 
+        """
+            Valid methods to update haproxy
+        """
+
         self.valid_update_types = [
             "update_by_config",
             "update_by_runtime"
@@ -64,9 +68,11 @@ class HaproxyUpdate(object):
 
     def __sanitise(self):
 
-        '''
-            Validate all the paths
-        '''
+        """Method to for performing sanity checks on the params
+
+           This method will check that the params received are inline
+           with what we desire.
+        """
         if not os.path.isfile(self.haproxy_config_file):
             return False
 
@@ -127,6 +133,15 @@ class HaproxyUpdate(object):
         return True
 
     def update_node_list(self, node_list):
+
+        """Method to update active node list
+
+           This method will e called to update the list of active backends.
+           Haproxy needs to be updated and optionally reloaded if this list changes
+
+           Args:
+                node_list (list) : List containing IPs/Hostnames of active backends
+        """
         self.node_list = node_list
 
     def update_haproxy(self):
