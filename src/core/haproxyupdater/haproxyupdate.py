@@ -218,6 +218,16 @@ class HaproxyUpdate(object):
         return reloaded
 
     def __update_haproxy_by_runtime(self):
+        """ Method to update haproxy via runtime change over unix socket
+
+            This method updates haproxy via runtime using runtimeupdater module.
+            Once it is updated over the socket, the changes takes place almost instantly
+            without any need to reload. Once updating is done, the config file is also
+            updated so that the runtime config and the actual config on disk stays
+            consistent. Like this, even if we have to restart haproxy for some reason,
+            it will start back with its proper configuration and not stale configuration.
+
+        """
         updated, stats = RuntimeUpdater.update_haproxy_runtime(node_ips=self.node_list,
                                                         port=self.backend_port,
                                                         sock_file=self.haproxy_socket_file,
@@ -227,6 +237,7 @@ class HaproxyUpdate(object):
         if not updated:
             return False
 
+        # Update the config after updating haproxy
         updated = ConfigHandler.update_config(haproxy_config_file=self.haproxy_config_file,
                                             template_file=self.template_file,
                                             node_list=self.node_list,
