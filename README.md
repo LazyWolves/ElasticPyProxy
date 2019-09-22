@@ -191,6 +191,38 @@ main tasks done by the components present in EP2
   - /etc/ep2
   - /etc/ep2/ep2.conf
   - /etc/ep2/haproxy.cfg.template
+
+## Configuring EP2
+
+A sample EP2 config file is given below:
+
+```
+  [haproxy]
+  haproxy_config_file = /etc/haproxy/haproxy.cfg
+  template_file = /home/deep/elasticpyproxy/etc/haproxy.config.template
+  backend_port = 6003
+  haproxy_binary = /usr/sbin/haproxy
+  start_by = systemd
+  haproxy_socket_file = /var/run/haproxy/haproxy.sock
+  pid_file = /run/haproxy.pid
+  backend_name = haproxynode
+  update_type = update_by_runtime
+  node_slots = 5
+  service_name = haproxy
+  lock_dir = /home/deep/elasticpyproxy/etc
+  orchestrator = aws
+  sleep_before_next_run = 5
+  sleep_before_next_lock_attempt = 5
+  log_file = /var/log/ep2/ep2.log
+  
+  [AWS]
+  aws_access_key_id =
+  aws_secret_access_key =
+  asg_name =
+  region_name =
+```
+
+
   
   
 
