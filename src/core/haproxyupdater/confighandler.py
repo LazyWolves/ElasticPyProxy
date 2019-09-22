@@ -5,6 +5,8 @@ from jinja2 import Template
 '''
 
 class ConfigHandler(object):
+    """
+    """
 
     @staticmethod
     def update_config(**kwargs):

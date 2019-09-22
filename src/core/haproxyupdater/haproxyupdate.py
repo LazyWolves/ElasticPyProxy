@@ -1,3 +1,9 @@
+"""
+.. module:: haproxyupdate
+   :synopsis: Module for updating haproxy
+
+"""
+
 import os
 from .confighandler import ConfigHandler
 from .runtimeupdater import RuntimeUpdater
