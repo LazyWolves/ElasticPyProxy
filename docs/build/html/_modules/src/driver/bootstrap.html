@@ -49,7 +49,7 @@
 <div class="viewcode-block" id="bootstrap"><a class="viewcode-back" href="../../../src.driver.html#src.driver.bootstrap.bootstrap">[docs]</a><span class="k">def</span> <span class="nf">bootstrap</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Method to bootstrap EP2 controller</span>
 
-<span class="sd">    This method bootstraps EP2 Ot creates the neccessary objects and returns it</span>
+<span class="sd">    This method bootstraps EP2 to creates the neccessary objects and returns it</span>
 <span class="sd">    to the driver.</span>
 
 <span class="sd">    Args:</span>
@@ -77,13 +77,24 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;No backends available. Bootstrap cannot proceed with 0 backends. Terminating EP2&quot;</span><span class="p">)</span>
         <span class="n">exit</span> <span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
+    <span class="c1"># Initialise driver cache with the fetched IPs</span>
     <span class="n">driverCache</span> <span class="o">=</span> <span class="n">DriverCache</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">asg_ips</span><span class="p">))</span>
 
+    <span class="c1">#Initialise haproxyupdater</span>
     <span class="n">haproxyupdater</span> <span class="o">=</span> <span class="n">HaproxyUpdate</span><span class="p">(</span><span class="o">**</span><span class="n">haproxy_config</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
+
+    <span class="c1"># Set the fectched nodes in haproxyupdater</span>
     <span class="n">haproxyupdater</span><span class="o">.</span><span class="n">update_node_list</span><span class="p">(</span><span class="n">asg_ips</span><span class="p">)</span>
+
+    <span class="c1"># update and reload haproxy</span>
     <span class="n">updated</span> <span class="o">=</span> <span class="n">haproxyupdater</span><span class="o">.</span><span class="n">update_haproxy_by_config_reload</span><span class="p">(</span><span class="n">update_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">updated</span><span class="p">:</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Start haproxy if its already not running. If its running then simply reload</span>
+<span class="sd">            so that the new config takes affect.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">running</span> <span class="o">=</span> <span class="n">__start_if_not_running_else_reload</span><span class="p">(</span><span class="n">haproxy_config</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">running</span><span class="p">,</span> <span class="n">haproxyupdater</span><span class="p">,</span> <span class="n">orchestratorHandler</span><span class="p">,</span> <span class="n">driverCache</span>
 
@@ -92,7 +103,24 @@
     <span class="k">return</span> <span class="n">updated</span><span class="p">,</span> <span class="n">haproxyupdater</span><span class="p">,</span> <span class="n">orchestratorHandler</span></div>
 
 <span class="k">def</span> <span class="nf">__is_haproxy_running</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;Method for checking if haproxy is running</span>
+
+<span class="sd">        This method checks whether haproxy is running by sending kill signal 0 to the PID</span>
+<span class="sd">        of haproxy.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config (dictionary) :  haproxy config dictionary</span>
+<span class="sd">            logger (object) : logger object</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool : Whether haproxy is running or not</span>
+<span class="sd">            str : error string</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pid_file</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pid_file&quot;</span><span class="p">)</span>
+
+    <span class="c1"># return false if PID file path is invalid</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">pid_file</span><span class="p">):</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Haproxy pid file not found. Attempt to start haproxy will be made&quot;</span><span class="p">)</span>
@@ -109,15 +137,18 @@
 <span class="sd">        &#39;&#39;&#39;</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not access haproxy pid file. Attempt to start haproxy will be made&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
 
     <span class="k">try</span><span class="p">:</span>
+
+        <span class="c1"># Try to send kill signal 0 to haproxy process</span>
         <span class="n">os</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">            Haproxy is not running, log</span>
 <span class="sd">        &#39;&#39;&#39;</span>
 
+        <span class="c1"># Since there is an exception, haproxy is not running</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Haproxy is not running&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
@@ -125,9 +156,25 @@
     <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">None</span>
 
 <span class="k">def</span> <span class="nf">__start_if_not_running_else_reload</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;Method to start/reload haproxy if it is not running</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config (dictionary) : haproxy config dictionary</span>
+<span class="sd">            logger (object) : logging object</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool : Whether successfully reloaded or not</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="n">is_haproxy_running</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">__is_haproxy_running</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
 
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        If haproxy is not running and ep2 is configured to start haproxy</span>
+<span class="sd">        via systemd, then start it by systemd. If systemd is not required</span>
+<span class="sd">        then do a not reload via binary. This is taken care by the reloader</span>
+<span class="sd">        module.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">is_haproxy_running</span> <span class="ow">and</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_by&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;systemd&quot;</span><span class="p">:</span>
         <span class="n">started</span> <span class="o">=</span> <span class="n">HaproxyReloader</span><span class="o">.</span><span class="n">start_by_systemd</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;service_name&quot;</span><span class="p">),</span> <span class="n">logger</span><span class="p">)</span>
 
