@@ -31,26 +31,49 @@
           <div class="body" role="main">
             
   <h1>Source code for src.core.nodefetchers.basefetcher</h1><div class="highlight"><pre>
-<span></span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Base fetcher for all the fetcher classes</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: basefectcher</span>
+<span class="sd">   :synopsis: Base class for all kinds of backend fetchers</span>
 
-<div class="viewcode-block" id="BaseFetcher"><a class="viewcode-back" href="../../../../src.core.nodefetchers.html#src.core.nodefetchers.basefetcher.BaseFetcher">[docs]</a><span class="k">class</span> <span class="nc">BaseFetcher</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BaseFetcher"><a class="viewcode-back" href="../../../../index.html#src.core.nodefetchers.basefetcher.BaseFetcher">[docs]</a><span class="k">class</span> <span class="nc">BaseFetcher</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Base class for all kinds of backend fetchers</span>
+
+<span class="sd">        This class is the base/super class for all backend fetchers.</span>
+<span class="sd">        Individual backend fetchers have to inherit this class and</span>
+<span class="sd">        an optionally override the methods present in this class</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs (dictionary) : Dictionary containing params</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; Init method for BaseFetcher</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                **kwargs (dictionary) : Dictionary containing params</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;response&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__check_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
-        <span class="sd">&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Method to check validity of the received response</span>
+
 <span class="sd">            Check if we got a response successfully. Should be overridden by individual fetchers</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                bool : Whether response is valid or not</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="BaseFetcher.fetch"><a class="viewcode-back" href="../../../../src.core.nodefetchers.html#src.core.nodefetchers.basefetcher.BaseFetcher.fetch">[docs]</a>    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseFetcher.fetch"><a class="viewcode-back" href="../../../../index.html#src.core.nodefetchers.basefetcher.BaseFetcher.fetch">[docs]</a>    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
-        <span class="sd">&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Method for fecthing backend nodes from orchestrator</span>
+
 <span class="sd">            Make request for nodes. Should be overridden by individual fetchers</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div></div>
 </pre></div>
 

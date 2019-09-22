@@ -31,9 +31,29 @@
           <div class="body" role="main">
             
   <h1>Source code for src.core.nodefetchers.orchestrator</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.awsfetcher.awsfetcher</span> <span class="k">import</span> <span class="n">AwsFetcher</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: orchestrator</span>
+<span class="sd">   :synopsis: Module for initialising backend fetcher</span>
 
-<div class="viewcode-block" id="get_orchestrator_handler"><a class="viewcode-back" href="../../../../src.core.nodefetchers.html#src.core.nodefetchers.orchestrator.get_orchestrator_handler">[docs]</a><span class="k">def</span> <span class="nf">get_orchestrator_handler</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">.awsfetcher.awsfetcher</span> <span class="k">import</span> <span class="n">AwsFetcher</span>
+
+<div class="viewcode-block" id="get_orchestrator_handler"><a class="viewcode-back" href="../../../../index.html#src.core.nodefetchers.orchestrator.get_orchestrator_handler">[docs]</a><span class="k">def</span> <span class="nf">get_orchestrator_handler</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Method for deciding which fetcher to use</span>
+
+<span class="sd">        Decide which fetcher to use depending on the orchestrator mentioned</span>
+<span class="sd">        in the config.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config (dictionary) : dictionary holding ep2 config</span>
+<span class="sd">            logger (object) : logger object</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object : Backend fetcher</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">orchestrator</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;haproxy&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;orchestrator&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">orchestrator</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;aws&quot;</span><span class="p">:</span>
@@ -41,7 +61,16 @@
 
     <span class="k">return</span> <span class="n">handler</span></div>
 
-<div class="viewcode-block" id="prepare_aws_handler"><a class="viewcode-back" href="../../../../src.core.nodefetchers.html#src.core.nodefetchers.orchestrator.prepare_aws_handler">[docs]</a><span class="k">def</span> <span class="nf">prepare_aws_handler</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+<div class="viewcode-block" id="prepare_aws_handler"><a class="viewcode-back" href="../../../../index.html#src.core.nodefetchers.orchestrator.prepare_aws_handler">[docs]</a><span class="k">def</span> <span class="nf">prepare_aws_handler</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Prepares the AWS fetcher</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config (dictionary) : dictionary containing ep2 config</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            srv.nodefetchers.awsfetcher.awsfetcher : Aws backend fetecher</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">aws_access_key_id</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;aws_access_key_id&quot;</span><span class="p">)</span>
     <span class="n">aws_secret_access_key</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;aws_secret_access_key&quot;</span><span class="p">)</span>
     <span class="n">ip_type</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ip_type&quot;</span><span class="p">)</span>

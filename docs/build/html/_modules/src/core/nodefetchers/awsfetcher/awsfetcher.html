@@ -31,13 +31,37 @@
           <div class="body" role="main">
             
   <h1>Source code for src.core.nodefetchers.awsfetcher.awsfetcher</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: awsfetcher</span>
+<span class="sd">   :synopsis: Module for fetching backends from AWS</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">from</span> <span class="nn">src.core.nodefetchers.basefetcher</span> <span class="k">import</span> <span class="n">BaseFetcher</span>
 <span class="kn">from</span> <span class="nn">.botohandler</span> <span class="k">import</span> <span class="n">BotoHandler</span>
 
-<div class="viewcode-block" id="AwsFetcher"><a class="viewcode-back" href="../../../../../src.core.nodefetchers.awsfetcher.html#src.core.nodefetchers.awsfetcher.awsfetcher.AwsFetcher">[docs]</a><span class="k">class</span> <span class="nc">AwsFetcher</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="AwsFetcher"><a class="viewcode-back" href="../../../../../index.html#src.core.nodefetchers.awsfetcher.awsfetcher.AwsFetcher">[docs]</a><span class="k">class</span> <span class="nc">AwsFetcher</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot; Class for fetching libe backends from AWS</span>
+
+<span class="sd">        Contains methods to fetch live backends from AWS using the boto3 library</span>
+<span class="sd">        To make this class work properly, ep2 config must have aws section with</span>
+<span class="sd">        access_key_id and secret_access_token specified along with aws region</span>
+<span class="sd">        and ip_type which is required (public or private)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs (dictionary) : Dictionary containing params</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; Init method for this class</span>
+
+<span class="sd">            Apart from initialising the aws creds it also creates instances</span>
+<span class="sd">            of boto3 clients for asg and ec2</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">aws_access_key_id</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;aws_access_key_id&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">aws_secret_access_key</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;aws_secret_access_key&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asg_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;asg_name&quot;</span><span class="p">)</span>
@@ -45,11 +69,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">region_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;region_name&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logger&quot;</span><span class="p">)</span>
 
+        <span class="c1"># Initialise boto3 client for asg</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asg_boto_client</span> <span class="o">=</span> <span class="n">BotoHandler</span><span class="o">.</span><span class="n">get_auto_scaling_client</span><span class="p">(</span><span class="n">aws_access_key_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">aws_access_key_id</span><span class="p">,</span>
                                                                    <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">aws_secret_access_key</span><span class="p">,</span>
                                                                    <span class="n">region_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">region_name</span><span class="p">,</span>
                                                                    <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
                                                                 <span class="p">)</span>
+
+        <span class="c1"># Initialise boto3 client for ec2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ec2_boto_client</span> <span class="o">=</span> <span class="n">BotoHandler</span><span class="o">.</span><span class="n">get_ec2_client</span><span class="p">(</span><span class="n">aws_access_key_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">aws_access_key_id</span><span class="p">,</span>
                                                           <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">aws_secret_access_key</span><span class="p">,</span>
                                                           <span class="n">region_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">region_name</span><span class="p">,</span>
@@ -59,9 +86,20 @@
     <span class="k">def</span> <span class="nf">__check_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="AwsFetcher.fetch"><a class="viewcode-back" href="../../../../../src.core.nodefetchers.awsfetcher.html#src.core.nodefetchers.awsfetcher.awsfetcher.AwsFetcher.fetch">[docs]</a>    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AwsFetcher.fetch"><a class="viewcode-back" href="../../../../../index.html#src.core.nodefetchers.awsfetcher.awsfetcher.AwsFetcher.fetch">[docs]</a>    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Method for fetching backends</span>
+
+<span class="sd">            This method takes help of BotoHandler for fetching backends from AWS</span>
+<span class="sd">            and return them to the caller</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                list : List of backends</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">asg_boto_client</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">ec2_boto_client</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># get backends from AWS</span>
         <span class="n">asg_instance_ips</span> <span class="o">=</span> <span class="n">BotoHandler</span><span class="o">.</span><span class="n">get_instance_ips_for_asg</span><span class="p">(</span><span class="n">asg_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asg_boto_client</span><span class="p">,</span>
                                                                 <span class="n">ec2_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ec2_boto_client</span><span class="p">,</span>
                                                                 <span class="n">asg_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asg_name</span><span class="p">,</span>

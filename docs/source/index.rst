@@ -43,13 +43,33 @@ haproxyreloader : Module for reloading haproxy
     :members:
 
 runtimeupdater : Module for updating haproxy at runtime
-***********************************************
+***********************************************************
 .. automodule:: src.core.haproxyupdater.runtimeupdater
     :members:
 
 sockethandler : Module for handling socket operations
-***********************************************
+***********************************************************
 .. automodule:: src.core.haproxyupdater.sockethandler
+    :members:
+
+basefetcher : Provides base class for backend fetchers
+**********************************************************
+.. automodule:: src.core.nodefetchers.basefetcher
+    :members:
+
+orchestrator : Module for providing appropriate backend fetcher
+******************************************************************
+.. automodule:: src.core.nodefetchers.orchestrator
+    :members:
+
+awsfetcher : Module for fecthing live backends from AWS
+************************************************************
+.. automodule:: src.core.nodefetchers.awsfetcher.awsfetcher
+    :members:
+
+botohandler : Module for handling AWS operations
+************************************************************
+.. automodule:: src.core.nodefetchers.awsfetcher.botohandler
     :members:
 
 Indices and tables

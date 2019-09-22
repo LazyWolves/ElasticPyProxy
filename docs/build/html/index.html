@@ -313,9 +313,9 @@ with the required param.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="runtimeupdater-module-for-updating-haproxy-at-runtime">
-<h2>runtimeupdater : Module for updating haproxy at runtime<a class="headerlink" href="#runtimeupdater-module-for-updating-haproxy-at-runtime" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-src.core.haproxyupdater.runtimeupdater"></span><span class="target" id="module-runtimeupdater"></span><dl class="class">
+<div class="section" id="module-src.core.haproxyupdater.runtimeupdater">
+<span id="runtimeupdater-module-for-updating-haproxy-at-runtime"></span><h2>runtimeupdater : Module for updating haproxy at runtime<a class="headerlink" href="#module-src.core.haproxyupdater.runtimeupdater" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-runtimeupdater"></span><dl class="class">
 <dt id="src.core.haproxyupdater.runtimeupdater.RuntimeUpdater">
 <em class="property">class </em><code class="sig-prename descclassname">src.core.haproxyupdater.runtimeupdater.</code><code class="sig-name descname">RuntimeUpdater</code><a class="reference internal" href="_modules/src/core/haproxyupdater/runtimeupdater.html#RuntimeUpdater"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.runtimeupdater.RuntimeUpdater" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for updating haproxy at runtime</p>
@@ -383,9 +383,9 @@ change its address to that of the live node and enable back that node.</p></li>
 </dd></dl>
 
 </div>
-<div class="section" id="sockethandler-module-for-handling-socket-operations">
-<h2>sockethandler : Module for handling socket operations<a class="headerlink" href="#sockethandler-module-for-handling-socket-operations" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-src.core.haproxyupdater.sockethandler"></span><span class="target" id="module-sockethandler"></span><dl class="class">
+<div class="section" id="module-src.core.haproxyupdater.sockethandler">
+<span id="sockethandler-module-for-handling-socket-operations"></span><h2>sockethandler : Module for handling socket operations<a class="headerlink" href="#module-src.core.haproxyupdater.sockethandler" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-sockethandler"></span><dl class="class">
 <dt id="src.core.haproxyupdater.sockethandler.SocketHandler">
 <em class="property">class </em><code class="sig-prename descclassname">src.core.haproxyupdater.sockethandler.</code><code class="sig-name descname">SocketHandler</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/sockethandler.html#SocketHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.sockethandler.SocketHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class containing methods for handling socket operation</p>
@@ -428,6 +428,171 @@ str : response sent by the haproxy unix socket</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.core.nodefetchers.basefetcher">
+<span id="basefetcher-provides-base-class-for-backend-fetchers"></span><h2>basefetcher : Provides base class for backend fetchers<a class="headerlink" href="#module-src.core.nodefetchers.basefetcher" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-basefectcher"></span><dl class="class">
+<dt id="src.core.nodefetchers.basefetcher.BaseFetcher">
+<em class="property">class </em><code class="sig-prename descclassname">src.core.nodefetchers.basefetcher.</code><code class="sig-name descname">BaseFetcher</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/basefetcher.html#BaseFetcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.basefetcher.BaseFetcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for all kinds of backend fetchers</p>
+<p>This class is the base/super class for all backend fetchers.
+Individual backend fetchers have to inherit this class and
+an optionally override the methods present in this class</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dictionary</em>) – Dictionary containing params</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="src.core.nodefetchers.basefetcher.BaseFetcher.fetch">
+<code class="sig-name descname">fetch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/basefetcher.html#BaseFetcher.fetch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.basefetcher.BaseFetcher.fetch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for fecthing backend nodes from orchestrator</p>
+<p>Make request for nodes. Should be overridden by individual fetchers</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.core.nodefetchers.orchestrator">
+<span id="orchestrator-module-for-providing-appropriate-backend-fetcher"></span><h2>orchestrator : Module for providing appropriate backend fetcher<a class="headerlink" href="#module-src.core.nodefetchers.orchestrator" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-orchestrator"></span><dl class="function">
+<dt id="src.core.nodefetchers.orchestrator.get_orchestrator_handler">
+<code class="sig-prename descclassname">src.core.nodefetchers.orchestrator.</code><code class="sig-name descname">get_orchestrator_handler</code><span class="sig-paren">(</span><em class="sig-param">config</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/orchestrator.html#get_orchestrator_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.orchestrator.get_orchestrator_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for deciding which fetcher to use</p>
+<p>Decide which fetcher to use depending on the orchestrator mentioned
+in the config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config</strong> (<em>dictionary</em>) – dictionary holding ep2 config</p></li>
+<li><p><strong>logger</strong> (<em>object</em>) – logger object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Backend fetcher</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.core.nodefetchers.orchestrator.prepare_aws_handler">
+<code class="sig-prename descclassname">src.core.nodefetchers.orchestrator.</code><code class="sig-name descname">prepare_aws_handler</code><span class="sig-paren">(</span><em class="sig-param">config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/orchestrator.html#prepare_aws_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.orchestrator.prepare_aws_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares the AWS fetcher</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dictionary</em>) – dictionary containing ep2 config</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Aws backend fetecher</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>srv.nodefetchers.awsfetcher.awsfetcher</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.core.nodefetchers.awsfetcher.awsfetcher">
+<span id="awsfetcher-module-for-fecthing-live-backends-from-aws"></span><h2>awsfetcher : Module for fecthing live backends from AWS<a class="headerlink" href="#module-src.core.nodefetchers.awsfetcher.awsfetcher" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-awsfetcher"></span><dl class="class">
+<dt id="src.core.nodefetchers.awsfetcher.awsfetcher.AwsFetcher">
+<em class="property">class </em><code class="sig-prename descclassname">src.core.nodefetchers.awsfetcher.awsfetcher.</code><code class="sig-name descname">AwsFetcher</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/awsfetcher/awsfetcher.html#AwsFetcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.awsfetcher.awsfetcher.AwsFetcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for fetching libe backends from AWS</p>
+<p>Contains methods to fetch live backends from AWS using the boto3 library
+To make this class work properly, ep2 config must have aws section with
+access_key_id and secret_access_token specified along with aws region
+and ip_type which is required (public or private)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dictionary</em>) – Dictionary containing params</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="src.core.nodefetchers.awsfetcher.awsfetcher.AwsFetcher.fetch">
+<code class="sig-name descname">fetch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/awsfetcher/awsfetcher.html#AwsFetcher.fetch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.awsfetcher.awsfetcher.AwsFetcher.fetch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for fetching backends</p>
+<p>This method takes help of BotoHandler for fetching backends from AWS
+and return them to the caller</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List of backends</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.core.nodefetchers.awsfetcher.botohandler">
+<span id="botohandler-module-for-handling-aws-operations"></span><h2>botohandler : Module for handling AWS operations<a class="headerlink" href="#module-src.core.nodefetchers.awsfetcher.botohandler" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-botohandler"></span><dl class="class">
+<dt id="src.core.nodefetchers.awsfetcher.botohandler.BotoHandler">
+<em class="property">class </em><code class="sig-prename descclassname">src.core.nodefetchers.awsfetcher.botohandler.</code><code class="sig-name descname">BotoHandler</code><a class="reference internal" href="_modules/src/core/nodefetchers/awsfetcher/botohandler.html#BotoHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.awsfetcher.botohandler.BotoHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for handling aws node fetching operations</p>
+<p>Methods in this class handle aws operations for retreiving the
+list of active backends. It first uses boto3 asg client for
+describing the asg of interest. Once we have the instance ids
+in that asg, we use ec2 client for describing those instances
+for getting their public/private ips</p>
+<dl class="method">
+<dt id="src.core.nodefetchers.awsfetcher.botohandler.BotoHandler.get_auto_scaling_client">
+<em class="property">static </em><code class="sig-name descname">get_auto_scaling_client</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/awsfetcher/botohandler.html#BotoHandler.get_auto_scaling_client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.awsfetcher.botohandler.BotoHandler.get_auto_scaling_client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for initialising asg boto client</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>object</em>) – kwargs must contains config dictionary, logger object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>boto3 asg client</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>boto3.client</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.core.nodefetchers.awsfetcher.botohandler.BotoHandler.get_ec2_client">
+<em class="property">static </em><code class="sig-name descname">get_ec2_client</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/awsfetcher/botohandler.html#BotoHandler.get_ec2_client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.awsfetcher.botohandler.BotoHandler.get_ec2_client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for initialising ec2 boto client</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>object</em>) – kwargs must contains config dictionary, logger object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>boto3 ec2 client</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>boto3.client</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.core.nodefetchers.awsfetcher.botohandler.BotoHandler.get_instance_ips_for_asg">
+<em class="property">static </em><code class="sig-name descname">get_instance_ips_for_asg</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/awsfetcher/botohandler.html#BotoHandler.get_instance_ips_for_asg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.awsfetcher.botohandler.BotoHandler.get_instance_ips_for_asg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for getting aws live instance IPs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>object</em>) – kwargs must contains config dictionary, logger object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of live backend IPs</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
 </dd>
 </dl>
 </dd></dl>

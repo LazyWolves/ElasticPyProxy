@@ -37,38 +37,101 @@
 </div>
 <div class="section" id="module-src.core.nodefetchers.awsfetcher.awsfetcher">
 <span id="src-core-nodefetchers-awsfetcher-awsfetcher-module"></span><h2>src.core.nodefetchers.awsfetcher.awsfetcher module<a class="headerlink" href="#module-src.core.nodefetchers.awsfetcher.awsfetcher" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<span class="target" id="module-awsfetcher"></span><dl class="class">
 <dt id="src.core.nodefetchers.awsfetcher.awsfetcher.AwsFetcher">
 <em class="property">class </em><code class="sig-prename descclassname">src.core.nodefetchers.awsfetcher.awsfetcher.</code><code class="sig-name descname">AwsFetcher</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/awsfetcher/awsfetcher.html#AwsFetcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.awsfetcher.awsfetcher.AwsFetcher" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for fetching libe backends from AWS</p>
+<p>Contains methods to fetch live backends from AWS using the boto3 library
+To make this class work properly, ep2 config must have aws section with
+access_key_id and secret_access_token specified along with aws region
+and ip_type which is required (public or private)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dictionary</em>) – Dictionary containing params</p>
+</dd>
+</dl>
 <dl class="method">
 <dt id="src.core.nodefetchers.awsfetcher.awsfetcher.AwsFetcher.fetch">
 <code class="sig-name descname">fetch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/awsfetcher/awsfetcher.html#AwsFetcher.fetch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.awsfetcher.awsfetcher.AwsFetcher.fetch" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Method for fetching backends</p>
+<p>This method takes help of BotoHandler for fetching backends from AWS
+and return them to the caller</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List of backends</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 </div>
 <div class="section" id="module-src.core.nodefetchers.awsfetcher.botohandler">
 <span id="src-core-nodefetchers-awsfetcher-botohandler-module"></span><h2>src.core.nodefetchers.awsfetcher.botohandler module<a class="headerlink" href="#module-src.core.nodefetchers.awsfetcher.botohandler" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<span class="target" id="module-botohandler"></span><dl class="class">
 <dt id="src.core.nodefetchers.awsfetcher.botohandler.BotoHandler">
 <em class="property">class </em><code class="sig-prename descclassname">src.core.nodefetchers.awsfetcher.botohandler.</code><code class="sig-name descname">BotoHandler</code><a class="reference internal" href="_modules/src/core/nodefetchers/awsfetcher/botohandler.html#BotoHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.awsfetcher.botohandler.BotoHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for handling aws node fetching operations</p>
+<p>Methods in this class handle aws operations for retreiving the
+list of active backends. It first uses boto3 asg client for
+describing the asg of interest. Once we have the instance ids
+in that asg, we use ec2 client for describing those instances
+for getting their public/private ips</p>
 <dl class="method">
 <dt id="src.core.nodefetchers.awsfetcher.botohandler.BotoHandler.get_auto_scaling_client">
 <em class="property">static </em><code class="sig-name descname">get_auto_scaling_client</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/awsfetcher/botohandler.html#BotoHandler.get_auto_scaling_client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.awsfetcher.botohandler.BotoHandler.get_auto_scaling_client" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Method for initialising asg boto client</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>object</em>) – kwargs must contains config dictionary, logger object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>boto3 asg client</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>boto3.client</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="src.core.nodefetchers.awsfetcher.botohandler.BotoHandler.get_ec2_client">
 <em class="property">static </em><code class="sig-name descname">get_ec2_client</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/awsfetcher/botohandler.html#BotoHandler.get_ec2_client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.awsfetcher.botohandler.BotoHandler.get_ec2_client" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Method for initialising ec2 boto client</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>object</em>) – kwargs must contains config dictionary, logger object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>boto3 ec2 client</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>boto3.client</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="src.core.nodefetchers.awsfetcher.botohandler.BotoHandler.get_instance_ips_for_asg">
 <em class="property">static </em><code class="sig-name descname">get_instance_ips_for_asg</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/awsfetcher/botohandler.html#BotoHandler.get_instance_ips_for_asg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.awsfetcher.botohandler.BotoHandler.get_instance_ips_for_asg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Method for getting aws live instance IPs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> (<em>object</em>) – kwargs must contains config dictionary, logger object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of live backend IPs</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 

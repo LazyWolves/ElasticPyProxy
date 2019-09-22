@@ -31,12 +31,37 @@
           <div class="body" role="main">
             
   <h1>Source code for src.core.nodefetchers.awsfetcher.botohandler</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">boto3</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: botohandler</span>
+<span class="sd">   :synopsis: Module for handling aws node fetching operations</span>
 
-<div class="viewcode-block" id="BotoHandler"><a class="viewcode-back" href="../../../../../src.core.nodefetchers.awsfetcher.html#src.core.nodefetchers.awsfetcher.botohandler.BotoHandler">[docs]</a><span class="k">class</span> <span class="nc">BotoHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">boto3</span>
+
+<div class="viewcode-block" id="BotoHandler"><a class="viewcode-back" href="../../../../../index.html#src.core.nodefetchers.awsfetcher.botohandler.BotoHandler">[docs]</a><span class="k">class</span> <span class="nc">BotoHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Class for handling aws node fetching operations</span>
+
+<span class="sd">        Methods in this class handle aws operations for retreiving the</span>
+<span class="sd">        list of active backends. It first uses boto3 asg client for</span>
+<span class="sd">        describing the asg of interest. Once we have the instance ids</span>
+<span class="sd">        in that asg, we use ec2 client for describing those instances</span>
+<span class="sd">        for getting their public/private ips</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     
-<div class="viewcode-block" id="BotoHandler.get_auto_scaling_client"><a class="viewcode-back" href="../../../../../src.core.nodefetchers.awsfetcher.html#src.core.nodefetchers.awsfetcher.botohandler.BotoHandler.get_auto_scaling_client">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BotoHandler.get_auto_scaling_client"><a class="viewcode-back" href="../../../../../index.html#src.core.nodefetchers.awsfetcher.botohandler.BotoHandler.get_auto_scaling_client">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_auto_scaling_client</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; Method for initialising asg boto client</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                **kwargs (object) : kwargs must contains config dictionary, logger object.</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                boto3.client : boto3 asg client</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">aws_access_key_id</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;aws_access_key_id&quot;</span><span class="p">)</span>
         <span class="n">aws_secret_access_key</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;aws_secret_access_key&quot;</span><span class="p">)</span>
         <span class="n">logger</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logger&quot;</span><span class="p">)</span>
@@ -60,8 +85,17 @@
 
         <span class="k">return</span> <span class="n">client</span></div>
 
-<div class="viewcode-block" id="BotoHandler.get_ec2_client"><a class="viewcode-back" href="../../../../../src.core.nodefetchers.awsfetcher.html#src.core.nodefetchers.awsfetcher.botohandler.BotoHandler.get_ec2_client">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BotoHandler.get_ec2_client"><a class="viewcode-back" href="../../../../../index.html#src.core.nodefetchers.awsfetcher.botohandler.BotoHandler.get_ec2_client">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_ec2_client</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; Method for initialising ec2 boto client</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                **kwargs (object) : kwargs must contains config dictionary, logger object.</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                boto3.client : boto3 ec2 client</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">aws_access_key_id</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;aws_access_key_id&quot;</span><span class="p">)</span>
         <span class="n">aws_secret_access_key</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;aws_secret_access_key&quot;</span><span class="p">)</span>
         <span class="n">logger</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logger&quot;</span><span class="p">)</span>
@@ -85,8 +119,17 @@
 
         <span class="k">return</span> <span class="n">client</span></div>
 
-<div class="viewcode-block" id="BotoHandler.get_instance_ips_for_asg"><a class="viewcode-back" href="../../../../../src.core.nodefetchers.awsfetcher.html#src.core.nodefetchers.awsfetcher.botohandler.BotoHandler.get_instance_ips_for_asg">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BotoHandler.get_instance_ips_for_asg"><a class="viewcode-back" href="../../../../../index.html#src.core.nodefetchers.awsfetcher.botohandler.BotoHandler.get_instance_ips_for_asg">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_instance_ips_for_asg</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; Method for getting aws live instance IPs</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                **kwargs (object) : kwargs must contains config dictionary, logger object.</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                list : List of live backend IPs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">asg_client</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;asg_client&quot;</span><span class="p">)</span>
         <span class="n">ec2_client</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ec2_client&quot;</span><span class="p">)</span>
         <span class="n">asg_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;asg_name&quot;</span><span class="p">)</span>
@@ -102,7 +145,20 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">__get_instance_ids_for_asg</span><span class="p">(</span><span class="n">boto_client</span><span class="p">,</span> <span class="n">asg_name</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; Method for getting aws live instance ids belonging to the asg of interest</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                boto_client (boto3.client) : boto3 asg client</span>
+<span class="sd">                asg_name (str) : name of the asg</span>
+<span class="sd">                logger (object) : logger object</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                list : List of live backend instance IDs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
+
+            <span class="c1"># Describe the esired asg</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">boto_client</span><span class="o">.</span><span class="n">describe_auto_scaling_groups</span><span class="p">(</span>
                 <span class="n">AutoScalingGroupNames</span><span class="o">=</span><span class="p">[</span>
                     <span class="n">asg_name</span><span class="p">,</span>
@@ -116,6 +172,7 @@
 
         <span class="n">instance_ids</span> <span class="o">=</span> <span class="p">[]</span>
 
+        <span class="c1"># Loop over the fetched instanced and extract their instance IDs</span>
         <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">:</span>
             <span class="n">instance_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;InstanceId&quot;</span><span class="p">))</span>
 
@@ -126,6 +183,18 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">__get_instance_ips</span><span class="p">(</span><span class="n">boto_client</span><span class="p">,</span> <span class="n">instance_ids</span><span class="p">,</span> <span class="n">ip_type</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot; Method for getting aws live instance ips from instance IDs</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                boto_client (boto3.client) : boto3 ec2 client</span>
+<span class="sd">                instance_ids (list) : List of instance IDs</span>
+<span class="sd">                ip_type (str) : Type of ip wanted - public or private</span>
+<span class="sd">                logger (object) : logger object</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                list : List of live backend instance IPs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">boto_client</span><span class="o">.</span><span class="n">describe_instances</span><span class="p">(</span>
                 <span class="n">InstanceIds</span><span class="o">=</span><span class="n">instance_ids</span>

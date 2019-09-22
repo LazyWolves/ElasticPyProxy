@@ -39,7 +39,7 @@
 
 <span class="kn">import</span> <span class="nn">socket</span>
 
-<div class="viewcode-block" id="SocketHandler"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.sockethandler.SocketHandler">[docs]</a><span class="k">class</span> <span class="nc">SocketHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="SocketHandler"><a class="viewcode-back" href="../../../../index.html#src.core.haproxyupdater.sockethandler.SocketHandler">[docs]</a><span class="k">class</span> <span class="nc">SocketHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot; Class containing methods for handling socket operation</span>
 
@@ -63,7 +63,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sock_file</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sock_file&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logger&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SocketHandler.connect_socket"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.sockethandler.SocketHandler.connect_socket">[docs]</a>    <span class="k">def</span> <span class="nf">connect_socket</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SocketHandler.connect_socket"><a class="viewcode-back" href="../../../../index.html#src.core.haproxyupdater.sockethandler.SocketHandler.connect_socket">[docs]</a>    <span class="k">def</span> <span class="nf">connect_socket</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot; Method to connect to haproxy unix socket</span>
 
@@ -89,7 +89,7 @@
 
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="SocketHandler.send_command"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.sockethandler.SocketHandler.send_command">[docs]</a>    <span class="k">def</span> <span class="nf">send_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="SocketHandler.send_command"><a class="viewcode-back" href="../../../../index.html#src.core.haproxyupdater.sockethandler.SocketHandler.send_command">[docs]</a>    <span class="k">def</span> <span class="nf">send_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot; Method to send command to haproxy unix socket and get response</span>
 
