@@ -1,15 +1,36 @@
+"""
+.. module:: confighandler
+   :synopsis: Module for updating haproxy config
+
+"""
+
 from jinja2 import Template
 
-'''
-    Config hanfler for handlung haproxy config file
-'''
-
 class ConfigHandler(object):
-    """
+
+    """ Class to handler haproxy config file updation
+
+        This class contains method for updating the haproxy config file
+        with the provided formatted haproxy config template.
+
+        The template is first populated with the fetched backends using jinja templating
+        engine and then the haproxy config file is updated with this formatted template.
+
+        Args:
+            **kwargs (dictionary) : Dictionary containing params
     """
 
     @staticmethod
     def update_config(**kwargs):
+
+        """ Method for updating haproxy config
+
+            This is the method which actually updates the haproxy config file
+            using the provided template file after properly formatting it
+
+            Args:
+                **kwargs (dictionary) : Dictionary containing params
+        """
         
         # get desired params
         haproxy_config_file = kwargs.get("haproxy_config_file")
@@ -20,8 +41,9 @@ class ConfigHandler(object):
         node_slots = kwargs.get("node_slots")
         logger = kwargs.get("logger")
 
+        # Try reading the template file
         could_read, template = ConfigHandler.read_write_file(operation="read", file=template_file, logger=logger)
-
+    
         if not could_read:
 
             logger.critical("Could not read template file : {}".format(template_file))
@@ -33,8 +55,15 @@ class ConfigHandler(object):
         nodes_str = ""
 
         if inactive_nodes_count and inactive_nodes_count != 0:
+
+            """
+                .. note::
+                    if There are inactive nodes and the count is not 0 then we need that many
+                    disabled nodes in the actual haproxy config.
+            """
             node_id = inactive_nodes_count + 1
 
+            # for each node in the active node list, for the template string
             for node_ip in node_list:
                 haproxy_node = node_template.format(node_id=node_id, ip=node_ip, port=backend_port)
                 nodes_str += (haproxy_node + "\n")
@@ -44,9 +73,16 @@ class ConfigHandler(object):
             nodes_str += (inactive_nodes + "\n")
 
         else:
+
+            """
+                .. note::
+                    If there are no inactive nodes, the we need to calculate the number of incative
+                    nodes and set the config accordingly.
+            """
             inactive_nodes_count = node_slots - len(node_list)
             node_id = inactive_nodes_count + 1
 
+            # for each node in the active node list, for the template string
             for node_ip in node_list:
                 haproxy_node = node_template.format(node_id=node_id, ip=node_ip, port=backend_port)
                 nodes_str += (haproxy_node + "\n")
@@ -72,6 +108,12 @@ class ConfigHandler(object):
 
     @staticmethod
     def read_write_file(**kwargs):
+
+        """ Method to read and write haproxy config file
+
+            Args:
+                **kwargs (dictionary) : Dictionary containing params
+        """
         operation = kwargs.get("operation")
         file = kwargs.get("file")
         logger = kwargs.get("logger")
