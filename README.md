@@ -121,7 +121,7 @@ main tasks done by the components present in EP2
   The command used is the usual systemd command
   
   ```
-  systemctl reoad \<haproxy_servicefile_name\>
+  systemctl reoad [haproxy_servicefile_name]
   ```
   
   The HAProxy systemd service file name should be provided as a EP2 config param.
@@ -139,8 +139,9 @@ main tasks done by the components present in EP2
   The command fired is the usual one
   
   ```
-     -W -q -D -f {haproxy_config_file} -p {pid_file} -x {sock_file} -sf $(cat {pid_file})
+     [haproxy_binary] -W -q -D -f [haproxy_config_file] -p [pid_file] -x [socket_file] -sf $(cat [pid_file])
   ```
   
+  The above causes hitless reload of HAProxy.  
   
 
