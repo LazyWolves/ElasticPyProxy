@@ -4,11 +4,33 @@ from .runtimeupdater import RuntimeUpdater
 from .haproxyreloader import HaproxyReloader
 
 class HaproxyUpdate(object):
+
+    """ Class for handling haproxy update and reload
+
+        This class contains handlers which controls haproxy uptation and reload.
+        Haproxy can be updated wither by updating its config file followed by
+        a reload via systemd or via binary. The other way to reload haproxy is
+        via the exposed socket. This type of update does not require any reload
+
+        For updating via runtime haproxy needs to maintain a pool if inactive
+        backends. When a new live backend comes, we can pull an inactive live backend
+        and make it live changing its ip to that of the live backend
+
+        Args:
+            **kwargs (dictionary) : params in key/value dict format
+    """
     def __init__(self, **kwargs):
 
-        '''
-            Get desired params
-        '''
+        """ Init method for the class
+
+            Extracts the desired params and stores them as instance variables
+            Also it sanitisez the params
+
+            Args:
+                **kwargs (dictionary) : params in key/value dict format
+        """
+
+        # Extract the desired params
         self.haproxy_config_file = kwargs.get("haproxy_config_file")
         self.template_file = kwargs.get("template_file")
         self.backend_port = int(kwargs.get("backend_port"))
@@ -23,6 +45,12 @@ class HaproxyUpdate(object):
         self.service_name = kwargs.get("service_name")
         self.logger = kwargs.get("logger")
 
+        """
+            Valid methods to start haproxy.
+
+            .. note::
+                init methods is not supported yet.
+        """
         self.valid_start_by = [
             "binary",
             "systemd",
