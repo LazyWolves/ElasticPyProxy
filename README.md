@@ -163,5 +163,34 @@ main tasks done by the components present in EP2
     
   - Once bootstrap is done, EP2 enters its not loop.
   
+  ## Installing EP2
+  
+  EP2 can be installed either using pip or can be built from source.
+  
+  **Installing via pip**
+  
+  Inorder to install via pip, execute the following
+  
+  ```
+  sudo pip3 install git+git://github.com/djmgit/ElasticPyProxy
+  
+  ```
+  
+  **Installing from source**
+  
+  Inorder to install from source perform the following actions:
+  
+  -  Clone this repo and enter into it using ``` git clone https://github.com/djmgit/ElasticPyProxy.git ```
+  -  Run the following command ``` sudo python3 setup.py install ```
+  
+  Once installation is done, ep2 will be installed at **/usr/bin/ep2**
+  
+  Also the following files and directories will be created:
+  
+  - /var/log/ep2
+  - /etc/ep2
+  - /etc/ep2/ep2.conf
+  - /etc/ep2/haproxy.cfg.template
+  
   
 
