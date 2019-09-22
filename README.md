@@ -142,6 +142,26 @@ main tasks done by the components present in EP2
      [haproxy_binary] -W -q -D -f [haproxy_config_file] -p [pid_file] -x [socket_file] -sf $(cat [pid_file])
   ```
   
-  The above causes hitless reload of HAProxy.  
+  The above causes hitless reload of HAProxy.
+  
+  ### Bootstrapping EP2
+  
+  At the very beginning when EP2 is started, bootstrapping takes place. The following essentially happens in the bootstrap
+  process :
+  
+  - The desired nodefetcher is initialised. As of now it is the **awsfetcher**. As a part of the initialisation of the
+    awsfether, the asg and ec2 boto3 clients are created using the provided aws credentials.
+    
+  - The the very first call to get the live backend server is made.
+  
+  - Once EP2 has the live backend server addresses, irrespective of whether EP2 is configures to use update via config or
+    update at runtime, EP2 updates the haproxy config with the formatted template file contents. It is during this time
+    EP2 creates the inactive pool if it is configured to use updae by runtime on later runs.
+   
+  - Once the updation is done, it checks whether HAPorxy is running or not. If its not running, the it starts HAProxy.
+    If it was running then it simply reloads it using the configured method.
+    
+  - Once bootstrap is done, EP2 enters its not loop.
+  
   
 
