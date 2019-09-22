@@ -246,6 +246,18 @@ Params involved:
 - asg_name : asg name
 - region_name : aws region name where the asg exists
 
+## Starting EP2
+
+Execute the following for starting EP2:
+
+```
+  sudo ep2 -f [Path to ep2.conf]
+```
+
+Stop EP2 by CTRL+C.
+
+The ideal way to run EP2 would be to use a process manager like **systemd** or **supervisord**.
+
 
 
   
