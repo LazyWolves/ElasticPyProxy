@@ -23,7 +23,7 @@ def pre_setup():
   source_config = os.path.join(base_path, SAMPLE_CONFIG_DIR, CONFIG_FILE)
   source_template = os.path.join(base_path, SAMPLE_CONFIG_DIR, TEMPLATE_FILE)
 
-  shutil.copy(source_config, os.path.join(CONFIG_DIR, CONFIG_DIR))
+  shutil.copy(source_config, os.path.join(CONFIG_DIR, CONFIG_FILE))
   shutil.copy(source_template, os.path.join(CONFIG_DIR, TEMPLATE_FILE))
 
 def readme():
