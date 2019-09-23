@@ -70,18 +70,13 @@ def drive():
         fetched from the orchestrator. Now we can begin with the poll-update-repeat
         loop for updating backends fetched from ochestrator
     '''
-
-    print ("Entering state loop...")
-    i = 1
     while True:
-        print ("run " + str(i))
 
         # Fetch backend IPs from orchestrator handler
         asg_ips = orchestratorHandler.fetch()
 
         # Proceed with updation only if IPs are not none
         if asg_ips != None:
-            print (asg_ips)
 
             # check if update is actually neccessary. Compare with cache
             should_update = driverCache.need_to_update(set(asg_ips))
@@ -93,7 +88,6 @@ def drive():
 
                 # Update haproxy
                 updated = haproxyupdater.update_haproxy()
-                print (updated)
             else:
                 logger.info("Backends not changed. Skipping update")
         else:
@@ -101,7 +95,6 @@ def drive():
 
         # sleep for configured time before the next run
         time.sleep(SLEEP_BEFORE_NEXT_RUN)
-        i += 1
 
 def __setup_logging(log_file):
     """
