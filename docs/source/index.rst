@@ -314,7 +314,7 @@ A sample haproxy template file is shown below::
       stats uri /stat
       stats hide-version
 
-The backend/lister used (``haproxynode``) in this case should be mentioned in **EP2 config**.
+The backend/listener used (``haproxynode``) in this case should be mentioned in **EP2 config**.
 The backend/listener of interest should have the template varibale ``nodes`` in jinja templating format.
 This template varibale will be replaced with the live backend servers in each run.
 
