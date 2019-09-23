@@ -19,6 +19,8 @@ will also be removed from HAProxy's concerned backend/listener.
 
 In the rest of the documentation, Amazon Autoscaling Group will be refered to as the **orchestrator** and the backend servers will be refered to as just **backends**
 
+View EP2 on `Github <https://www.github.com/djmgit/ElasticPyProxy>`_
+
 How EP2 works
 ***************
 
@@ -253,6 +255,73 @@ Params involved:
 - aws_secret_access_key : aws creds
 - asg_name : asg name
 - region_name : aws region name where the asg exists
+
+A sample haproxy template file is shown below::
+
+  global
+	  log /dev/log	local0
+	  log /dev/log	local1 notice
+	  chroot /var/lib/haproxy
+	  stats socket /var/run/haproxy/haproxy.sock mode 660 level admin expose-fd listeners
+	  stats timeout 30s
+	  user haproxy
+	  group haproxy
+	  daemon
+
+	  # Default SSL material locations
+	  ca-base /etc/ssl/certs
+	  crt-base /etc/ssl/private
+
+	  # Default ciphers to use on SSL-enabled listening sockets.
+	  # For more information, see ciphers(1SSL). This list is from:
+	  #  https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/
+	  # An alternative list with additional directives can be obtained from
+	  #  https://mozilla.github.io/server-side-tls/ssl-config-generator/?server=haproxy
+	  ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS
+	  ssl-default-bind-options no-sslv3
+	  stats socket ipv4@127.0.0.1:9999 level admin
+    stats timeout 2m
+
+  defaults
+	  log	global
+	  mode	http
+	  option	httplog
+	  option	dontlognull
+  	  timeout connect 5000
+  	  timeout client  50000
+  	  timeout server  50000
+	  errorfile 400 /etc/haproxy/errors/400.http
+	  errorfile 403 /etc/haproxy/errors/403.http
+	  errorfile 408 /etc/haproxy/errors/408.http
+	  errorfile 500 /etc/haproxy/errors/500.http
+	  errorfile 502 /etc/haproxy/errors/502.http
+	  errorfile 503 /etc/haproxy/errors/503.http
+	  errorfile 504 /etc/haproxy/errors/504.http
+
+  listen haproxynode
+	  bind *:7001
+	  balance roundrobin
+	  option forwardfor
+	  http-request set-header X-Forwarded-Port %[dst_port]
+	  http-request set-header X-CLIENT-IP %[src]
+	  http-request add-header X-Forwarded-Proto https if {{ ssl_fc }}
+	  option httpchk HEAD / HTTP/1.1\r\nHost:localhost
+	  {{nodes}}
+
+  listen stats
+      bind :32700
+      stats enable
+      stats uri /stat
+      stats hide-version
+
+The backend/listername used (``haproxynode``) in this case should be mentione in **EP2 config**.
+The backend/listener of interest should have the template varibale ``nodes`` in jinja templating format.
+This template varibale will be replaced with the live backend servers in each run.
+
+Once this template is formatted, the actuall HAProxy config will be updated with the formatted contents of this
+template file.
+
+So, whatever changes one usually has to make to HAProxy config, they have to be made here.
 
 Starting EP2
 ***************
