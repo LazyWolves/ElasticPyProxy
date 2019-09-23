@@ -3,8 +3,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+*******************************************************************************
 ElasticPyProxy : A controller for dynamic scaling of Haproxy backend servers
-================================================================================
+*******************************************************************************
 
 ElasticPyProxy (EP2) is a controller written completely in python for dynamically scaling HAProxy backend servers. Using this
 controller, it is possible to integrate HAProxy with a server orchestrator which spwans servers dynamically and scales
@@ -25,7 +26,8 @@ Simple put, continuously polls the orchestrator and checks what are the availabl
 However it can be made to do this simple job in more than one way as needed by the user or the host system. Following are the
 main tasks done by the components present in EP2
 
-**EP2 working:**
+EP2 working
+============
 
 - The system where EP2 runs should have the HAProxy (v1.8 and above) binary, HAproxy UNIX socket exposed and 
   accessible, optionally systemd service file properly configured.
@@ -66,7 +68,7 @@ main tasks done by the components present in EP2
   processes.
   
 Major components of EP2
-****************************
+=========================
   
   - Backend fetcher : The backend fetcher fetches the live backends from the configured orchestrator. As mentioned earlier
     for now this is AWS.
@@ -80,7 +82,7 @@ Major components of EP2
   - HaproxyReloader : This is used to reload HAProxy wither via systemd or via binary.
   
 AWS ASG Backend fetcher
-***************************
+**************************
   
   The **aws asg backend fectcher** or the awsfetcher in short, fetches the available servers in the concerned asg using
   the boto3 python libaray.
@@ -130,11 +132,9 @@ Reloading HAProxy via systemd
   When updating HAProxy via config, HAProxy has to be reloaded and one such way to reload HAProxy is via **systemd**. For this
   there should be a properly configured systemd service file such that systemd reload works properly.
   
-  The command used is the usual systemd command
+  The command used is the usual systemd command::
   
-  ```
-  systemctl reoad [haproxy_servicefile_name]
-  ```
+    systemctl reoad [haproxy_servicefile_name]
   
   The HAProxy systemd service file name should be provided as a EP2 config param.
   
@@ -145,15 +145,13 @@ Reloading HAProxy via binary
   config :
   
   - haproxy_config_file : The haproxy config file
-  - haproxy_binary : The location of the HAProxy binary which is usually ``` /usr/sbin/haproxy```
+  - haproxy_binary : The location of the HAProxy binary which is usually ``/usr/sbin/haproxy``
   - haproxy_socket_file : The location of the HAProxy unix socket file.
-  - pid_file : The location of the HAProxy PID file which is usually ```/run/haproxy.pid```
+  - pid_file : The location of the HAProxy PID file which is usually ``/run/haproxy.pid``
   
-  The command fired is the usual one
+  The command fired is the usual one::
   
-  ```
-  [haproxy_binary] -W -q -D -f [haproxy_config_file] -p [pid_file] -x [socket_file] -sf $(cat [pid_file])
-  ```
+    [haproxy_binary] -W -q -D -f [haproxy_config_file] -p [pid_file] -x [socket_file] -sf $(cat [pid_file])
   
   The above causes hitless reload of HAProxy.
   
@@ -184,18 +182,16 @@ Installing EP2
   
   **Installing via pip**
   
-  Inorder to install via pip, execute the following
+  Inorder to install via pip, execute the following::
   
-  ```
-  sudo pip3 install git+git://github.com/djmgit/ElasticPyProxy
-  ```
+    sudo pip3 install git+git://github.com/djmgit/ElasticPyProxy
   
   **Installing from source**
   
   Inorder to install from source perform the following actions:
   
-  -  Clone this repo and enter into it using ``` git clone https://github.com/djmgit/ElasticPyProxy.git ```
-  -  Run the following command ``` sudo python3 setup.py install ```
+  -  Clone this repo and enter into it using ``git clone https://github.com/djmgit/ElasticPyProxy.git``
+  -  Run the following command ``sudo python3 setup.py install``
   
   Once installation is done, ep2 will be installed at **/usr/bin/ep2**
   
@@ -209,38 +205,35 @@ Installing EP2
 Configuring EP2
 ********************
 
-A sample EP2 config file is given below:
+A sample EP2 config file is given below::
 
-`
-[haproxy]
-haproxy_config_file = /etc/haproxy/haproxy.cfg
-template_file = /home/deep/elasticpyproxy/etc/haproxy.config.template
-backend_port = 6003
-haproxy_binary = /usr/sbin/haproxy
-start_by = systemd
-haproxy_socket_file = /var/run/haproxy/haproxy.sock
-pid_file = /run/haproxy.pid
-backend_name = haproxynode
-update_type = update_by_runtime
-node_slots = 5
-service_name = haproxy
-lock_dir = /home/deep/elasticpyproxy/etc
-orchestrator = aws
-sleep_before_next_run = 5
-log_file = /var/log/ep2/ep2.log
+  [haproxy]
+  haproxy_config_file = /etc/haproxy/haproxy.cfg
+  template_file = /home/deep/elasticpyproxy/etc/haproxy.config.template
+  backend_port = 6003
+  haproxy_binary = /usr/sbin/haproxy
+  start_by = systemd
+  haproxy_socket_file = /var/run/haproxy/haproxy.sock
+  pid_file = /run/haproxy.pid
+  backend_name = haproxynode
+  update_type = update_by_runtime
+  node_slots = 5
+  service_name = haproxy
+  lock_dir = /home/deep/elasticpyproxy/etc
+  orchestrator = aws
+  sleep_before_next_run = 5
+  log_file = /var/log/ep2/ep2.log
 
-[AWS]
-aws_access_key_id =
-aws_secret_access_key =
-asg_name =
-region_name =
-`
+  [AWS]
+  aws_access_key_id =
+  aws_secret_access_key =
+  asg_name =
+  region_name =
 
 Params involved:
 
 - haproxy_config_file : This is the path to the actual haproxy config file. Usually it is /etc/haproxy/haproxy.cfg
-- template_file : Path to the template file. This is the file that will be populated and used to update the actuall
-                  haproxy config file.
+- template_file : Path to the template file. This is the file that will be populated and used to update the actuall haproxy config file.
 - backend_port : The port used by backend servers.
 - haproxy_binary : The HAProxy binary file location.
 - start_by : How to start/reload HAProxy. Can be **systemd** or **binary**
@@ -264,11 +257,10 @@ Params involved:
 Starting EP2
 ***************
 
-Execute the following for starting EP2:
+Execute the following for starting EP2::
 
-```
-sudo ep2 -f [Path to ep2.conf]
-```
+  sudo ep2 -f [Path to ep2.conf]
+
 
 Stop EP2 by CTRL+C.
 
@@ -282,62 +274,62 @@ ElasticPyProxy Code Documentation
    :caption: Contents:
 
 driver (Main entry point for ElasticPyProxy)
-***********************************************
+==============================================
 .. automodule:: src.driver.driver
     :members:
 
 drivercache : Cache layer for EP2
-***********************************************
+=====================================
 .. automodule:: src.driver.drivercache
     :members:
 
 bootstrap : Bootstrapper for ep2
-***********************************************
+===================================
 .. automodule:: src.driver.bootstrap
     :members:
 
 haproxyupdate : Module for updating haproxy
-***********************************************
+=============================================
 .. automodule:: src.core.haproxyupdater.haproxyupdate
     :members:
 
 confighandler : Module for updating haproxy
-***********************************************
+=================================================
 .. automodule:: src.core.haproxyupdater.confighandler
     :members:
 
 haproxyreloader : Module for reloading haproxy
-***********************************************
+=================================================
 .. automodule:: src.core.haproxyupdater.haproxyreloader
     :members:
 
 runtimeupdater : Module for updating haproxy at runtime
-***********************************************************
+======================================================================
 .. automodule:: src.core.haproxyupdater.runtimeupdater
     :members:
 
 sockethandler : Module for handling socket operations
-***********************************************************
+======================================================================
 .. automodule:: src.core.haproxyupdater.sockethandler
     :members:
 
 basefetcher : Provides base class for backend fetchers
-**********************************************************
+======================================================================
 .. automodule:: src.core.nodefetchers.basefetcher
     :members:
 
 orchestrator : Module for providing appropriate backend fetcher
-******************************************************************
+======================================================================
 .. automodule:: src.core.nodefetchers.orchestrator
     :members:
 
 awsfetcher : Module for fecthing live backends from AWS
-************************************************************
+================================================================
 .. automodule:: src.core.nodefetchers.awsfetcher.awsfetcher
     :members:
 
 botohandler : Module for handling AWS operations
-************************************************************
+================================================================
 .. automodule:: src.core.nodefetchers.awsfetcher.botohandler
     :members:
 

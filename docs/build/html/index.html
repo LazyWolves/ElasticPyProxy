@@ -46,7 +46,8 @@ will also be removed from HAProxy’s concerned backend/listener.</p>
 <p>Simple put, continuously polls the orchestrator and checks what are the available backends and updates haproxy accordingly.
 However it can be made to do this simple job in more than one way as needed by the user or the host system. Following are the
 main tasks done by the components present in EP2</p>
-<p><strong>EP2 working:</strong></p>
+<div class="section" id="ep2-working">
+<h3>EP2 working<a class="headerlink" href="#ep2-working" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>The system where EP2 runs should have the HAProxy (v1.8 and above) binary, HAproxy UNIX socket exposed and
 accessible, optionally systemd service file properly configured.</p></li>
@@ -78,7 +79,7 @@ processes.</p></li>
 </ul>
 </div>
 <div class="section" id="major-components-of-ep2">
-<h2>Major components of EP2<a class="headerlink" href="#major-components-of-ep2" title="Permalink to this headline">¶</a></h2>
+<h3>Major components of EP2<a class="headerlink" href="#major-components-of-ep2" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><ul class="simple">
 <li><p>Backend fetcher : The backend fetcher fetches the live backends from the configured orchestrator. As mentioned earlier
@@ -89,6 +90,7 @@ for now this is AWS.</p></li>
 <li><p>HaproxyReloader : This is used to reload HAProxy wither via systemd or via binary.</p></li>
 </ul>
 </div></blockquote>
+</div>
 </div>
 <div class="section" id="aws-asg-backend-fetcher">
 <h2>AWS ASG Backend fetcher<a class="headerlink" href="#aws-asg-backend-fetcher" title="Permalink to this headline">¶</a></h2>
@@ -135,10 +137,10 @@ figured out from the <strong>min/max</strong> criteria of the orchestrator in us
 <blockquote>
 <div><p>When updating HAProxy via config, HAProxy has to be reloaded and one such way to reload HAProxy is via <strong>systemd</strong>. For this
 there should be a properly configured systemd service file such that systemd reload works properly.</p>
-<p>The command used is the usual systemd command</p>
-<p><code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">systemctl</span> <span class="pre">reoad</span> <span class="pre">[haproxy_servicefile_name]</span>
-<span class="pre">`</span></code></p>
+<p>The command used is the usual systemd command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">systemctl</span> <span class="n">reoad</span> <span class="p">[</span><span class="n">haproxy_servicefile_name</span><span class="p">]</span>
+</pre></div>
+</div>
 <p>The HAProxy systemd service file name should be provided as a EP2 config param.</p>
 </div></blockquote>
 </div>
@@ -149,14 +151,14 @@ there should be a properly configured systemd service file such that systemd rel
 config :</p>
 <ul class="simple">
 <li><p>haproxy_config_file : The haproxy config file</p></li>
-<li><p>haproxy_binary : The location of the HAProxy binary which is usually <code class="docutils literal notranslate"><span class="pre">`</span> <span class="pre">/usr/sbin/haproxy`</span></code></p></li>
+<li><p>haproxy_binary : The location of the HAProxy binary which is usually <code class="docutils literal notranslate"><span class="pre">/usr/sbin/haproxy</span></code></p></li>
 <li><p>haproxy_socket_file : The location of the HAProxy unix socket file.</p></li>
-<li><p>pid_file : The location of the HAProxy PID file which is usually <code class="docutils literal notranslate"><span class="pre">`/run/haproxy.pid`</span></code></p></li>
+<li><p>pid_file : The location of the HAProxy PID file which is usually <code class="docutils literal notranslate"><span class="pre">/run/haproxy.pid</span></code></p></li>
 </ul>
-<p>The command fired is the usual one</p>
-<p><code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">[haproxy_binary]</span> <span class="pre">-W</span> <span class="pre">-q</span> <span class="pre">-D</span> <span class="pre">-f</span> <span class="pre">[haproxy_config_file]</span> <span class="pre">-p</span> <span class="pre">[pid_file]</span> <span class="pre">-x</span> <span class="pre">[socket_file]</span> <span class="pre">-sf</span> <span class="pre">$(cat</span> <span class="pre">[pid_file])</span>
-<span class="pre">`</span></code></p>
+<p>The command fired is the usual one:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[haproxy_binary] -W -q -D -f [haproxy_config_file] -p [pid_file] -x [socket_file] -sf $(cat [pid_file])
+</pre></div>
+</div>
 <p>The above causes hitless reload of HAProxy.</p>
 </div></blockquote>
 </div>
@@ -183,15 +185,15 @@ If it was running then it simply reloads it using the configured method.</p></li
 <blockquote>
 <div><p>EP2 can be installed either using pip or can be built from source.</p>
 <p><strong>Installing via pip</strong></p>
-<p>Inorder to install via pip, execute the following</p>
-<p><code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">sudo</span> <span class="pre">pip3</span> <span class="pre">install</span> <span class="pre">git+git://github.com/djmgit/ElasticPyProxy</span>
-<span class="pre">`</span></code></p>
+<p>Inorder to install via pip, execute the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pip3</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">git</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">djmgit</span><span class="o">/</span><span class="n">ElasticPyProxy</span>
+</pre></div>
+</div>
 <p><strong>Installing from source</strong></p>
 <p>Inorder to install from source perform the following actions:</p>
 <ul class="simple">
-<li><p>Clone this repo and enter into it using <code class="docutils literal notranslate"><span class="pre">`</span> <span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/djmgit/ElasticPyProxy.git</span> <span class="pre">`</span></code></p></li>
-<li><p>Run the following command <code class="docutils literal notranslate"><span class="pre">`</span> <span class="pre">sudo</span> <span class="pre">python3</span> <span class="pre">setup.py</span> <span class="pre">install</span> <span class="pre">`</span></code></p></li>
+<li><p>Clone this repo and enter into it using <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/djmgit/ElasticPyProxy.git</span></code></p></li>
+<li><p>Run the following command <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">python3</span> <span class="pre">setup.py</span> <span class="pre">install</span></code></p></li>
 </ul>
 <p>Once installation is done, ep2 will be installed at <strong>/usr/bin/ep2</strong></p>
 <p>Also the following files and directories will be created:</p>
@@ -206,37 +208,34 @@ If it was running then it simply reloads it using the configured method.</p></li
 <div class="section" id="configuring-ep2">
 <h2>Configuring EP2<a class="headerlink" href="#configuring-ep2" title="Permalink to this headline">¶</a></h2>
 <p>A sample EP2 config file is given below:</p>
-<p>`
-[haproxy]
-haproxy_config_file = /etc/haproxy/haproxy.cfg
-template_file = /home/deep/elasticpyproxy/etc/haproxy.config.template
-backend_port = 6003
-haproxy_binary = /usr/sbin/haproxy
-start_by = systemd
-haproxy_socket_file = /var/run/haproxy/haproxy.sock
-pid_file = /run/haproxy.pid
-backend_name = haproxynode
-update_type = update_by_runtime
-node_slots = 5
-service_name = haproxy
-lock_dir = /home/deep/elasticpyproxy/etc
-orchestrator = aws
-sleep_before_next_run = 5
-log_file = /var/log/ep2/ep2.log</p>
-<p>[AWS]
-aws_access_key_id =
-aws_secret_access_key =
-asg_name =
-region_name =
-`</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">haproxy</span><span class="p">]</span>
+<span class="n">haproxy_config_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">haproxy</span><span class="o">/</span><span class="n">haproxy</span><span class="o">.</span><span class="n">cfg</span>
+<span class="n">template_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">deep</span><span class="o">/</span><span class="n">elasticpyproxy</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">haproxy</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">template</span>
+<span class="n">backend_port</span> <span class="o">=</span> <span class="mi">6003</span>
+<span class="n">haproxy_binary</span> <span class="o">=</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">haproxy</span>
+<span class="n">start_by</span> <span class="o">=</span> <span class="n">systemd</span>
+<span class="n">haproxy_socket_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">haproxy</span><span class="o">/</span><span class="n">haproxy</span><span class="o">.</span><span class="n">sock</span>
+<span class="n">pid_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">haproxy</span><span class="o">.</span><span class="n">pid</span>
+<span class="n">backend_name</span> <span class="o">=</span> <span class="n">haproxynode</span>
+<span class="n">update_type</span> <span class="o">=</span> <span class="n">update_by_runtime</span>
+<span class="n">node_slots</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">service_name</span> <span class="o">=</span> <span class="n">haproxy</span>
+<span class="n">lock_dir</span> <span class="o">=</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">deep</span><span class="o">/</span><span class="n">elasticpyproxy</span><span class="o">/</span><span class="n">etc</span>
+<span class="n">orchestrator</span> <span class="o">=</span> <span class="n">aws</span>
+<span class="n">sleep_before_next_run</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">log_file</span> <span class="o">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">ep2</span><span class="o">/</span><span class="n">ep2</span><span class="o">.</span><span class="n">log</span>
+
+<span class="p">[</span><span class="n">AWS</span><span class="p">]</span>
+<span class="n">aws_access_key_id</span> <span class="o">=</span>
+<span class="n">aws_secret_access_key</span> <span class="o">=</span>
+<span class="n">asg_name</span> <span class="o">=</span>
+<span class="n">region_name</span> <span class="o">=</span>
+</pre></div>
+</div>
 <p>Params involved:</p>
 <ul class="simple">
 <li><p>haproxy_config_file : This is the path to the actual haproxy config file. Usually it is /etc/haproxy/haproxy.cfg</p></li>
-<li><dl class="simple">
-<dt>template_file<span class="classifier">Path to the template file. This is the file that will be populated and used to update the actuall</span></dt><dd><p>haproxy config file.</p>
-</dd>
-</dl>
-</li>
+<li><p>template_file : Path to the template file. This is the file that will be populated and used to update the actuall haproxy config file.</p></li>
 <li><p>backend_port : The port used by backend servers.</p></li>
 <li><p>haproxy_binary : The HAProxy binary file location.</p></li>
 <li><p>start_by : How to start/reload HAProxy. Can be <strong>systemd</strong> or <strong>binary</strong></p></li>
@@ -263,9 +262,9 @@ region_name =
 <div class="section" id="starting-ep2">
 <h2>Starting EP2<a class="headerlink" href="#starting-ep2" title="Permalink to this headline">¶</a></h2>
 <p>Execute the following for starting EP2:</p>
-<p><code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">sudo</span> <span class="pre">ep2</span> <span class="pre">-f</span> <span class="pre">[Path</span> <span class="pre">to</span> <span class="pre">ep2.conf]</span>
-<span class="pre">`</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">ep2</span> <span class="o">-</span><span class="n">f</span> <span class="p">[</span><span class="n">Path</span> <span class="n">to</span> <span class="n">ep2</span><span class="o">.</span><span class="n">conf</span><span class="p">]</span>
+</pre></div>
+</div>
 <p>Stop EP2 by CTRL+C.</p>
 <p>The ideal way to run EP2 would be to use a process manager like <strong>systemd</strong> or <strong>supervisord</strong>.</p>
 </div>
@@ -273,9 +272,8 @@ region_name =
 <h2>ElasticPyProxy Code Documentation<a class="headerlink" href="#elasticpyproxy-code-documentation" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 </div>
-</div>
 <div class="section" id="module-src.driver.driver">
-<span id="driver-main-entry-point-for-elasticpyproxy"></span><h2>driver (Main entry point for ElasticPyProxy)<a class="headerlink" href="#module-src.driver.driver" title="Permalink to this headline">¶</a></h2>
+<span id="driver-main-entry-point-for-elasticpyproxy"></span><h3>driver (Main entry point for ElasticPyProxy)<a class="headerlink" href="#module-src.driver.driver" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-driver"></span><dl class="function">
 <dt id="src.driver.driver.drive">
 <code class="sig-prename descclassname">src.driver.driver.</code><code class="sig-name descname">drive</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/driver/driver.html#drive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.driver.driver.drive" title="Permalink to this definition">¶</a></dt>
@@ -295,7 +293,7 @@ for bootstrapping ep2, reads ep2 config, initialises haproxy and starts the
 
 </div>
 <div class="section" id="module-src.driver.drivercache">
-<span id="drivercache-cache-layer-for-ep2"></span><h2>drivercache : Cache layer for EP2<a class="headerlink" href="#module-src.driver.drivercache" title="Permalink to this headline">¶</a></h2>
+<span id="drivercache-cache-layer-for-ep2"></span><h3>drivercache : Cache layer for EP2<a class="headerlink" href="#module-src.driver.drivercache" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-drivercache"></span><dl class="class">
 <dt id="src.driver.drivercache.DriverCache">
 <em class="property">class </em><code class="sig-prename descclassname">src.driver.drivercache.</code><code class="sig-name descname">DriverCache</code><span class="sig-paren">(</span><em class="sig-param">node_ips</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/driver/drivercache.html#DriverCache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.driver.drivercache.DriverCache" title="Permalink to this definition">¶</a></dt>
@@ -330,7 +328,7 @@ will be done</p>
 
 </div>
 <div class="section" id="module-src.driver.bootstrap">
-<span id="bootstrap-bootstrapper-for-ep2"></span><h2>bootstrap : Bootstrapper for ep2<a class="headerlink" href="#module-src.driver.bootstrap" title="Permalink to this headline">¶</a></h2>
+<span id="bootstrap-bootstrapper-for-ep2"></span><h3>bootstrap : Bootstrapper for ep2<a class="headerlink" href="#module-src.driver.bootstrap" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-bootstrap"></span><dl class="function">
 <dt id="src.driver.bootstrap.bootstrap">
 <code class="sig-prename descclassname">src.driver.bootstrap.</code><code class="sig-name descname">bootstrap</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/driver/bootstrap.html#bootstrap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.driver.bootstrap.bootstrap" title="Permalink to this definition">¶</a></dt>
@@ -354,7 +352,7 @@ src.core.nodefetchers.basefetcher: Object for fetching backends</p>
 
 </div>
 <div class="section" id="module-src.core.haproxyupdater.haproxyupdate">
-<span id="haproxyupdate-module-for-updating-haproxy"></span><h2>haproxyupdate : Module for updating haproxy<a class="headerlink" href="#module-src.core.haproxyupdater.haproxyupdate" title="Permalink to this headline">¶</a></h2>
+<span id="haproxyupdate-module-for-updating-haproxy"></span><h3>haproxyupdate : Module for updating haproxy<a class="headerlink" href="#module-src.core.haproxyupdater.haproxyupdate" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-haproxyupdate"></span><dl class="class">
 <dt id="src.core.haproxyupdater.haproxyupdate.HaproxyUpdate">
 <em class="property">class </em><code class="sig-prename descclassname">src.core.haproxyupdater.haproxyupdate.</code><code class="sig-name descname">HaproxyUpdate</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/haproxyupdate.html#HaproxyUpdate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.haproxyupdate.HaproxyUpdate" title="Permalink to this definition">¶</a></dt>
@@ -440,7 +438,7 @@ Haproxy needs to be updated and optionally reloaded if this list changes</p>
 
 </div>
 <div class="section" id="module-src.core.haproxyupdater.confighandler">
-<span id="confighandler-module-for-updating-haproxy"></span><h2>confighandler : Module for updating haproxy<a class="headerlink" href="#module-src.core.haproxyupdater.confighandler" title="Permalink to this headline">¶</a></h2>
+<span id="confighandler-module-for-updating-haproxy"></span><h3>confighandler : Module for updating haproxy<a class="headerlink" href="#module-src.core.haproxyupdater.confighandler" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-confighandler"></span><dl class="class">
 <dt id="src.core.haproxyupdater.confighandler.ConfigHandler">
 <em class="property">class </em><code class="sig-prename descclassname">src.core.haproxyupdater.confighandler.</code><code class="sig-name descname">ConfigHandler</code><a class="reference internal" href="_modules/src/core/haproxyupdater/confighandler.html#ConfigHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.confighandler.ConfigHandler" title="Permalink to this definition">¶</a></dt>
@@ -495,7 +493,7 @@ using the provided template file after properly formatting it</p>
 
 </div>
 <div class="section" id="module-src.core.haproxyupdater.haproxyreloader">
-<span id="haproxyreloader-module-for-reloading-haproxy"></span><h2>haproxyreloader : Module for reloading haproxy<a class="headerlink" href="#module-src.core.haproxyupdater.haproxyreloader" title="Permalink to this headline">¶</a></h2>
+<span id="haproxyreloader-module-for-reloading-haproxy"></span><h3>haproxyreloader : Module for reloading haproxy<a class="headerlink" href="#module-src.core.haproxyupdater.haproxyreloader" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-haproxyreloader"></span><dl class="class">
 <dt id="src.core.haproxyupdater.haproxyreloader.HaproxyReloader">
 <em class="property">class </em><code class="sig-prename descclassname">src.core.haproxyupdater.haproxyreloader.</code><code class="sig-name descname">HaproxyReloader</code><a class="reference internal" href="_modules/src/core/haproxyupdater/haproxyreloader.html#HaproxyReloader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.haproxyreloader.HaproxyReloader" title="Permalink to this definition">¶</a></dt>
@@ -551,7 +549,7 @@ with the required param.</p>
 
 </div>
 <div class="section" id="module-src.core.haproxyupdater.runtimeupdater">
-<span id="runtimeupdater-module-for-updating-haproxy-at-runtime"></span><h2>runtimeupdater : Module for updating haproxy at runtime<a class="headerlink" href="#module-src.core.haproxyupdater.runtimeupdater" title="Permalink to this headline">¶</a></h2>
+<span id="runtimeupdater-module-for-updating-haproxy-at-runtime"></span><h3>runtimeupdater : Module for updating haproxy at runtime<a class="headerlink" href="#module-src.core.haproxyupdater.runtimeupdater" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-runtimeupdater"></span><dl class="class">
 <dt id="src.core.haproxyupdater.runtimeupdater.RuntimeUpdater">
 <em class="property">class </em><code class="sig-prename descclassname">src.core.haproxyupdater.runtimeupdater.</code><code class="sig-name descname">RuntimeUpdater</code><a class="reference internal" href="_modules/src/core/haproxyupdater/runtimeupdater.html#RuntimeUpdater"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.runtimeupdater.RuntimeUpdater" title="Permalink to this definition">¶</a></dt>
@@ -621,7 +619,7 @@ change its address to that of the live node and enable back that node.</p></li>
 
 </div>
 <div class="section" id="module-src.core.haproxyupdater.sockethandler">
-<span id="sockethandler-module-for-handling-socket-operations"></span><h2>sockethandler : Module for handling socket operations<a class="headerlink" href="#module-src.core.haproxyupdater.sockethandler" title="Permalink to this headline">¶</a></h2>
+<span id="sockethandler-module-for-handling-socket-operations"></span><h3>sockethandler : Module for handling socket operations<a class="headerlink" href="#module-src.core.haproxyupdater.sockethandler" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-sockethandler"></span><dl class="class">
 <dt id="src.core.haproxyupdater.sockethandler.SocketHandler">
 <em class="property">class </em><code class="sig-prename descclassname">src.core.haproxyupdater.sockethandler.</code><code class="sig-name descname">SocketHandler</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/sockethandler.html#SocketHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.sockethandler.SocketHandler" title="Permalink to this definition">¶</a></dt>
@@ -673,7 +671,7 @@ str : response sent by the haproxy unix socket</p>
 
 </div>
 <div class="section" id="module-src.core.nodefetchers.basefetcher">
-<span id="basefetcher-provides-base-class-for-backend-fetchers"></span><h2>basefetcher : Provides base class for backend fetchers<a class="headerlink" href="#module-src.core.nodefetchers.basefetcher" title="Permalink to this headline">¶</a></h2>
+<span id="basefetcher-provides-base-class-for-backend-fetchers"></span><h3>basefetcher : Provides base class for backend fetchers<a class="headerlink" href="#module-src.core.nodefetchers.basefetcher" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-basefectcher"></span><dl class="class">
 <dt id="src.core.nodefetchers.basefetcher.BaseFetcher">
 <em class="property">class </em><code class="sig-prename descclassname">src.core.nodefetchers.basefetcher.</code><code class="sig-name descname">BaseFetcher</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/basefetcher.html#BaseFetcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.basefetcher.BaseFetcher" title="Permalink to this definition">¶</a></dt>
@@ -697,7 +695,7 @@ an optionally override the methods present in this class</p>
 
 </div>
 <div class="section" id="module-src.core.nodefetchers.orchestrator">
-<span id="orchestrator-module-for-providing-appropriate-backend-fetcher"></span><h2>orchestrator : Module for providing appropriate backend fetcher<a class="headerlink" href="#module-src.core.nodefetchers.orchestrator" title="Permalink to this headline">¶</a></h2>
+<span id="orchestrator-module-for-providing-appropriate-backend-fetcher"></span><h3>orchestrator : Module for providing appropriate backend fetcher<a class="headerlink" href="#module-src.core.nodefetchers.orchestrator" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-orchestrator"></span><dl class="function">
 <dt id="src.core.nodefetchers.orchestrator.get_orchestrator_handler">
 <code class="sig-prename descclassname">src.core.nodefetchers.orchestrator.</code><code class="sig-name descname">get_orchestrator_handler</code><span class="sig-paren">(</span><em class="sig-param">config</em>, <em class="sig-param">logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/orchestrator.html#get_orchestrator_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.orchestrator.get_orchestrator_handler" title="Permalink to this definition">¶</a></dt>
@@ -739,7 +737,7 @@ in the config.</p>
 
 </div>
 <div class="section" id="module-src.core.nodefetchers.awsfetcher.awsfetcher">
-<span id="awsfetcher-module-for-fecthing-live-backends-from-aws"></span><h2>awsfetcher : Module for fecthing live backends from AWS<a class="headerlink" href="#module-src.core.nodefetchers.awsfetcher.awsfetcher" title="Permalink to this headline">¶</a></h2>
+<span id="awsfetcher-module-for-fecthing-live-backends-from-aws"></span><h3>awsfetcher : Module for fecthing live backends from AWS<a class="headerlink" href="#module-src.core.nodefetchers.awsfetcher.awsfetcher" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-awsfetcher"></span><dl class="class">
 <dt id="src.core.nodefetchers.awsfetcher.awsfetcher.AwsFetcher">
 <em class="property">class </em><code class="sig-prename descclassname">src.core.nodefetchers.awsfetcher.awsfetcher.</code><code class="sig-name descname">AwsFetcher</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/awsfetcher/awsfetcher.html#AwsFetcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.awsfetcher.awsfetcher.AwsFetcher" title="Permalink to this definition">¶</a></dt>
@@ -773,7 +771,7 @@ and return them to the caller</p>
 
 </div>
 <div class="section" id="module-src.core.nodefetchers.awsfetcher.botohandler">
-<span id="botohandler-module-for-handling-aws-operations"></span><h2>botohandler : Module for handling AWS operations<a class="headerlink" href="#module-src.core.nodefetchers.awsfetcher.botohandler" title="Permalink to this headline">¶</a></h2>
+<span id="botohandler-module-for-handling-aws-operations"></span><h3>botohandler : Module for handling AWS operations<a class="headerlink" href="#module-src.core.nodefetchers.awsfetcher.botohandler" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-botohandler"></span><dl class="class">
 <dt id="src.core.nodefetchers.awsfetcher.botohandler.BotoHandler">
 <em class="property">class </em><code class="sig-prename descclassname">src.core.nodefetchers.awsfetcher.botohandler.</code><code class="sig-name descname">BotoHandler</code><a class="reference internal" href="_modules/src/core/nodefetchers/awsfetcher/botohandler.html#BotoHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.awsfetcher.botohandler.BotoHandler" title="Permalink to this definition">¶</a></dt>
@@ -837,14 +835,15 @@ for getting their public/private ips</p>
 </dd></dl>
 
 </div>
-</div>
 <div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<h3>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
+</div>
+</div>
 </div>
 
 
