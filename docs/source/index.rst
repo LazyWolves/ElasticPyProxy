@@ -24,14 +24,14 @@ View EP2 on `Github <https://www.github.com/djmgit/ElasticPyProxy>`_
 How EP2 works
 ***************
 
-Simple put, continuously polls the orchestrator and checks what are the available backends and updates haproxy accordingly.
+Simple put EP2, continuously polls the orchestrator and checks what are the available backends and updates haproxy accordingly.
 However it can be made to do this simple job in more than one way as needed by the user or the host system. Following are the
 main tasks done by the components present in EP2
 
 EP2 working
 ============
 
-- The system where EP2 runs should have the HAProxy (v1.8 and above) binary, HAproxy UNIX socket exposed and 
+- The system where EP2 runs should have the HAProxy (v1.8 or above) binary, HAproxy UNIX socket exposed and 
   accessible, optionally systemd service file properly configured.
 
 - When EP2 starts, the first thing it does is bootstrap the controller. The bootstrapping includes creating clients
@@ -46,10 +46,10 @@ EP2 working
   its poll-update-repeat loop.
   
 - Once EP2 enters the loop, it primarily does two things. Firstly it polls the orchestrator for the current backend nodes. On
-  getting the list of current live backends it compares it againts a locally saved in memory list of live backends.
-  If there is a diiference, it updates the local in-memory list and geoes on to update HAProxy otherwise it does nothing
+  getting the list of current live backends it compares it against a locally saved in memory list of live backends.
+  If there is a difference, it updates the local in-memory list and geoes on to update HAProxy otherwise it does nothing
   
-- EP2 can update haproxy in two ways. First way is, it simply formats the configures haproxy template file with the live
+- EP2 can update haproxy in two ways. First way is, it simply formats the configured haproxy template file with the live
   backend servers, updates the HAProxy config file with the contents of the formatted template file and reloads HAProxy.
   
 - Since HAProxy reload (post v1.8) is hitless, reload wont cause any downtime.
@@ -58,7 +58,7 @@ EP2 working
   must be provided in EP2 config accordingly. More on this below.
   
 - The issue with the above method of updating is, HAProxy has to be reloaded. When the number of reloads is less, it is not
-  a big issue. Howver if the number of reload is too high, it can cause overhead since reload essentially involves  transfer
+  a big issue. However if the number of reload is too high, it can cause overhead since reload essentially involves  transfer
   of connections/sockets from old process to the new process.
   
 - The second method of updation is the one in which reload is not required at all. It updates HAProxy in runtime using the
@@ -99,7 +99,7 @@ Updating HAProxy via config
   updation methods, EP2 is preconfigured with a template HAProxy config (mentioned below). 
   
   Once the current live backend servers are available, EP2 formats the template and populates it with the current live backends.
-  Then it replaces the contents of the actually HAProxy config file with the contents if this formatted template file.
+  Then it replaces the contents of the actually HAProxy config file with the contents of this formatted template file.
   After this is done it reloads HAProxy either via **systemd** or via **binary**.
   
   Both the path to Haproxy config file and path to the HAProxy template file should be provided in EP2 config.
@@ -143,7 +143,7 @@ Reloading HAProxy via systemd
 Reloading HAProxy via binary
 *******************************
   
-  The other way to reload haproy is by executing the binary. For this is work the following things must be provided in EP2
+  The other way to reload haproxy is by executing the binary. For this is to work the following things must be provided in EP2
   config :
   
   - haproxy_config_file : The haproxy config file
@@ -164,18 +164,18 @@ Bootstrapping EP2
   process :
   
   - The desired nodefetcher is initialised. As of now it is the **awsfetcher**. As a part of the initialisation of the
-    awsfether, the asg and ec2 boto3 clients are created using the provided aws credentials.
+    awsfetcher, the asg and ec2 boto3 clients are created using the provided aws credentials.
     
-  - The the very first call to get the live backend server is made.
+  - The the very first call to get the live backend servers is made.
   
-  - Once EP2 has the live backend server addresses, irrespective of whether EP2 is configures to use update via config or
+  - Once EP2 has the live backend server addresses, irrespective of whether EP2 is configured to use update via config or
     update at runtime, EP2 updates the haproxy config with the formatted template file contents. It is during this time
     EP2 creates the inactive pool if it is configured to use updae by runtime on later runs.
    
-  - Once the updation is done, it checks whether HAPorxy is running or not. If its not running, the it starts HAProxy.
+  - Once the updation is done, it checks whether HAProxy is running or not. If its not running, the it starts HAProxy.
     If it was running then it simply reloads it using the configured method.
     
-  - Once bootstrap is done, EP2 enters its not loop.
+  - Once bootstrap is done, EP2 enters its loop.
   
 Installing EP2
 *********************
@@ -235,12 +235,12 @@ A sample EP2 config file is given below::
 Params involved:
 
 - haproxy_config_file : This is the path to the actual haproxy config file. Usually it is /etc/haproxy/haproxy.cfg
-- template_file : Path to the template file. This is the file that will be populated and used to update the actuall haproxy config file.
+- template_file : Path to the template file. This is the file that will be populated and used to update the actual haproxy config file.
 - backend_port : The port used by backend servers.
 - haproxy_binary : The HAProxy binary file location.
 - start_by : How to start/reload HAProxy. Can be **systemd** or **binary**
 - haproxy_socket_file : Path to HAProxy socket file
-- pid_file : Path to HAProxy socket file
+- pid_file : Path to HAProxy pid file
 - backend_name : The name of the HAProxy backend/listener name under which the live backend servers fetched from orchestrator
                  will be added.
 - update_type : How to update HAProxy. Either **update_by_config** or **udpate_by_runtime**
@@ -314,11 +314,11 @@ A sample haproxy template file is shown below::
       stats uri /stat
       stats hide-version
 
-The backend/listername used (``haproxynode``) in this case should be mentione in **EP2 config**.
+The backend/lister used (``haproxynode``) in this case should be mentioned in **EP2 config**.
 The backend/listener of interest should have the template varibale ``nodes`` in jinja templating format.
 This template varibale will be replaced with the live backend servers in each run.
 
-Once this template is formatted, the actuall HAProxy config will be updated with the formatted contents of this
+Once this template is formatted, the actual HAProxy config will be updated with the formatted contents of this
 template file.
 
 So, whatever changes one usually has to make to HAProxy config, they have to be made here.
