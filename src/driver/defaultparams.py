@@ -10,7 +10,7 @@ default_params = {
     "update_type" : "update_by_runtime",
     "node_slots" : 50,
     "service_name" : "haproxy",
-    "lock_dir" : "/var/run/ep2",
+    "lock_dir" : "/run",
     "orchestrator" : "aws",
     "sleep_before_next_run" : 5,
     "sleep_before_next_lock_attempt" : 5,
