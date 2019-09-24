@@ -144,6 +144,11 @@ def __load_config():
         for name, value in parser.items(section):
             config[section.lower()][name] = value
 
+    config = merge_with_default_config(config)
+
+    return config
+
+def merge_with_default_config(config):
     return config
 
 def __can_aquire_lock(lock_dir):

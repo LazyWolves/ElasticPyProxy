@@ -6,6 +6,7 @@ import os
 
 LOG_DIR = "/var/log/ep2"
 CONFIG_DIR = "/etc/ep2"
+
 SAMPLE_CONFIG_DIR = "etc"
 
 CONFIG_FILE = "ep2.conf"
