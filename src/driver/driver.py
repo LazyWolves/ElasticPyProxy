@@ -12,8 +12,8 @@ from .defaultparams import default_params
 from .bootstrap import bootstrap
 import logging
 
-CONFIG_FILE = default_params.get("config")
-LOCK_FILE = default_params.get("lock_file")
+CONFIG_FILE = "/etc/ep2/ep2.conf"
+LOCK_FILE = default_params.get("lock_dir")
 
 def drive():
     """
@@ -44,9 +44,9 @@ def drive():
     haproxy_config = config.get("haproxy")
 
     # load values/defaults
-    SLEEP_BEFORE_NEXT_RUN = int(haproxy_config.get("sleep_before_next_run", default_params.get("sleep_before_next_run")))
-    SLEEP_BEFORE_NEXT_LOCK_ATTEMPT = int(haproxy_config.get("sleep_before_next_lock_attempt", default_params.get("sleep_before_next_lock_attempt")))
-    LOG_FILE = haproxy_config.get("log_file", default_params.get("log_file"))
+    SLEEP_BEFORE_NEXT_RUN = int(haproxy_config.get("sleep_before_next_run"))
+    SLEEP_BEFORE_NEXT_LOCK_ATTEMPT = int(haproxy_config.get("sleep_before_next_lock_attempt"))
+    LOG_FILE = haproxy_config.get("log_file")
 
     logger = __setup_logging(LOG_FILE)
 
