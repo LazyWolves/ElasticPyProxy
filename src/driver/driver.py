@@ -149,6 +149,14 @@ def __load_config():
     return config
 
 def merge_with_default_config(config):
+    haproxy_config = config.get("haproxy")
+
+    for key in default_params:
+        if not haproxy_config.get(key):
+            haproxy_config[key] = default_params[key]
+
+    config["haproxy"] = haproxy_config
+
     return config
 
 def __can_aquire_lock(lock_dir):
