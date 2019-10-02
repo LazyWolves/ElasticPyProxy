@@ -7,6 +7,13 @@ class TestConfigHandler:
     def test_update_config(self):
         pass
 
+    def setup_env(self):
+        with open("haproxy.cfg.test", "w") as f:
+            f.write(SAMPLE_HAPROXY_CONFIG)
+
+        with open("haproxy.cfg.template.test", "w") as f:
+            f.write(SAMPLE_HAPROXY_TEMPLATE)
+
     def test_read_write_file(self):
         file = "haproxy.cfg.test"
 
