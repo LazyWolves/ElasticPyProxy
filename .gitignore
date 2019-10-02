@@ -2,3 +2,5 @@ notes
 **/__pycache__/
 etc/elasticpyproxy.conf
 etc/haproxy.config.template
+tests/unit/haproxy.cfg.test
+tests/unit/haproxy.cfg.template.test
