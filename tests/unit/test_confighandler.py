@@ -10,7 +10,6 @@ haproxy_template_file_test = os.path.join(base_path, "haproxy.cfg.template.test"
 class TestConfigHandler:
     def test_update_config(self):
         self.setup_env()
-        base_path = os.path.dirname(os.path.realpath(__file__))
 
         udpated = ConfigHandler.update_config(haproxy_config_file=haproxy_config_file_test,
                                               template_file=haproxy_template_file_test,
@@ -28,6 +27,13 @@ class TestConfigHandler:
         assert "node5 1.1.1.1:5555 check" in cfg
         assert "node6 5.5.5.5:5555 check" in cfg
         assert "server-template node 4 10.0.0.1:8080 check disabled" in cfg
+
+        # tear down the test setup
+        self.remove_file(haproxy_config_file_test)
+        self.remove_file(haproxy_template_file_test)
+
+    def test_update_config_with_slots(self):
+        self.setup_env()
 
     def test_read_write_file(self):
         status, content = ConfigHandler.read_write_file(operation="write", file=haproxy_config_file_test, logger=logging, content=SAMPLE_HAPROXY_CONFIG)
