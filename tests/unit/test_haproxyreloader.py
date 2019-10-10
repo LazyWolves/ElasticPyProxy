@@ -8,6 +8,11 @@ haproxy_socket_file = "/var/run/haproxy/haproxy.sock"
 pid_file = "/run/haproxy.pid"
 
 class TestHaproxyReloader:
+
+    def test_start_by_systemd(self):
+        started = HaproxyReloader.start_by_systemd(service_name, logging)
+
+        assert started == True
     
     def test_reload_haproxy_by_systemd(self):
 
