@@ -33,7 +33,30 @@ class TestConfigHandler:
         self.remove_file(haproxy_template_file_test)
 
     def test_update_config_with_slots(self):
+
+        # setup environment
         self.setup_env()
+
+        udpated = ConfigHandler.update_config(haproxy_config_file=haproxy_config_file_test,
+                                              template_file=haproxy_template_file_test,
+                                              node_list=["1.1.1.1", "5.5.5.5"],
+                                              backend_port=5555,
+                                              node_slots=10,
+                                              logger=logging
+                                            )
+
+        assert udpated == True
+
+        with open(haproxy_config_file_test) as f:
+            cfg = f.read()
+
+        assert "node9 1.1.1.1:5555 check" in cfg
+        assert "node10 5.5.5.5:5555 check" in cfg
+        assert "server-template node 8 10.0.0.1:8080 check disabled" in cfg
+
+        # tear down test environment
+        self.remove_file(haproxy_config_file_test)
+        self.remove_file(haproxy_template_file_test)
 
     def test_read_write_file(self):
         status, content = ConfigHandler.read_write_file(operation="write", file=haproxy_config_file_test, logger=logging, content=SAMPLE_HAPROXY_CONFIG)
