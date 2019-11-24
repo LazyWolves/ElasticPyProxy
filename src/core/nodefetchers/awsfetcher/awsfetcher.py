@@ -66,10 +66,14 @@ class AwsFetcher(object):
         if self.asg_boto_client == None or self.ec2_boto_client == None:
             return None
 
+        # split the asg_name param using comma and store it in a list
+        asgs = self.asg_name.split(",")
+        asgs = [asg.strip() for asg in asgs]
+
         # get backends from AWS
         asg_instance_ips = BotoHandler.get_instance_ips_for_asg(asg_client=self.asg_boto_client,
                                                                 ec2_client=self.ec2_boto_client,
-                                                                asg_name=self.asg_name,
+                                                                asg_name=asgs,
                                                                 ip_type=self.ip_type
                                                             )
 

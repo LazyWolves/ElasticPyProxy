@@ -111,7 +111,7 @@ class BotoHandler(object):
         return asg_instance_ips
 
     @staticmethod
-    def __get_instance_ids_for_asg(boto_client, asg_name, logger=None):
+    def __get_instance_ids_for_asg(boto_client, asg_names, logger=None):
 
         """ Method for getting aws live instance ids belonging to the asg of interest
 
@@ -127,15 +127,17 @@ class BotoHandler(object):
 
             # Describe the esired asg
             response = boto_client.describe_auto_scaling_groups(
-                AutoScalingGroupNames=[
-                    asg_name,
-                ]
+                AutoScalingGroupNames=asg_names
             )
         except Exception as ex:
             logger.critical("Failed to get instance ids for ASG with error : {}".format(str(ex)))
             return None
 
-        instances = response.get("AutoScalingGroups")[0]["Instances"]
+        instances = []
+
+        # loop over all the autoscaling groups and get instance from them
+        for asg in response.get("AutoScalingGroups"):
+            instances += asg.get("Instances")
 
         instance_ids = []
 
