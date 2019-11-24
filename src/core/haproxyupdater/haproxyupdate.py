@@ -113,8 +113,12 @@ class HaproxyUpdate(object):
         if not self.node_list:
             return False
 
-        if self.haproxy_socket_file and not os.path.exists(self.haproxy_socket_file):
+        if not self.haproxy_socket_file:
             return False
+
+        for sock_file in self.haproxy_socket_file.split(","):
+            if not os.path.exists(sock_file.strip()):
+                return False
 
         if self.update_type == "update_by_config":
             if not self.start_by:
