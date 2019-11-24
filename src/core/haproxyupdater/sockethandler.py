@@ -27,10 +27,11 @@ class SocketHandler(object):
         """
 
         # get the desired params
-        self.sock_file = kwargs.get("sock_file")
+        self.sock_files = kwargs.get("sock_file").split(",")
+        self.sock_files = [sock_file.strip() for sock_file in self.sock_files]
         self.logger = kwargs.get("logger")
 
-    def connect_socket(self):
+    def connect_socket(self, sock_file):
 
         """ Method to connect to haproxy unix socket
 
@@ -44,7 +45,7 @@ class SocketHandler(object):
             # try connecting to haproxy socket file
             self.socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             self.socket.settimeout(10)
-            self.socket.connect(self.sock_file)
+            self.socket.connect(sock_file)
         except Exception as ex:
 
             '''
@@ -72,9 +73,19 @@ class SocketHandler(object):
         """
         response = None
         command = kwargs.get("command").encode()
+        command_type = kwargs.get("command_type", "GET")
 
+        if command_type == "GET":
+            return self.send_one(self.sock_files[0], command)
+        else:
+            return self.send_all(command)
+
+    def destroy_socket(self):
+        self.socket.close()
+
+    def send_one(self, sock_file, command):
         # connect to the haproxy socket
-        connected = self.connect_socket()
+        connected = self.connect_socket(sock_file)
 
         if not connected:
             return False, None
@@ -106,5 +117,14 @@ class SocketHandler(object):
 
         return True, response
 
-    def destroy_socket(self):
-        self.socket.close()
+    def send_all(self, command):
+
+        final_status = True
+
+        for sock_file in self.sock_files:
+            status, response = self.send_one(sock_file, command)
+
+            if not status:
+                final_status = False
+
+        return final_status, response

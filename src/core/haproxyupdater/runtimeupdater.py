@@ -47,7 +47,7 @@ class RuntimeUpdater(object):
         SHOW_STATUS = "show stat\n"
 
         # get stats
-        has_stat, stats = haproxy_sock.send_command(command=SHOW_STATUS)
+        has_stat, stats = haproxy_sock.send_command(command=SHOW_STATUS, command_type="GET")
         if not has_stat:
 
             logger.critical("Failed to fetch haproxy status")
@@ -127,7 +127,7 @@ class RuntimeUpdater(object):
             if active_node not in node_ips:
 
                 # send command to disable this node
-                command_status, _ = haproxy_sock.send_command(command=MAKE_MAINT.format(backend_name=backend_name, node_name=active_nodes[active_node]))
+                command_status, _ = haproxy_sock.send_command(command=MAKE_MAINT.format(backend_name=backend_name, node_name=active_nodes[active_node]), command_type="SET")
                 if command_status:
 
                     # if command execution was success then add it to inactive nodes list
@@ -159,24 +159,24 @@ class RuntimeUpdater(object):
 
                     # Send command to socket for changing the address of that inactive node to the address of the
                     # current live backend under consideration
-                    command_status, _ = haproxy_sock.send_command(command=SET_ADDR.format(backend_name=backend_name, node_name=node_to_use, addr=new_node_ip, port=port))
+                    command_status, _ = haproxy_sock.send_command(command=SET_ADDR.format(backend_name=backend_name, node_name=node_to_use, addr=new_node_ip, port=port), command_type="SET")
                     if not command_status:
 
                         '''
                             Log error
                         '''
-                        logger.critical("Failed to change {node} backend addr to ip:{ip}".format(node=node_to_use, ip=new_node_ip))
+                        logger.critical("Failed to change {node} backend addr to ip:{ip} for some or all sockets".format(node=node_to_use, ip=new_node_ip))
                     else :
                         logger.info("Successfully changed {node} backend addr to ip:{ip}".format(node=node_to_use, ip=new_node_ip))
 
                     # Once the address has been changed successfully, make this inactive node active
-                    command_status, _ = haproxy_sock.send_command(command=MAKE_READY.format(backend_name=backend_name, node_name=node_to_use))
+                    command_status, _ = haproxy_sock.send_command(command=MAKE_READY.format(backend_name=backend_name, node_name=node_to_use), command_type="SET")
                     if not command_status:
 
                         '''
                             Log error
                         '''
-                        logger.critical("Failed to activate node:{node}".format(node=node_to_use))
+                        logger.critical("Failed to activate node:{node} for some or all sockets".format(node=node_to_use))
                     else:
                         logger.info("Sucessfully activated node:{node}".format(node=node_to_use))
                 else:
