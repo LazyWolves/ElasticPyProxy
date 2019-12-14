@@ -67,7 +67,7 @@ def bootstrap(**kwargs):
 
     logger.critical("Haproxy config update at botstrap failed")
 
-    return updated, haproxyupdater, orchestratorHandler
+    return updated, haproxyupdater, orchestratorHandler, driverCache
 
 def __is_haproxy_running(config, logger=None):
 
