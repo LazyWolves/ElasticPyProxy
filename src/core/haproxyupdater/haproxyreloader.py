@@ -56,7 +56,10 @@ class HaproxyReloader(object):
             # get the required params for bianry reload
             binary = kwargs.get("haproxy_binary")
             haproxy_config_file = kwargs.get("haproxy_config_file")
-            sock_file = kwargs.get("haproxy_socket_file")
+
+            # it is assumed that the socket referd to by the first file has got expose-fd listeners
+            # this socket will be used for socket transfer between processes and for HAProxy reload.
+            sock_file = kwargs.get("haproxy_socket_file").split(",")[0].strip()
             pid_file = kwargs.get("pid_file")
 
             reloaded = HaproxyReloader.__reload_by_binary(binary, haproxy_config_file, sock_file, pid_file, logger)
