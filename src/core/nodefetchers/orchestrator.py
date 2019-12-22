@@ -24,11 +24,11 @@ def get_orchestrator_handler(config, logger=None):
     orchestrator = config.get("haproxy").get("orchestrator")
 
     if orchestrator.lower() == "aws":
-        handler = prepare_aws_handler(config.get(orchestrator))
+        handler = prepare_aws_handler(config.get(orchestrator), logger)
 
     return handler
 
-def prepare_aws_handler(config):
+def prepare_aws_handler(config, logger):
 
     """ Prepares the AWS fetcher
 
@@ -48,7 +48,8 @@ def prepare_aws_handler(config):
                              aws_secret_access_key=aws_secret_access_key,
                              ip_type=ip_type,
                              asg_name=asg_name,
-                             region_name=region_name
+                             region_name=region_name,
+                             logger=logger
                             )
 
     return aws_handler
