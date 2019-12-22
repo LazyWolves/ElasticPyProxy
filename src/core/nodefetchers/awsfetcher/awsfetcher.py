@@ -74,7 +74,8 @@ class AwsFetcher(object):
         asg_instance_ips = BotoHandler.get_instance_ips_for_asg(asg_client=self.asg_boto_client,
                                                                 ec2_client=self.ec2_boto_client,
                                                                 asg_name=asgs,
-                                                                ip_type=self.ip_type
+                                                                ip_type=self.ip_type,
+                                                                logger=self.logger
                                                             )
 
         return asg_instance_ips
