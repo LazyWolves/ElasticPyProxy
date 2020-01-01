@@ -42,6 +42,8 @@ class ConfigHandler(object):
         backend_port = kwargs.get("backend_port")
         inactive_nodes_count = kwargs.get("inactive_nodes_count")
         node_slots = kwargs.get("node_slots")
+        backend_maxconn = kwargs.get("backend_maxconn")
+        check_interval = kwargs.get("check_interval")
         logger = kwargs.get("logger")
 
         # Try reading the template file
@@ -52,8 +54,8 @@ class ConfigHandler(object):
             logger.critical("Could not read template file : {}".format(template_file))
             return False
 
-        node_template = "    server node{node_id} {ip}:{port} check"
-        inactive_nodes_template = "    server-template node {count} 10.0.0.1:8080 check disabled"
+        node_template = ConfigHandler.__get_node_template(backend_maxconn=backend_maxconn, check_interval=check_interval, inactive=False)
+        inactive_nodes_template = ConfigHandler.__get_node_template(backend_maxconn=backend_maxconn, check_interval=check_interval, inactive=True)
 
         nodes_str = ""
 
@@ -108,6 +110,28 @@ class ConfigHandler(object):
         logger.info("Successfully updated haproxy config")
 
         return True
+
+    @staticmethod
+    def __get_node_template(**kwargs):
+        check_interval_str = ""
+        backend_maxconn_str = ""
+        backend_maxconn = kwargs.get("backend_maxconn")
+        check_interval = kwargs.get("check_interval")
+        inactive = kwargs.get("inactive", False)
+        node_template = ""
+
+        if backend_maxconn != None:
+            backend_maxconn_str = "maxconn {val}".format(val=backend_maxconn)
+
+        if check_interval != None:
+            check_interval_str = "inter {val}".format(val=check_interval)
+
+        if inactive == False:
+            node_template = "    server node{node_id} {ip}:{port} check " + check_interval_str + " " + backend_maxconn_str
+        else:
+            node_template = "    server-template node {count} 10.0.0.1:8080 check " + check_interval_str + " " + backend_maxconn_str + " disabled"
+
+        return node_template
 
     @staticmethod
     def read_write_file(**kwargs):

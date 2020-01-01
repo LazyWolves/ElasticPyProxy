@@ -49,6 +49,8 @@ class HaproxyUpdate(object):
         self.update_type = kwargs.get("update_type")
         self.node_slots = int(kwargs.get("node_slots"))
         self.service_name = kwargs.get("service_name")
+        self.backend_maxconn = kwargs.get("backend_maxconn")
+        self.check_interval = kwargs.get("check_interval")
         self.logger = kwargs.get("logger")
 
         """
@@ -211,6 +213,8 @@ class HaproxyUpdate(object):
                                         node_list=self.node_list,
                                         backend_port=self.backend_port,
                                         node_slots=self.node_slots,
+                                        backend_maxconn=self.backend_maxconn,
+                                        check_interval=self.check_interval,
                                         logger=self.logger
                                         )
 
@@ -258,6 +262,8 @@ class HaproxyUpdate(object):
         updated = ConfigHandler.update_config(haproxy_config_file=self.haproxy_config_file,
                                             template_file=self.template_file,
                                             node_list=self.node_list,
+                                            backend_maxconn=self.backend_maxconn,
+                                            check_interval=self.check_interval,
                                             backend_port=self.backend_port,
                                             inactive_nodes_count=stats.get("inactive_nodes_count"),
                                             logger=self.logger)
