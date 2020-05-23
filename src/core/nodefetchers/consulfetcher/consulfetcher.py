@@ -29,5 +29,18 @@ class ConsulFetcher(BaseFetcher):
                                                 consul_service_path=consul_service_path,
                                                 consul_request_url_with_service=self.service_name
                                            )
-        
-                                
+
+        if self.tags and len(self.tags) != 0:
+            formatted_tags = self.__get_formatted_tags(self.tags)
+
+            consul_request_url_with_service = "{consul_request_url_with_service}?{formatted_tags}".format(
+                                                    formatted_tags=formatted_tags
+                                              )
+
+        consul_response = requests.get(consul_request_url_with_service)
+        consul_response_json = consul_response.json()
+
+        print (consul_response_json)
+
+if __name__ == "__main__":
+    pass
