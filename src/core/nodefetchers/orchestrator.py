@@ -71,7 +71,8 @@ def prepare_consul_handler(config, logger):
                         consul_ip=consul_ip,
                         consul_port=consul_port,
                         service_name=service_name,
-                        tags=tags
+                        tags=tags,
+                        logger=logger
                     )
 
     return consul_fetcher

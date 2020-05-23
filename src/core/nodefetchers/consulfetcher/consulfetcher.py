@@ -8,6 +8,7 @@ class ConsulFetcher(BaseFetcher):
         self.consul_port = kwargs.get("consul_port")
         self.service_name = kwargs.get("service_name")
         self.tags = kwargs.get("tags")
+        self.logger = kwargs.get("logger")
 
     def __check_response(self):
         return True
@@ -36,10 +37,16 @@ class ConsulFetcher(BaseFetcher):
             consul_request_url_with_service = "{consul_request_url_with_service}?{formatted_tags}".format(
                                                     consul_request_url_with_service=consul_request_url_with_service,
                                                     formatted_tags=formatted_tags
-                                              )
+                                                )
 
-        consul_response = requests.get(consul_request_url_with_service)
-        consul_response_json = consul_response.json()
+        consul_response_json = None
+
+        try:
+            consul_response = requests.get(consul_request_url_with_service)
+            consul_response_json = consul_response.json()
+        except Exception as ex:
+            self.logger.critical("Failed to fetch consul nodes : {}".format(str(ex)))
+            return consul_response_json
 
         node_ips = []
 
