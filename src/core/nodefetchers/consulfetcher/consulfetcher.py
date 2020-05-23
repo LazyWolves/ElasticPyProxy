@@ -27,20 +27,27 @@ class ConsulFetcher(BaseFetcher):
         consul_request_url_with_service = "{consul_request_url_base}{consul_service_path}/{service_name}".format(
                                                 consul_request_url_base=consul_request_url_base,
                                                 consul_service_path=consul_service_path,
-                                                consul_request_url_with_service=self.service_name
+                                                service_name=self.service_name
                                            )
 
         if self.tags and len(self.tags) != 0:
             formatted_tags = self.__get_formatted_tags(self.tags)
 
             consul_request_url_with_service = "{consul_request_url_with_service}?{formatted_tags}".format(
+                                                    consul_request_url_with_service=consul_request_url_with_service,
                                                     formatted_tags=formatted_tags
                                               )
 
         consul_response = requests.get(consul_request_url_with_service)
         consul_response_json = consul_response.json()
 
-        print (consul_response_json)
+        node_ips = []
+
+        for node in consul_response_json:
+            node_ips.append(node.get("Address"))
+
+        return node_ips
 
 if __name__ == "__main__":
-    pass
+    cf = ConsulFetcher(consul_ip="127.0.0.1", consul_port=8500, service_name="web",tags=["apache","web"])
+    print (cf.fetch())
