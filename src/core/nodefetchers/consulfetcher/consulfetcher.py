@@ -9,6 +9,7 @@ class ConsulFetcher(BaseFetcher):
         self.service_name = kwargs.get("service_name")
         self.tags = kwargs.get("tags")
         self.logger = kwargs.get("logger")
+        self.only_passing = kwargs.get("only_passing")
 
     def __check_response(self):
         return True
@@ -25,6 +26,7 @@ class ConsulFetcher(BaseFetcher):
                                         consul_port=self.consul_port
                                    )
         consul_service_path = "/service"
+        consul_passing_str = "passing"
         consul_request_url_with_service = "{consul_request_url_base}{consul_service_path}/{service_name}".format(
                                                 consul_request_url_base=consul_request_url_base,
                                                 consul_service_path=consul_service_path,
@@ -38,6 +40,12 @@ class ConsulFetcher(BaseFetcher):
                                                     consul_request_url_with_service=consul_request_url_with_service,
                                                     formatted_tags=formatted_tags
                                                 )
+
+        if self.only_passing == True:
+            consul_request_url_with_service = "{consul_request_url_with_service}&{consul_passing_str}".format(
+                                                    consul_request_url_with_service=consul_request_url_with_service,
+                                                    consul_passing_str=consul_passing_str
+                                              )
 
         consul_response_json = None
 
