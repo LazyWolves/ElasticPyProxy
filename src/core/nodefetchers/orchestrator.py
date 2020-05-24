@@ -30,7 +30,7 @@ def get_orchestrator_handler(config, logger=None):
     if orchestrator.lower() == "aws":
         handler = prepare_aws_handler(config.get(orchestrator), logger)
 
-    if orchestrator.logger() == "consul":
+    if orchestrator.lower() == "consul":
         handler = prepare_consul_handler(config.get(orchestrator), logger)
 
     return handler
@@ -66,6 +66,11 @@ def prepare_consul_handler(config, logger):
     consul_port = config.get("consul_port", DEFAULT_CONSUL_PORT)
     service_name = config.get("service_name")
     tags = config.get("tag")
+
+    tags_list = []
+
+    if tags:
+        tags_list = [tag.strip() for tag in tags.split(",")]
 
     consul_fetcher = ConsulFetcher(
                         consul_ip=consul_ip,
