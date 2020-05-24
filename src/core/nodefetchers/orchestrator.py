@@ -65,8 +65,8 @@ def prepare_consul_handler(config, logger):
     consul_ip = config.get("consul_ip", DEFAULT_CONSUL_IP)
     consul_port = config.get("consul_port", DEFAULT_CONSUL_PORT)
     service_name = config.get("service_name")
-    tags = config.get("tag")
-    only_passing = config.get("only_passing")
+    tags = config.get("tags")
+    only_passing = bool(config.get("only_passing", True))
 
     tags_list = []
 
@@ -77,7 +77,7 @@ def prepare_consul_handler(config, logger):
                         consul_ip=consul_ip,
                         consul_port=consul_port,
                         service_name=service_name,
-                        tags=tags,
+                        tags=tags_list,
                         only_passing=only_passing,
                         logger=logger
                     )

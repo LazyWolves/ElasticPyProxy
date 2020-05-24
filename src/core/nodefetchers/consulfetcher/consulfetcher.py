@@ -41,10 +41,16 @@ class ConsulFetcher(BaseFetcher):
                                                     formatted_tags=formatted_tags
                                                 )
 
+        if "?" in consul_request_url_with_service:
+            url_parts_joiner = "&"
+        else:
+            url_parts_joiner = "?"
+
         if self.only_passing == True:
-            consul_request_url_with_service = "{consul_request_url_with_service}&{consul_passing_str}".format(
+            consul_request_url_with_service = "{consul_request_url_with_service}{url_parts_joiner}{consul_passing_str}".format(
                                                     consul_request_url_with_service=consul_request_url_with_service,
-                                                    consul_passing_str=consul_passing_str
+                                                    consul_passing_str=consul_passing_str,
+                                                    url_parts_joiner=url_parts_joiner
                                               )
 
         consul_response_json = None
