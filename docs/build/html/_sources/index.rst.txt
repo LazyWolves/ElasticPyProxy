@@ -264,8 +264,9 @@ Params involved:
 - start_by : How to start/reload HAProxy. Can be **systemd** or **binary**
 - haproxy_socket_file : Path to HAProxy socket file
 - pid_file : Path to HAProxy pid file
-- backend_name : The name of the HAProxy backend/listener name under which the live backend servers fetched from orchestrator
-                 will be added.
+- backend_name : The name of the HAProxy backend/listener name under which the live backend servers fetched from orchestrator will be added.
+- backend_maxconn : Max connections for individual backends
+- check_interval : Interval for performing health checks for individual backends
 - update_type : How to update HAProxy. Either **update_by_config** or **udpate_by_runtime**
 - node_slots : Total number of slots for backend servers. As mentioned above, this will be used to calculate inactive servers.
 - service_name : Service name for HAProxy systemd service. Required only when using reload by systemd

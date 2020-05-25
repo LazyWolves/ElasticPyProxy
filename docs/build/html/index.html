@@ -263,11 +263,9 @@ If it was running then it simply reloads it using the configured method.</p></li
 <li><p>start_by : How to start/reload HAProxy. Can be <strong>systemd</strong> or <strong>binary</strong></p></li>
 <li><p>haproxy_socket_file : Path to HAProxy socket file</p></li>
 <li><p>pid_file : Path to HAProxy pid file</p></li>
-<li><dl class="simple">
-<dt>backend_name<span class="classifier">The name of the HAProxy backend/listener name under which the live backend servers fetched from orchestrator</span></dt><dd><p>will be added.</p>
-</dd>
-</dl>
-</li>
+<li><p>backend_name : The name of the HAProxy backend/listener name under which the live backend servers fetched from orchestrator will be added.</p></li>
+<li><p>backend_maxconn : Max connections for individual backends</p></li>
+<li><p>check_interval : Interval for performing health checks for individual backends</p></li>
 <li><p>update_type : How to update HAProxy. Either <strong>update_by_config</strong> or <strong>udpate_by_runtime</strong></p></li>
 <li><p>node_slots : Total number of slots for backend servers. As mentioned above, this will be used to calculate inactive servers.</p></li>
 <li><p>service_name : Service name for HAProxy systemd service. Required only when using reload by systemd</p></li>
