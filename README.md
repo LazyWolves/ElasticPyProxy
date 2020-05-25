@@ -2,15 +2,32 @@
 
 ElasticPyProxy (EP2) is a controller written completely in python for dynamically scaling HAProxy backend servers. Using this
 controller, it is possible to integrate HAProxy with a server orchestrator which spwans servers dynamically and scales
-out and in very frequently. As of now it provides support for **only for AWS** however handler for any orchestrator which
-exposes an API for getting live backends can be added easily.
+out and in very frequently. As of now it provides support for the following:
+
+- AWS Autoscaling groups
+- Consul
+
+however handler for any orchestrator which exposes an API for getting live backends can be added easily.
+
+It is to be noted that **consul is not an orchestrator** but a service discovery tool. It can be used to discovery
+A given service can be discovered with consul and later the hosts/nodes which are the provider of that service
+can be discovered by either consul DNS or consul catalog API. If a node providing the given services goes down,
+the api will remove those nodes from the catalogue and show only the live ones.
+
+In the rest of the documentation we will continue refering to AWS ASG while explaining the differemt features
+of EP2 but evrything will be applicable to Consul as well. 
 
 So, going ahead with aws, it is possible, using EP2 to integrate HAProxy with a AWS Autoscaling Group. Once integrated, the
 HAProxy backend servers will scale out and in with the ASG of interest. Thus, whenever the ASG spawns a new instance, that
 instance will get added to haproxy's concerned backend/listener and when the ASG removes a backend, that particular server 
 will also be removed from HAProxy's concerned backend/listener.
 
-In the rest of the documentation, Amazon Autoscaling Group will be refered to as the **orchestrator** and the backend servers will be refered to as just **backends**
+Know more about Hashicorp Consul `here <https://www.consul.io/>`_
+
+In the rest of the documentation, for simplicity the term **orchestrator** will be used to refer to AWS ASG
+and consul (although consul is not an orchestrator as already mentioned above but a service discovery mechanism,
+any orchestrator can be exposed via consul, even AWS ASG) and the backend servers will be refered to as 
+just **backends**
 
 ## How EP2 works
 
@@ -71,13 +88,10 @@ main tasks done by the components present in EP2
   
   - HaproxyReloader : This is used to reload HAProxy wither via systemd or via binary.
   
-  ### AWS ASG Backend fetcher
+  ### Backend fetcher
   
-  The **aws asg backend fectcher** or the awsfetcher in short, fetches the available servers in the concerned asg using
-  the boto3 python libaray.
-  
-  It uses the boto3 asg client to get the instance IDs of the available instances in the desired asg and then uses
-  boto3 ec2 client to get the public/private IPs of the available instances.
+  The awsfetcher and the consulfetcher, fetches the available servers in the concerned asg or service respectively.
+  For AWS ASG, boto3 library is used and for Consul, the Consul catalog API is used.
   
   ### Updating HAProxy via config
   
@@ -220,6 +234,16 @@ A sample EP2 config file is given below:
   asg_name =
   region_name =
 ```
+For Consul, the following block can be used instead of [AWS]
+
+```
+  [CONSUL]
+  service_name =
+  consul_ip =
+  consul_port =
+  only_passing =
+  tags =
+```
 
 Params involved:
 
@@ -229,10 +253,11 @@ Params involved:
 - backend_port : The port used by backend servers.
 - haproxy_binary : The HAProxy binary file location.
 - start_by : How to start/reload HAProxy. Can be **systemd** or **binary**
-- haproxy_socket_file : Path to HAProxy socket file
+- haproxy_socket_file : Path to HAProxy socket file. If Haproxy has been configure to spawn multiple process via nbproc, then paths to multiple socket files can be provided here separated by comma
 - pid_file : Path to HAProxy pid file
-- backend_name : The name of the HAProxy backend/listener name under which the live backend servers fetched from orchestrator
-                 will be added.
+- backend_name : The name of the HAProxy backend/listener name under which the live backend servers fetched from orchestrator will be added.
+- backend_maxconn : Max connections for individual backends
+- check_interval : Interval for performing health checks for individual backends
 - update_type : How to update HAProxy. Either **update_by_config** or **udpate_by_runtime**
 - node_slots : Total number of slots for backend servers. As mentioned above, this will be used to calculate inactive servers.
 - service_name : Service name for HAProxy systemd service. Required only when using reload by systemd
@@ -241,10 +266,21 @@ Params involved:
 - sleep_before_next_run : Amount of time to wait before next poll-update run
 - log_file : The file to output logs
 
+[AWS]
+
 - aws_access_key_id : aws creds
 - aws_secret_access_key : aws creds
-- asg_name : asg name
+- asg_name : Name of the autoscaling group
 - region_name : aws region name where the asg exists
+
+[CONSUL]
+
+- service_name : Name of the service which has already been registered with consul and whose providers we want to discover
+- consul_ip : IP adress where consul catalog API is running. Default is 127.0.0.1. If the node where EP2 is running has been added the the consul cluster, then consul api should be accessed via 127.0.0.1 if not changed otherwise.
+
+- consul_port : Port for the Consul catalog API. Default is 8500
+- only_passing : can be **True** or **False**. If True, then only those backends will be discovered and added for which the service checks are passing. Please refer Consul doc to learn more about service checks. Default value is True.
+- tags : Comma separated values of tags to filter services.
 
 
 A sample haproxy template file is shown below
