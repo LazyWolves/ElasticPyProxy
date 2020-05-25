@@ -62,6 +62,15 @@ def prepare_aws_handler(config, logger):
     return aws_handler
 
 def prepare_consul_handler(config, logger):
+
+    """ Prepares the Consul fetcher
+
+        Args:
+            config (dictionary) : dictionary containing ep2 config
+
+        Returns:
+            srv.nodefetchers.consulfetcher.cosulfetcher : Consul backend fetcher
+    """
     consul_ip = config.get("consul_ip", DEFAULT_CONSUL_IP)
     consul_port = config.get("consul_port", DEFAULT_CONSUL_PORT)
     service_name = config.get("service_name")

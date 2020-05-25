@@ -3,6 +3,22 @@ from src.core.nodefetchers.basefetcher import BaseFetcher
 
 class ConsulFetcher(BaseFetcher):
 
+    """ Class for fetching live backends discovered by consul
+
+        Contains methods to fetch live backends from consul using consul catalog API
+        To make this class work properly, ep2 config must have aws section with
+        the following
+
+        - consul ip - default is 127.0.0.1
+        - consul api port - default is 8500
+        - service name registered with consul
+        - tags - tags to filter
+        - only_passing - to select nodes on which the service checks are passing
+
+        Args:
+            **kwargs (dictionary) : Dictionary containing params
+    """
+
     def __init__(self, **kwargs):
         self.consul_ip = kwargs.get("consul_ip")
         self.consul_port = kwargs.get("consul_port")
