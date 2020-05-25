@@ -16,7 +16,7 @@ out and in very frequently. As of now it provides support for the following:
 
 however handler for any orchestrator which exposes an API for getting live backends can be added easily.
 
-It is to be noted that **consul is not a orchestrator** but a service discovery tool. It can be used to discovery
+It is to be noted that **consul is not an orchestrator** but a service discovery tool. It can be used to discovery
 A given service can be discovered with consul and later the hosts/nodes which are the provider of that service
 can be discovered by either consul DNS or consul catalog API. If a node providing the given services goes down,
 the api will remove those nodes from the catalogue and show only the live ones.
