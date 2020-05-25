@@ -9,15 +9,32 @@ ElasticPyProxy : A controller for dynamic scaling of Haproxy backend servers
 
 ElasticPyProxy (EP2) is a controller written completely in python for dynamically scaling HAProxy backend servers. Using this
 controller, it is possible to integrate HAProxy with a server orchestrator which spwans servers dynamically and scales
-out and in very frequently. As of now it provides support for **only for AWS** however handler for any orchestrator which
-exposes an API for getting live backends can be added easily.
+out and in very frequently. As of now it provides support for the following:
+
+- AWS Autoscaling groups
+- Consul
+
+however handler for any orchestrator which exposes an API for getting live backends can be added easily.
+
+It is to be noted that **consul is not a orchestrator** but a service discovery tool. It can be used to discovery
+A given service can be discovered with consul and later the hosts/nodes which are the provider of that service
+can be discovered by either consul DNS or consul catalog API. If a node providing the given services goes down,
+the api will remove those nodes from the catalogue and show only the live ones.
+
+In the rest of the documentation we will continue refering to AWS ASG while explaining the differemt features
+of EP2 but evrything will be applicable to Consul as well. 
 
 So, going ahead with aws, it is possible, using EP2 to integrate HAProxy with a AWS Autoscaling Group. Once integrated, the
 HAProxy backend servers will scale out and in with the ASG of interest. Thus, whenever the ASG spawns a new instance, that
 instance will get added to haproxy's concerned backend/listener and when the ASG removes a backend, that particular server 
 will also be removed from HAProxy's concerned backend/listener.
 
-In the rest of the documentation, Amazon Autoscaling Group will be refered to as the **orchestrator** and the backend servers will be refered to as just **backends**
+Know more about Hashicorp Consul `here <https://www.consul.io/>`_
+
+In the rest of the documentation, for simplicity the term **orchestrator** will be used to refer to AWS ASG
+and consul (although consul is not an orchestrator as already mentioned above but a service discovery mechanism,
+any orchestrator can be exposed via consul, even AWS ASG) and the backend servers will be refered to as 
+just **backends**
 
 View EP2 on `Github <https://www.github.com/djmgit/ElasticPyProxy>`_
 
@@ -47,7 +64,7 @@ EP2 working
   
 - Once EP2 enters the loop, it primarily does two things. Firstly it polls the orchestrator for the current backend nodes. On
   getting the list of current live backends it compares it against a locally saved in memory list of live backends.
-  If there is a difference, it updates the local in-memory list and geoes on to update HAProxy otherwise it does nothing
+  If there is a difference, it updates the local in-memory list and goes on to update HAProxy otherwise it does nothing
   
 - EP2 can update haproxy in two ways. First way is, it simply formats the configured haproxy template file with the live
   backend servers, updates the HAProxy config file with the contents of the formatted template file and reloads HAProxy.
@@ -73,7 +90,7 @@ Major components of EP2
 =========================
   
   - Backend fetcher : The backend fetcher fetches the live backends from the configured orchestrator. As mentioned earlier
-    for now this is AWS.
+    for now this is AWS ASG and Consul.
     
   - HaproxyUpdater : This updates the HAProxy, either by updating config or via socket at runtime.
   
@@ -83,14 +100,11 @@ Major components of EP2
   
   - HaproxyReloader : This is used to reload HAProxy wither via systemd or via binary.
   
-AWS ASG Backend fetcher
+Backend fetcher
 **************************
   
-  The **aws asg backend fectcher** or the awsfetcher in short, fetches the available servers in the concerned asg using
-  the boto3 python libaray.
-  
-  It uses the boto3 asg client to get the instance IDs of the available instances in the desired asg and then uses
-  boto3 ec2 client to get the public/private IPs of the available instances.
+  The awsfetcher and the consulfetcher, fetches the available servers in the concerned asg or service respectively.
+  For AWS ASG, boto3 library is used and for Consul, the Consul catalog API is used.
   
 Updating HAProxy via config
 *******************************
@@ -231,7 +245,16 @@ A sample EP2 config file is given below::
   aws_secret_access_key =
   asg_name =
   region_name =
+  
+For Consul, the following block can be used instead of [AWS]::
 
+  [CONSUL]
+  service_name =
+  consul_ip =
+  consul_port =
+  only_passing =
+  tags =
+    
 Params involved:
 
 - haproxy_config_file : This is the path to the actual haproxy config file. Usually it is /etc/haproxy/haproxy.cfg
