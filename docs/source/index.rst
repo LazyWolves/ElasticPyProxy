@@ -274,10 +274,24 @@ Params involved:
 - sleep_before_next_run : Amount of time to wait before next poll-update run
 - log_file : The file to output logs
 
+[AWS]
 - aws_access_key_id : aws creds
 - aws_secret_access_key : aws creds
 - asg_name : asg name
 - region_name : aws region name where the asg exists
+
+[CONSUL]
+- service_name : Name of the service which has already been registered with consul and whose providers we want
+                 to discover
+- consul_ip : IP adress where consul catalog API is running. Default is 127.0.0.1. If the node where EP2 is running
+              has been added the the consul cluster, then consul api should be accessed via 127.0.0.1 if not changed
+              otherwise.
+
+- consul_port : Port for the Consul catalog API. Default is 8500
+- only_passing : can be **True** or **False**. If True, then only those backends will be discovered and added for
+                 which the service checks are passing. Please refer Consul doc to learn more about service checks.
+                 Default value is True.
+- tags : Comma separated values of tags to filter services.
 
 A sample haproxy template file is shown below::
 
