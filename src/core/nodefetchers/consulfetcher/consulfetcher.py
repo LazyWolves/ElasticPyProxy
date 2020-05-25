@@ -20,6 +20,11 @@ class ConsulFetcher(BaseFetcher):
     """
 
     def __init__(self, **kwargs):
+
+        """ Init method for this class
+
+            Method initialise consul variables
+        """
         self.consul_ip = kwargs.get("consul_ip")
         self.consul_port = kwargs.get("consul_port")
         self.service_name = kwargs.get("service_name")
@@ -31,12 +36,30 @@ class ConsulFetcher(BaseFetcher):
         return True
 
     def __get_formatted_tags(self, tags):
+
+        """
+            Method to format list of tags into 'tag=<tag_value>&tag=...' format
+
+            Args:
+                tags (list): List of tags
+
+            Returns:
+                string: Formatted tags
+        """
         formatted_tag_list = ["tag={tag}".format(tag=tag) for tag in tags]
         formatted_tags = "&".join(formatted_tag_list)
 
         return formatted_tags
 
     def fetch(self):
+
+        """ Method for fetching backends
+
+            This method queries consul catalog APIs to
+
+            Returns:
+                list : List of backends
+        """
         consul_request_url_base = "http://{consul_ip}:{consul_port}/v1/catalog".format(
                                         consul_ip=self.consul_ip,
                                         consul_port=self.consul_port
