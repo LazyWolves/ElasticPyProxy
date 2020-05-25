@@ -262,7 +262,7 @@ Params involved:
 - backend_port : The port used by backend servers.
 - haproxy_binary : The HAProxy binary file location.
 - start_by : How to start/reload HAProxy. Can be **systemd** or **binary**
-- haproxy_socket_file : Path to HAProxy socket file
+- haproxy_socket_file : Path to HAProxy socket file. If Haproxy has been configure to spawn multiple process via nbproc, then paths to multiple socket files can be provided here separated by comma
 - pid_file : Path to HAProxy pid file
 - backend_name : The name of the HAProxy backend/listener name under which the live backend servers fetched from orchestrator will be added.
 - backend_maxconn : Max connections for individual backends

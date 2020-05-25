@@ -261,7 +261,7 @@ If it was running then it simply reloads it using the configured method.</p></li
 <li><p>backend_port : The port used by backend servers.</p></li>
 <li><p>haproxy_binary : The HAProxy binary file location.</p></li>
 <li><p>start_by : How to start/reload HAProxy. Can be <strong>systemd</strong> or <strong>binary</strong></p></li>
-<li><p>haproxy_socket_file : Path to HAProxy socket file</p></li>
+<li><p>haproxy_socket_file : Path to HAProxy socket file. If Haproxy has been configure to spawn multiple process via nbproc, then paths to multiple socket files can be provided here separated by comma</p></li>
 <li><p>pid_file : Path to HAProxy pid file</p></li>
 <li><p>backend_name : The name of the HAProxy backend/listener name under which the live backend servers fetched from orchestrator will be added.</p></li>
 <li><p>backend_maxconn : Max connections for individual backends</p></li>
