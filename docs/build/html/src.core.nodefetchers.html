@@ -100,7 +100,7 @@ in the config.</p>
 
 <dl class="function">
 <dt id="src.core.nodefetchers.orchestrator.prepare_aws_handler">
-<code class="sig-prename descclassname">src.core.nodefetchers.orchestrator.</code><code class="sig-name descname">prepare_aws_handler</code><span class="sig-paren">(</span><em class="sig-param">config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/orchestrator.html#prepare_aws_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.orchestrator.prepare_aws_handler" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">src.core.nodefetchers.orchestrator.</code><code class="sig-name descname">prepare_aws_handler</code><span class="sig-paren">(</span><em class="sig-param">config</em>, <em class="sig-param">logger</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/orchestrator.html#prepare_aws_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.orchestrator.prepare_aws_handler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepares the AWS fetcher</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -111,6 +111,23 @@ in the config.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>srv.nodefetchers.awsfetcher.awsfetcher</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.core.nodefetchers.orchestrator.prepare_consul_handler">
+<code class="sig-prename descclassname">src.core.nodefetchers.orchestrator.</code><code class="sig-name descname">prepare_consul_handler</code><span class="sig-paren">(</span><em class="sig-param">config</em>, <em class="sig-param">logger</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/orchestrator.html#prepare_consul_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.orchestrator.prepare_consul_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares the Consul fetcher</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dictionary</em>) – dictionary containing ep2 config</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Consul backend fetcher</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>srv.nodefetchers.consulfetcher.cosulfetcher</p>
 </dd>
 </dl>
 </dd></dl>

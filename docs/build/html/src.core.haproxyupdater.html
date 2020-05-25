@@ -323,7 +323,7 @@ this class.</p>
 </dl>
 <dl class="method">
 <dt id="src.core.haproxyupdater.sockethandler.SocketHandler.connect_socket">
-<code class="sig-name descname">connect_socket</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/sockethandler.html#SocketHandler.connect_socket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.sockethandler.SocketHandler.connect_socket" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">connect_socket</code><span class="sig-paren">(</span><em class="sig-param">sock_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/sockethandler.html#SocketHandler.connect_socket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.sockethandler.SocketHandler.connect_socket" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to connect to haproxy unix socket</p>
 <p>This method creates a socket connection to the given haproxy unix socket</p>
 <dl class="field-list simple">
@@ -339,6 +339,11 @@ this class.</p>
 <dl class="method">
 <dt id="src.core.haproxyupdater.sockethandler.SocketHandler.destroy_socket">
 <code class="sig-name descname">destroy_socket</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/sockethandler.html#SocketHandler.destroy_socket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.sockethandler.SocketHandler.destroy_socket" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.core.haproxyupdater.sockethandler.SocketHandler.send_all">
+<code class="sig-name descname">send_all</code><span class="sig-paren">(</span><em class="sig-param">command</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/sockethandler.html#SocketHandler.send_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.sockethandler.SocketHandler.send_all" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -360,6 +365,11 @@ str : response sent by the haproxy unix socket</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="method">
+<dt id="src.core.haproxyupdater.sockethandler.SocketHandler.send_one">
+<code class="sig-name descname">send_one</code><span class="sig-paren">(</span><em class="sig-param">sock_file</em>, <em class="sig-param">command</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/sockethandler.html#SocketHandler.send_one"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.sockethandler.SocketHandler.send_one" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

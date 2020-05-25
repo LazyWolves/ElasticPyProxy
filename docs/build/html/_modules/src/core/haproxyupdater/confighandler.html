@@ -75,6 +75,8 @@
         <span class="n">backend_port</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;backend_port&quot;</span><span class="p">)</span>
         <span class="n">inactive_nodes_count</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inactive_nodes_count&quot;</span><span class="p">)</span>
         <span class="n">node_slots</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;node_slots&quot;</span><span class="p">)</span>
+        <span class="n">backend_maxconn</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;backend_maxconn&quot;</span><span class="p">)</span>
+        <span class="n">check_interval</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;check_interval&quot;</span><span class="p">)</span>
         <span class="n">logger</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logger&quot;</span><span class="p">)</span>
 
         <span class="c1"># Try reading the template file</span>
@@ -85,8 +87,8 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Could not read template file : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">template_file</span><span class="p">))</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="n">node_template</span> <span class="o">=</span> <span class="s2">&quot;    server node</span><span class="si">{node_id}</span><span class="s2"> </span><span class="si">{ip}</span><span class="s2">:</span><span class="si">{port}</span><span class="s2"> check&quot;</span>
-        <span class="n">inactive_nodes_template</span> <span class="o">=</span> <span class="s2">&quot;    server-template node </span><span class="si">{count}</span><span class="s2"> 10.0.0.1:8080 check disabled&quot;</span>
+        <span class="n">node_template</span> <span class="o">=</span> <span class="n">ConfigHandler</span><span class="o">.</span><span class="n">__get_node_template</span><span class="p">(</span><span class="n">backend_maxconn</span><span class="o">=</span><span class="n">backend_maxconn</span><span class="p">,</span> <span class="n">check_interval</span><span class="o">=</span><span class="n">check_interval</span><span class="p">,</span> <span class="n">inactive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">inactive_nodes_template</span> <span class="o">=</span> <span class="n">ConfigHandler</span><span class="o">.</span><span class="n">__get_node_template</span><span class="p">(</span><span class="n">backend_maxconn</span><span class="o">=</span><span class="n">backend_maxconn</span><span class="p">,</span> <span class="n">check_interval</span><span class="o">=</span><span class="n">check_interval</span><span class="p">,</span> <span class="n">inactive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="n">nodes_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
@@ -141,6 +143,28 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Successfully updated haproxy config&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="kc">True</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__get_node_template</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">check_interval_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">backend_maxconn_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">backend_maxconn</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;backend_maxconn&quot;</span><span class="p">)</span>
+        <span class="n">check_interval</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;check_interval&quot;</span><span class="p">)</span>
+        <span class="n">inactive</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inactive&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">node_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">backend_maxconn</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">backend_maxconn_str</span> <span class="o">=</span> <span class="s2">&quot;maxconn </span><span class="si">{val}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">val</span><span class="o">=</span><span class="n">backend_maxconn</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">check_interval</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">check_interval_str</span> <span class="o">=</span> <span class="s2">&quot;inter </span><span class="si">{val}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">val</span><span class="o">=</span><span class="n">check_interval</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">inactive</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">node_template</span> <span class="o">=</span> <span class="s2">&quot;    server node</span><span class="si">{node_id}</span><span class="s2"> </span><span class="si">{ip}</span><span class="s2">:</span><span class="si">{port}</span><span class="s2"> check &quot;</span> <span class="o">+</span> <span class="n">check_interval_str</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">backend_maxconn_str</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">node_template</span> <span class="o">=</span> <span class="s2">&quot;    server-template node </span><span class="si">{count}</span><span class="s2"> 10.0.0.1:8080 check &quot;</span> <span class="o">+</span> <span class="n">check_interval_str</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">backend_maxconn_str</span> <span class="o">+</span> <span class="s2">&quot; disabled&quot;</span>
+
+        <span class="k">return</span> <span class="n">node_template</span>
 
 <div class="viewcode-block" id="ConfigHandler.read_write_file"><a class="viewcode-back" href="../../../../index.html#src.core.haproxyupdater.confighandler.ConfigHandler.read_write_file">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">read_write_file</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>

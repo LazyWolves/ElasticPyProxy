@@ -60,10 +60,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># get the desired params</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sock_file</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sock_file&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sock_files</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sock_file&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sock_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">sock_file</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">sock_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sock_files</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logger&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SocketHandler.connect_socket"><a class="viewcode-back" href="../../../../index.html#src.core.haproxyupdater.sockethandler.SocketHandler.connect_socket">[docs]</a>    <span class="k">def</span> <span class="nf">connect_socket</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SocketHandler.connect_socket"><a class="viewcode-back" href="../../../../index.html#src.core.haproxyupdater.sockethandler.SocketHandler.connect_socket">[docs]</a>    <span class="k">def</span> <span class="nf">connect_socket</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sock_file</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot; Method to connect to haproxy unix socket</span>
 
@@ -77,7 +78,7 @@
             <span class="c1"># try connecting to haproxy socket file</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">socket</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_UNIX</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sock_file</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">sock_file</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
 
             <span class="sd">&#39;&#39;&#39;</span>
@@ -105,9 +106,19 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">response</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">command</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;command&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+        <span class="n">command_type</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;command_type&quot;</span><span class="p">,</span> <span class="s2">&quot;GET&quot;</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">command_type</span> <span class="o">==</span> <span class="s2">&quot;GET&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sock_files</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">command</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_all</span><span class="p">(</span><span class="n">command</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SocketHandler.destroy_socket"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.sockethandler.SocketHandler.destroy_socket">[docs]</a>    <span class="k">def</span> <span class="nf">destroy_socket</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SocketHandler.send_one"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.sockethandler.SocketHandler.send_one">[docs]</a>    <span class="k">def</span> <span class="nf">send_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sock_file</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
         <span class="c1"># connect to the haproxy socket</span>
-        <span class="n">connected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connect_socket</span><span class="p">()</span>
+        <span class="n">connected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connect_socket</span><span class="p">(</span><span class="n">sock_file</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">connected</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
@@ -139,8 +150,17 @@
 
         <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">response</span></div>
 
-<div class="viewcode-block" id="SocketHandler.destroy_socket"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.sockethandler.SocketHandler.destroy_socket">[docs]</a>    <span class="k">def</span> <span class="nf">destroy_socket</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+<div class="viewcode-block" id="SocketHandler.send_all"><a class="viewcode-back" href="../../../../src.core.haproxyupdater.html#src.core.haproxyupdater.sockethandler.SocketHandler.send_all">[docs]</a>    <span class="k">def</span> <span class="nf">send_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+
+        <span class="n">final_status</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">for</span> <span class="n">sock_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sock_files</span><span class="p">:</span>
+            <span class="n">status</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_one</span><span class="p">(</span><span class="n">sock_file</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">status</span><span class="p">:</span>
+                <span class="n">final_status</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="n">final_status</span><span class="p">,</span> <span class="n">response</span></div></div>
 </pre></div>
 
           </div>

@@ -144,7 +144,7 @@
         <span class="k">return</span> <span class="n">asg_instance_ips</span></div>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">__get_instance_ids_for_asg</span><span class="p">(</span><span class="n">boto_client</span><span class="p">,</span> <span class="n">asg_name</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__get_instance_ids_for_asg</span><span class="p">(</span><span class="n">boto_client</span><span class="p">,</span> <span class="n">asg_names</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot; Method for getting aws live instance ids belonging to the asg of interest</span>
 
@@ -160,15 +160,17 @@
 
             <span class="c1"># Describe the esired asg</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">boto_client</span><span class="o">.</span><span class="n">describe_auto_scaling_groups</span><span class="p">(</span>
-                <span class="n">AutoScalingGroupNames</span><span class="o">=</span><span class="p">[</span>
-                    <span class="n">asg_name</span><span class="p">,</span>
-                <span class="p">]</span>
+                <span class="n">AutoScalingGroupNames</span><span class="o">=</span><span class="n">asg_names</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Failed to get instance ids for ASG with error : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)))</span>
             <span class="k">return</span> <span class="kc">None</span>
 
-        <span class="n">instances</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;AutoScalingGroups&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;Instances&quot;</span><span class="p">]</span>
+        <span class="n">instances</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># loop over all the autoscaling groups and get instance from them</span>
+        <span class="k">for</span> <span class="n">asg</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;AutoScalingGroups&quot;</span><span class="p">):</span>
+            <span class="n">instances</span> <span class="o">+=</span> <span class="n">asg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Instances&quot;</span><span class="p">)</span>
 
         <span class="n">instance_ids</span> <span class="o">=</span> <span class="p">[]</span>
 

@@ -45,8 +45,8 @@
 <span class="kn">from</span> <span class="nn">.bootstrap</span> <span class="k">import</span> <span class="n">bootstrap</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="n">CONFIG_FILE</span> <span class="o">=</span> <span class="n">default_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;config&quot;</span><span class="p">)</span>
-<span class="n">LOCK_FILE</span> <span class="o">=</span> <span class="n">default_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lock_file&quot;</span><span class="p">)</span>
+<span class="n">CONFIG_FILE</span> <span class="o">=</span> <span class="s2">&quot;/etc/ep2/ep2.conf&quot;</span>
+<span class="n">LOCK_FILE</span> <span class="o">=</span> <span class="n">default_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lock_dir&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="drive"><a class="viewcode-back" href="../../../index.html#src.driver.driver.drive">[docs]</a><span class="k">def</span> <span class="nf">drive</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -77,9 +77,9 @@
     <span class="n">haproxy_config</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;haproxy&quot;</span><span class="p">)</span>
 
     <span class="c1"># load values/defaults</span>
-    <span class="n">SLEEP_BEFORE_NEXT_RUN</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">haproxy_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sleep_before_next_run&quot;</span><span class="p">,</span> <span class="n">default_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sleep_before_next_run&quot;</span><span class="p">)))</span>
-    <span class="n">SLEEP_BEFORE_NEXT_LOCK_ATTEMPT</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">haproxy_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sleep_before_next_lock_attempt&quot;</span><span class="p">,</span> <span class="n">default_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sleep_before_next_lock_attempt&quot;</span><span class="p">)))</span>
-    <span class="n">LOG_FILE</span> <span class="o">=</span> <span class="n">haproxy_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_file&quot;</span><span class="p">,</span> <span class="n">default_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_file&quot;</span><span class="p">))</span>
+    <span class="n">SLEEP_BEFORE_NEXT_RUN</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">haproxy_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sleep_before_next_run&quot;</span><span class="p">))</span>
+    <span class="n">SLEEP_BEFORE_NEXT_LOCK_ATTEMPT</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">haproxy_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sleep_before_next_lock_attempt&quot;</span><span class="p">))</span>
+    <span class="n">LOG_FILE</span> <span class="o">=</span> <span class="n">haproxy_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_file&quot;</span><span class="p">)</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">__setup_logging</span><span class="p">(</span><span class="n">LOG_FILE</span><span class="p">)</span>
 
@@ -103,18 +103,13 @@
 <span class="sd">        fetched from the orchestrator. Now we can begin with the poll-update-repeat</span>
 <span class="sd">        loop for updating backends fetched from ochestrator</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-
-    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Entering state loop...&quot;</span><span class="p">)</span>
-    <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;run &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
 
         <span class="c1"># Fetch backend IPs from orchestrator handler</span>
         <span class="n">asg_ips</span> <span class="o">=</span> <span class="n">orchestratorHandler</span><span class="o">.</span><span class="n">fetch</span><span class="p">()</span>
 
         <span class="c1"># Proceed with updation only if IPs are not none</span>
         <span class="k">if</span> <span class="n">asg_ips</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="nb">print</span> <span class="p">(</span><span class="n">asg_ips</span><span class="p">)</span>
 
             <span class="c1"># check if update is actually neccessary. Compare with cache</span>
             <span class="n">should_update</span> <span class="o">=</span> <span class="n">driverCache</span><span class="o">.</span><span class="n">need_to_update</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">asg_ips</span><span class="p">))</span>
@@ -126,15 +121,13 @@
 
                 <span class="c1"># Update haproxy</span>
                 <span class="n">updated</span> <span class="o">=</span> <span class="n">haproxyupdater</span><span class="o">.</span><span class="n">update_haproxy</span><span class="p">()</span>
-                <span class="nb">print</span> <span class="p">(</span><span class="n">updated</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Backends not changed. Skipping update&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;No backends found. Skippin run&quot;</span><span class="p">)</span>
 
         <span class="c1"># sleep for configured time before the next run</span>
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">SLEEP_BEFORE_NEXT_RUN</span><span class="p">)</span>
-        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span></div>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">SLEEP_BEFORE_NEXT_RUN</span><span class="p">)</span></div>
 
 <span class="k">def</span> <span class="nf">__setup_logging</span><span class="p">(</span><span class="n">log_file</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -184,7 +177,20 @@
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">parser</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">section</span><span class="p">):</span>
             <span class="n">config</span><span class="p">[</span><span class="n">section</span><span class="o">.</span><span class="n">lower</span><span class="p">()][</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
+    <span class="n">config</span> <span class="o">=</span> <span class="n">merge_with_default_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">config</span>
+
+<div class="viewcode-block" id="merge_with_default_config"><a class="viewcode-back" href="../../../src.driver.html#src.driver.driver.merge_with_default_config">[docs]</a><span class="k">def</span> <span class="nf">merge_with_default_config</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+    <span class="n">haproxy_config</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;haproxy&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">default_params</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">haproxy_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="n">haproxy_config</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">default_params</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="n">config</span><span class="p">[</span><span class="s2">&quot;haproxy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">haproxy_config</span>
+
+    <span class="k">return</span> <span class="n">config</span></div>
 
 <span class="k">def</span> <span class="nf">__can_aquire_lock</span><span class="p">(</span><span class="n">lock_dir</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">lock_dir</span><span class="p">):</span>

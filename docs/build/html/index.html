@@ -34,23 +34,37 @@
 <h1>ElasticPyProxy : A controller for dynamic scaling of Haproxy backend servers<a class="headerlink" href="#elasticpyproxy-a-controller-for-dynamic-scaling-of-haproxy-backend-servers" title="Permalink to this headline">¶</a></h1>
 <p>ElasticPyProxy (EP2) is a controller written completely in python for dynamically scaling HAProxy backend servers. Using this
 controller, it is possible to integrate HAProxy with a server orchestrator which spwans servers dynamically and scales
-out and in very frequently. As of now it provides support for <strong>only for AWS</strong> however handler for any orchestrator which
-exposes an API for getting live backends can be added easily.</p>
+out and in very frequently. As of now it provides support for the following:</p>
+<ul class="simple">
+<li><p>AWS Autoscaling groups</p></li>
+<li><p>Consul</p></li>
+</ul>
+<p>however handler for any orchestrator which exposes an API for getting live backends can be added easily.</p>
+<p>It is to be noted that <strong>consul is not a orchestrator</strong> but a service discovery tool. It can be used to discovery
+A given service can be discovered with consul and later the hosts/nodes which are the provider of that service
+can be discovered by either consul DNS or consul catalog API. If a node providing the given services goes down,
+the api will remove those nodes from the catalogue and show only the live ones.</p>
+<p>In the rest of the documentation we will continue refering to AWS ASG while explaining the differemt features
+of EP2 but evrything will be applicable to Consul as well.</p>
 <p>So, going ahead with aws, it is possible, using EP2 to integrate HAProxy with a AWS Autoscaling Group. Once integrated, the
 HAProxy backend servers will scale out and in with the ASG of interest. Thus, whenever the ASG spawns a new instance, that
 instance will get added to haproxy’s concerned backend/listener and when the ASG removes a backend, that particular server
 will also be removed from HAProxy’s concerned backend/listener.</p>
-<p>In the rest of the documentation, Amazon Autoscaling Group will be refered to as the <strong>orchestrator</strong> and the backend servers will be refered to as just <strong>backends</strong></p>
+<p>Know more about Hashicorp Consul <a class="reference external" href="https://www.consul.io/">here</a></p>
+<p>In the rest of the documentation, for simplicity the term <strong>orchestrator</strong> will be used to refer to AWS ASG
+and consul (although consul is not an orchestrator as already mentioned above but a service discovery mechanism,
+any orchestrator can be exposed via consul, even AWS ASG) and the backend servers will be refered to as
+just <strong>backends</strong></p>
 <p>View EP2 on <a class="reference external" href="https://www.github.com/djmgit/ElasticPyProxy">Github</a></p>
 <div class="section" id="how-ep2-works">
 <h2>How EP2 works<a class="headerlink" href="#how-ep2-works" title="Permalink to this headline">¶</a></h2>
-<p>Simple put, continuously polls the orchestrator and checks what are the available backends and updates haproxy accordingly.
+<p>Simple put EP2, continuously polls the orchestrator and checks what are the available backends and updates haproxy accordingly.
 However it can be made to do this simple job in more than one way as needed by the user or the host system. Following are the
 main tasks done by the components present in EP2</p>
 <div class="section" id="ep2-working">
 <h3>EP2 working<a class="headerlink" href="#ep2-working" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p>The system where EP2 runs should have the HAProxy (v1.8 and above) binary, HAproxy UNIX socket exposed and
+<li><p>The system where EP2 runs should have the HAProxy (v1.8 or above) binary, HAproxy UNIX socket exposed and
 accessible, optionally systemd service file properly configured.</p></li>
 <li><p>When EP2 starts, the first thing it does is bootstrap the controller. The bootstrapping includes creating clients
 for accessing the orchestrator, making the first call to orchestrator API for getting current live backends, updating
@@ -61,15 +75,15 @@ it.</p></li>
 <li><p>Once bootstrap is done, we now have a running haproxy with the current live backends added to it. Post this, EP2 enters
 its poll-update-repeat loop.</p></li>
 <li><p>Once EP2 enters the loop, it primarily does two things. Firstly it polls the orchestrator for the current backend nodes. On
-getting the list of current live backends it compares it againts a locally saved in memory list of live backends.
-If there is a diiference, it updates the local in-memory list and geoes on to update HAProxy otherwise it does nothing</p></li>
-<li><p>EP2 can update haproxy in two ways. First way is, it simply formats the configures haproxy template file with the live
+getting the list of current live backends it compares it against a locally saved in memory list of live backends.
+If there is a difference, it updates the local in-memory list and goes on to update HAProxy otherwise it does nothing</p></li>
+<li><p>EP2 can update haproxy in two ways. First way is, it simply formats the configured haproxy template file with the live
 backend servers, updates the HAProxy config file with the contents of the formatted template file and reloads HAProxy.</p></li>
 <li><p>Since HAProxy reload (post v1.8) is hitless, reload wont cause any downtime.</p></li>
 <li><p>EP2 allows two ways to reload HAProxy, one via systemd service and the other via the HAProxy binary. The respective params
 must be provided in EP2 config accordingly. More on this below.</p></li>
 <li><p>The issue with the above method of updating is, HAProxy has to be reloaded. When the number of reloads is less, it is not
-a big issue. Howver if the number of reload is too high, it can cause overhead since reload essentially involves  transfer
+a big issue. However if the number of reload is too high, it can cause overhead since reload essentially involves  transfer
 of connections/sockets from old process to the new process.</p></li>
 <li><p>The second method of updation is the one in which reload is not required at all. It updates HAProxy in runtime using the
 UNIX socket file it exposes. This is to some extent complicated than the previous method. Once the new backends are added
@@ -84,7 +98,7 @@ processes.</p></li>
 <blockquote>
 <div><ul class="simple">
 <li><p>Backend fetcher : The backend fetcher fetches the live backends from the configured orchestrator. As mentioned earlier
-for now this is AWS.</p></li>
+for now this is AWS ASG and Consul.</p></li>
 <li><p>HaproxyUpdater : This updates the HAProxy, either by updating config or via socket at runtime.</p></li>
 <li><p>ConfigHandler : This is used by HaproxyUpdater to handle the HAProxy config updation</p></li>
 <li><p>RuntimeUpdater : This is used by HaproxyUpdater to update HAProxy at runtime via socket.</p></li>
@@ -93,13 +107,11 @@ for now this is AWS.</p></li>
 </div></blockquote>
 </div>
 </div>
-<div class="section" id="aws-asg-backend-fetcher">
-<h2>AWS ASG Backend fetcher<a class="headerlink" href="#aws-asg-backend-fetcher" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="backend-fetcher">
+<h2>Backend fetcher<a class="headerlink" href="#backend-fetcher" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><p>The <strong>aws asg backend fectcher</strong> or the awsfetcher in short, fetches the available servers in the concerned asg using
-the boto3 python libaray.</p>
-<p>It uses the boto3 asg client to get the instance IDs of the available instances in the desired asg and then uses
-boto3 ec2 client to get the public/private IPs of the available instances.</p>
+<div><p>The awsfetcher and the consulfetcher, fetches the available servers in the concerned asg or service respectively.
+For AWS ASG, boto3 library is used and for Consul, the Consul catalog API is used.</p>
 </div></blockquote>
 </div>
 <div class="section" id="updating-haproxy-via-config">
@@ -108,7 +120,7 @@ boto3 ec2 client to get the public/private IPs of the available instances.</p>
 <div><p>As mentioned above, one of the ways HAProxy can be updated using EP2 is via updating its config direcly. In both the
 updation methods, EP2 is preconfigured with a template HAProxy config (mentioned below).</p>
 <p>Once the current live backend servers are available, EP2 formats the template and populates it with the current live backends.
-Then it replaces the contents of the actually HAProxy config file with the contents if this formatted template file.
+Then it replaces the contents of the actually HAProxy config file with the contents of this formatted template file.
 After this is done it reloads HAProxy either via <strong>systemd</strong> or via <strong>binary</strong>.</p>
 <p>Both the path to Haproxy config file and path to the HAProxy template file should be provided in EP2 config.</p>
 </div></blockquote>
@@ -148,7 +160,7 @@ there should be a properly configured systemd service file such that systemd rel
 <div class="section" id="reloading-haproxy-via-binary">
 <h2>Reloading HAProxy via binary<a class="headerlink" href="#reloading-haproxy-via-binary" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><p>The other way to reload haproy is by executing the binary. For this is work the following things must be provided in EP2
+<div><p>The other way to reload haproxy is by executing the binary. For this is to work the following things must be provided in EP2
 config :</p>
 <ul class="simple">
 <li><p>haproxy_config_file : The haproxy config file</p></li>
@@ -170,14 +182,14 @@ config :</p>
 process :</p>
 <ul class="simple">
 <li><p>The desired nodefetcher is initialised. As of now it is the <strong>awsfetcher</strong>. As a part of the initialisation of the
-awsfether, the asg and ec2 boto3 clients are created using the provided aws credentials.</p></li>
-<li><p>The the very first call to get the live backend server is made.</p></li>
-<li><p>Once EP2 has the live backend server addresses, irrespective of whether EP2 is configures to use update via config or
+awsfetcher, the asg and ec2 boto3 clients are created using the provided aws credentials.</p></li>
+<li><p>The the very first call to get the live backend servers is made.</p></li>
+<li><p>Once EP2 has the live backend server addresses, irrespective of whether EP2 is configured to use update via config or
 update at runtime, EP2 updates the haproxy config with the formatted template file contents. It is during this time
 EP2 creates the inactive pool if it is configured to use updae by runtime on later runs.</p></li>
-<li><p>Once the updation is done, it checks whether HAPorxy is running or not. If its not running, the it starts HAProxy.
+<li><p>Once the updation is done, it checks whether HAProxy is running or not. If its not running, the it starts HAProxy.
 If it was running then it simply reloads it using the configured method.</p></li>
-<li><p>Once bootstrap is done, EP2 enters its not loop.</p></li>
+<li><p>Once bootstrap is done, EP2 enters its loop.</p></li>
 </ul>
 </div></blockquote>
 </div>
@@ -233,15 +245,24 @@ If it was running then it simply reloads it using the configured method.</p></li
 <span class="n">region_name</span> <span class="o">=</span>
 </pre></div>
 </div>
+<p>For Consul, the following block can be used instead of [AWS]:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">CONSUL</span><span class="p">]</span>
+<span class="n">service_name</span> <span class="o">=</span>
+<span class="n">consul_ip</span> <span class="o">=</span>
+<span class="n">consul_port</span> <span class="o">=</span>
+<span class="n">only_passing</span> <span class="o">=</span>
+<span class="n">tags</span> <span class="o">=</span>
+</pre></div>
+</div>
 <p>Params involved:</p>
 <ul class="simple">
 <li><p>haproxy_config_file : This is the path to the actual haproxy config file. Usually it is /etc/haproxy/haproxy.cfg</p></li>
-<li><p>template_file : Path to the template file. This is the file that will be populated and used to update the actuall haproxy config file.</p></li>
+<li><p>template_file : Path to the template file. This is the file that will be populated and used to update the actual haproxy config file.</p></li>
 <li><p>backend_port : The port used by backend servers.</p></li>
 <li><p>haproxy_binary : The HAProxy binary file location.</p></li>
 <li><p>start_by : How to start/reload HAProxy. Can be <strong>systemd</strong> or <strong>binary</strong></p></li>
 <li><p>haproxy_socket_file : Path to HAProxy socket file</p></li>
-<li><p>pid_file : Path to HAProxy socket file</p></li>
+<li><p>pid_file : Path to HAProxy pid file</p></li>
 <li><dl class="simple">
 <dt>backend_name<span class="classifier">The name of the HAProxy backend/listener name under which the live backend servers fetched from orchestrator</span></dt><dd><p>will be added.</p>
 </dd>
@@ -254,10 +275,21 @@ If it was running then it simply reloads it using the configured method.</p></li
 <li><p>orchestrator : The backend orchestrator. As of now it can only be <strong>aws</strong></p></li>
 <li><p>sleep_before_next_run : Amount of time to wait before next poll-update run</p></li>
 <li><p>log_file : The file to output logs</p></li>
+</ul>
+<p>[AWS]</p>
+<ul class="simple">
 <li><p>aws_access_key_id : aws creds</p></li>
 <li><p>aws_secret_access_key : aws creds</p></li>
-<li><p>asg_name : asg name</p></li>
+<li><p>asg_name : Name of the autoscaling group</p></li>
 <li><p>region_name : aws region name where the asg exists</p></li>
+</ul>
+<p>[CONSUL]</p>
+<ul class="simple">
+<li><p>service_name : Name of the service which has already been registered with consul and whose providers we want to discover</p></li>
+<li><p>consul_ip : IP adress where consul catalog API is running. Default is 127.0.0.1. If the node where EP2 is running has been added the the consul cluster, then consul api should be accessed via 127.0.0.1 if not changed otherwise.</p></li>
+<li><p>consul_port : Port for the Consul catalog API. Default is 8500</p></li>
+<li><p>only_passing : can be <strong>True</strong> or <strong>False</strong>. If True, then only those backends will be discovered and added for which the service checks are passing. Please refer Consul doc to learn more about service checks. Default value is True.</p></li>
+<li><p>tags : Comma separated values of tags to filter services.</p></li>
 </ul>
 <p>A sample haproxy template file is shown below:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>global
@@ -317,10 +349,10 @@ listen stats
     stats hide-version
 </pre></div>
 </div>
-<p>The backend/listername used (<code class="docutils literal notranslate"><span class="pre">haproxynode</span></code>) in this case should be mentione in <strong>EP2 config</strong>.
+<p>The backend/listener used (<code class="docutils literal notranslate"><span class="pre">haproxynode</span></code>) in this case should be mentioned in <strong>EP2 config</strong>.
 The backend/listener of interest should have the template varibale <code class="docutils literal notranslate"><span class="pre">nodes</span></code> in jinja templating format.
 This template varibale will be replaced with the live backend servers in each run.</p>
-<p>Once this template is formatted, the actuall HAProxy config will be updated with the formatted contents of this
+<p>Once this template is formatted, the actual HAProxy config will be updated with the formatted contents of this
 template file.</p>
 <p>So, whatever changes one usually has to make to HAProxy config, they have to be made here.</p>
 </div>
@@ -699,7 +731,7 @@ this class.</p>
 </dl>
 <dl class="method">
 <dt id="src.core.haproxyupdater.sockethandler.SocketHandler.connect_socket">
-<code class="sig-name descname">connect_socket</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/sockethandler.html#SocketHandler.connect_socket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.sockethandler.SocketHandler.connect_socket" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">connect_socket</code><span class="sig-paren">(</span><em class="sig-param">sock_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/haproxyupdater/sockethandler.html#SocketHandler.connect_socket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.haproxyupdater.sockethandler.SocketHandler.connect_socket" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to connect to haproxy unix socket</p>
 <p>This method creates a socket connection to the given haproxy unix socket</p>
 <dl class="field-list simple">
@@ -785,7 +817,7 @@ in the config.</p>
 
 <dl class="function">
 <dt id="src.core.nodefetchers.orchestrator.prepare_aws_handler">
-<code class="sig-prename descclassname">src.core.nodefetchers.orchestrator.</code><code class="sig-name descname">prepare_aws_handler</code><span class="sig-paren">(</span><em class="sig-param">config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/orchestrator.html#prepare_aws_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.orchestrator.prepare_aws_handler" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">src.core.nodefetchers.orchestrator.</code><code class="sig-name descname">prepare_aws_handler</code><span class="sig-paren">(</span><em class="sig-param">config</em>, <em class="sig-param">logger</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/orchestrator.html#prepare_aws_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.orchestrator.prepare_aws_handler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prepares the AWS fetcher</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -796,6 +828,23 @@ in the config.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>srv.nodefetchers.awsfetcher.awsfetcher</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.core.nodefetchers.orchestrator.prepare_consul_handler">
+<code class="sig-prename descclassname">src.core.nodefetchers.orchestrator.</code><code class="sig-name descname">prepare_consul_handler</code><span class="sig-paren">(</span><em class="sig-param">config</em>, <em class="sig-param">logger</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/nodefetchers/orchestrator.html#prepare_consul_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.core.nodefetchers.orchestrator.prepare_consul_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares the Consul fetcher</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dictionary</em>) – dictionary containing ep2 config</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Consul backend fetcher</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>srv.nodefetchers.consulfetcher.cosulfetcher</p>
 </dd>
 </dl>
 </dd></dl>

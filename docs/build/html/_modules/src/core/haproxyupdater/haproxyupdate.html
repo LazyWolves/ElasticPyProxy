@@ -82,6 +82,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">update_type</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;update_type&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">node_slots</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;node_slots&quot;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">service_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;service_name&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backend_maxconn</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;backend_maxconn&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_interval</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;check_interval&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logger&quot;</span><span class="p">)</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
@@ -146,8 +148,12 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_list</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">haproxy_socket_file</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">haproxy_socket_file</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">haproxy_socket_file</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">for</span> <span class="n">sock_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">haproxy_socket_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">sock_file</span><span class="o">.</span><span class="n">strip</span><span class="p">()):</span>
+                <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_type</span> <span class="o">==</span> <span class="s2">&quot;update_by_config&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_by</span><span class="p">:</span>
@@ -240,6 +246,8 @@
                                         <span class="n">node_list</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">node_list</span><span class="p">,</span>
                                         <span class="n">backend_port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_port</span><span class="p">,</span>
                                         <span class="n">node_slots</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">node_slots</span><span class="p">,</span>
+                                        <span class="n">backend_maxconn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_maxconn</span><span class="p">,</span>
+                                        <span class="n">check_interval</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">check_interval</span><span class="p">,</span>
                                         <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
                                         <span class="p">)</span>
 
@@ -287,6 +295,8 @@
         <span class="n">updated</span> <span class="o">=</span> <span class="n">ConfigHandler</span><span class="o">.</span><span class="n">update_config</span><span class="p">(</span><span class="n">haproxy_config_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">haproxy_config_file</span><span class="p">,</span>
                                             <span class="n">template_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">template_file</span><span class="p">,</span>
                                             <span class="n">node_list</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">node_list</span><span class="p">,</span>
+                                            <span class="n">backend_maxconn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_maxconn</span><span class="p">,</span>
+                                            <span class="n">check_interval</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">check_interval</span><span class="p">,</span>
                                             <span class="n">backend_port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">backend_port</span><span class="p">,</span>
                                             <span class="n">inactive_nodes_count</span><span class="o">=</span><span class="n">stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inactive_nodes_count&quot;</span><span class="p">),</span>
                                             <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>

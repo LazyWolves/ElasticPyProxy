@@ -99,11 +99,16 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">asg_boto_client</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">ec2_boto_client</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
+        <span class="c1"># split the asg_name param using comma and store it in a list</span>
+        <span class="n">asgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">asg_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+        <span class="n">asgs</span> <span class="o">=</span> <span class="p">[</span><span class="n">asg</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">asg</span> <span class="ow">in</span> <span class="n">asgs</span><span class="p">]</span>
+
         <span class="c1"># get backends from AWS</span>
         <span class="n">asg_instance_ips</span> <span class="o">=</span> <span class="n">BotoHandler</span><span class="o">.</span><span class="n">get_instance_ips_for_asg</span><span class="p">(</span><span class="n">asg_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asg_boto_client</span><span class="p">,</span>
                                                                 <span class="n">ec2_client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ec2_boto_client</span><span class="p">,</span>
-                                                                <span class="n">asg_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asg_name</span><span class="p">,</span>
-                                                                <span class="n">ip_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ip_type</span>
+                                                                <span class="n">asg_name</span><span class="o">=</span><span class="n">asgs</span><span class="p">,</span>
+                                                                <span class="n">ip_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ip_type</span><span class="p">,</span>
+                                                                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
                                                             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">asg_instance_ips</span></div></div>
