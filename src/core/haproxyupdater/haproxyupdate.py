@@ -161,6 +161,10 @@ class HaproxyUpdate(object):
         """
         self.node_list = node_list
 
+    def update_agent_ip(self, agent_ip):
+
+        self.agent_ip = agent_ip
+
     def update_haproxy(self):
 
         """ Updates haproxy config
