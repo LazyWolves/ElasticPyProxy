@@ -161,9 +161,10 @@ class HaproxyUpdate(object):
         """
         self.node_list = node_list
 
-    def update_agent_ip(self, agent_ip):
+    def update_agent_ip(self, agent_ip, agent_action):
 
         self.agent_ip = agent_ip
+        self.agent_action = agent_action
 
     def update_haproxy(self):
 
@@ -257,6 +258,7 @@ class HaproxyUpdate(object):
 
         if self.sa_mode == True:
             updated, stats = RuntimeUpdater.update_haproxy_runtime(node_ip=self.agent_ip,
+                                                            agent_action=self.agent_action,
                                                             port=self.backend_port,
                                                             sock_file=self.haproxy_socket_file,
                                                             node_name=self.backend_name,

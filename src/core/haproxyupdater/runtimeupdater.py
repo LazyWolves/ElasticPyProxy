@@ -279,6 +279,7 @@ class RuntimeUpdater(object):
 
         if sa_mode == True:
             node_ip = kwargs.get("node_ip")
+            agent_action = kwargs.get("agent_action")
         else:
             node_ips = kwargs.get("node_ips")
 
@@ -293,7 +294,7 @@ class RuntimeUpdater(object):
 
         # Use the respective util method to update haproxy
         if sa_mode == True:
-            updated, stats = RuntimeUpdater.update_from_agent_util(socketHandler, node_ip, nodes, backend_name, port, logger)
+            updated, stats = RuntimeUpdater.update_from_agent_util(socketHandler, node_ip, nodes, backend_name, port, agent_action, logger)
         else:
             updated, stats = RuntimeUpdater.update_runtime_util(socketHandler, node_ips, nodes, backend_name, port, logger)
         if not updated:
