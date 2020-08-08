@@ -24,6 +24,9 @@ class RuntimeUpdater(object):
         the live ones.
     """
 
+    REGISTER_AGENT = "REGISTER"
+    PURGE_AGENT = "PURGE"
+
     @staticmethod
     def __get_haproxy_stats(haproxy_sock, backend_name, logger=None):
 
@@ -192,6 +195,43 @@ class RuntimeUpdater(object):
         }
 
         return True, stats
+
+    @staticmethod
+    def update_from_agent_util(haproxy_sock, node_ip, nodes, backend_name, port, agent_action, logger=None):
+
+        active_nodes = nodes.get("active_nodes")
+        inactive_nodes = nodes.get("inactive_nodes")
+
+        # Command templates for the comands
+        SET_ADDR = "set server {backend_name}/{node_name} addr {addr} port {port}\n"
+        MAKE_READY = "set server {backend_name}/{node_name} state ready\n"
+        MAKE_MAINT = "set server {backend_name}/{node_name} state maint\n"
+
+        if (agent_action == RuntimeUpdater.REGISTER_AGENT) and (node_ip not in active_nodes):
+            if len(inactive_nodes) > 0:
+
+                node_to_use = inactive_nodes.pop(0)
+                logger.info("Using inactive node:{node} for ip:{ip}".format(node=node_to_use, ip=node_ip))
+
+                command_status, _ = haproxy_sock.send_command(command=SET_ADDR.format(backend_name=backend_name, node_name=node_to_use, addr=new_node_ip, port=port), command_type="SET")
+                if not command_status:
+
+                    '''
+                        Log error
+                    '''
+                    logger.critical("Failed to change {node} backend addr to ip:{ip} for some or all sockets".format(node=node_to_use, ip=new_node_ip))
+                else :
+                    logger.info("Successfully changed {node} backend addr to ip:{ip}".format(node=node_to_use, ip=new_node_ip))
+                # Once the address has been changed successfully, make this inactive node active
+                command_status, _ = haproxy_sock.send_command(command=MAKE_READY.format(backend_name=backend_name, node_name=node_to_use), command_type="SET")
+                if not command_status:
+
+                    '''
+                        Log error
+                    '''
+                    logger.critical("Failed to activate node:{node} for some or all sockets".format(node=node_to_use))
+                else:
+                    logger.info("Sucessfully activated node:{node}".format(node=node_to_use))
 
     @staticmethod
     def update_haproxy_runtime(**kwargs):
