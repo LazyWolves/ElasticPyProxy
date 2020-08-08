@@ -207,6 +207,9 @@ class RuntimeUpdater(object):
         MAKE_READY = "set server {backend_name}/{node_name} state ready\n"
         MAKE_MAINT = "set server {backend_name}/{node_name} state maint\n"
 
+        '''
+            Handle requests to register a new node or purge an existing live node
+        '''
         if (agent_action == RuntimeUpdater.REGISTER_AGENT) and (node_ip not in active_nodes):
             if len(inactive_nodes) > 0:
 
@@ -238,6 +241,11 @@ class RuntimeUpdater(object):
                 '''
                 logger.critical("Insufficient nodes in inactive pool. Please increase node_slots and retsart ep2")
         else:
+
+            '''
+                It is a request to purge a particular live backend server.
+                First make sure that node to be removed is actually live
+            '''
             if node_ip in active_nodes:
                 command_status, _ = haproxy_sock.send_command(command=MAKE_MAINT.format(backend_name=backend_name, node_name=active_nodes[node_ip]), command_type="SET")
                 if command_status:
