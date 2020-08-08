@@ -51,6 +51,7 @@ class HaproxyUpdate(object):
         self.service_name = kwargs.get("service_name")
         self.backend_maxconn = kwargs.get("backend_maxconn")
         self.check_interval = kwargs.get("check_interval")
+        self.sa_mode = kwargs.get("sa_mode", False)
         self.logger = kwargs.get("logger")
 
         """
