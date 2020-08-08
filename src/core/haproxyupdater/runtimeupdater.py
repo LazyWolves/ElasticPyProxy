@@ -253,6 +253,12 @@ class RuntimeUpdater(object):
                 else:
                     logger.critical("Failed removing node:{server}/ip:{ip}".format(server=active_nodes[node_ip], ip=node_ip))
 
+        stats = {
+            "inactive_nodes_count": len(inactive_nodes),
+            "node": node_ip
+        }
+
+        return True, stats
 
     @staticmethod
     def update_haproxy_runtime(**kwargs):
@@ -266,10 +272,12 @@ class RuntimeUpdater(object):
                 stats : dictionary containing active nodes and inactive node count
         """
         node_ips = kwargs.get("node_ips")
+        node_ip  = kwargs.get("node_ip")
         port = kwargs.get("port")
         sock_file = kwargs.get("sock_file")
         backend_name = kwargs.get("node_name")
         logger = kwargs.get("logger")
+        sa_mode = kwargs.get("sa_mode", False)
 
         # Initialise socket handler with the socket file and logger object
         socketHandler = SocketHandler(sock_file=sock_file, logger=logger)
@@ -280,8 +288,11 @@ class RuntimeUpdater(object):
         if not got_status:
             return False, None
 
-        # Use the util method to update haproxy
-        updated, stats = RuntimeUpdater.update_runtime_util(socketHandler, node_ips, nodes, backend_name, port, logger)
+        # Use the respective util method to update haproxy
+        if sa_mode == True:
+            updated, stats = RuntimeUpdater.update_from_agent_util(socketHandler, node_ip, nodes, backend_name, port, logger)
+        else:
+            updated, stats = RuntimeUpdater.update_runtime_util(socketHandler, node_ips, nodes, backend_name, port, logger)
         if not updated:
             return False, None
 
