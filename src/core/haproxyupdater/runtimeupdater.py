@@ -271,13 +271,16 @@ class RuntimeUpdater(object):
                 bool : Successfully updated haproxy or not
                 stats : dictionary containing active nodes and inactive node count
         """
-        node_ips = kwargs.get("node_ips")
-        node_ip  = kwargs.get("node_ip")
         port = kwargs.get("port")
         sock_file = kwargs.get("sock_file")
         backend_name = kwargs.get("node_name")
         logger = kwargs.get("logger")
         sa_mode = kwargs.get("sa_mode", False)
+
+        if sa_mode == True:
+            node_ip = kwargs.get("node_ip")
+        else:
+            node_ips = kwargs.get("node_ips")
 
         # Initialise socket handler with the socket file and logger object
         socketHandler = SocketHandler(sock_file=sock_file, logger=logger)
