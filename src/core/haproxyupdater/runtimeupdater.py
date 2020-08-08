@@ -237,6 +237,14 @@ class RuntimeUpdater(object):
                     Log error
                 '''
                 logger.critical("Insufficient nodes in inactive pool. Please increase node_slots and retsart ep2")
+        else:
+            if node_ip in active_nodes:
+                command_status, _ = haproxy_sock.send_command(command=MAKE_MAINT.format(backend_name=backend_name, node_name=active_nodes[node_ip]), command_type="SET")
+                if command_status:
+                    logger.info("Removed node:{server}/ip:{ip} from active backend pool".format(server=active_nodes[node_ip], ip=node_ip))
+                else:
+                    logger.critical("Failed removing node:{server}/ip:{ip}".format(server=active_nodes[node_ip], ip=node_ip))
+
 
     @staticmethod
     def update_haproxy_runtime(**kwargs):
