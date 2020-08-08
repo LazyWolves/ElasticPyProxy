@@ -213,15 +213,15 @@ class RuntimeUpdater(object):
                 node_to_use = inactive_nodes.pop(0)
                 logger.info("Using inactive node:{node} for ip:{ip}".format(node=node_to_use, ip=node_ip))
 
-                command_status, _ = haproxy_sock.send_command(command=SET_ADDR.format(backend_name=backend_name, node_name=node_to_use, addr=new_node_ip, port=port), command_type="SET")
+                command_status, _ = haproxy_sock.send_command(command=SET_ADDR.format(backend_name=backend_name, node_name=node_to_use, addr=node_ip, port=port), command_type="SET")
                 if not command_status:
 
                     '''
                         Log error
                     '''
-                    logger.critical("Failed to change {node} backend addr to ip:{ip} for some or all sockets".format(node=node_to_use, ip=new_node_ip))
+                    logger.critical("Failed to change {node} backend addr to ip:{ip} for some or all sockets".format(node=node_to_use, ip=node_ip))
                 else :
-                    logger.info("Successfully changed {node} backend addr to ip:{ip}".format(node=node_to_use, ip=new_node_ip))
+                    logger.info("Successfully changed {node} backend addr to ip:{ip}".format(node=node_to_use, ip=node_ip))
                 # Once the address has been changed successfully, make this inactive node active
                 command_status, _ = haproxy_sock.send_command(command=MAKE_READY.format(backend_name=backend_name, node_name=node_to_use), command_type="SET")
                 if not command_status:
@@ -232,6 +232,11 @@ class RuntimeUpdater(object):
                     logger.critical("Failed to activate node:{node} for some or all sockets".format(node=node_to_use))
                 else:
                     logger.info("Sucessfully activated node:{node}".format(node=node_to_use))
+            else:
+                '''
+                    Log error
+                '''
+                logger.critical("Insufficient nodes in inactive pool. Please increase node_slots and retsart ep2")
 
     @staticmethod
     def update_haproxy_runtime(**kwargs):
