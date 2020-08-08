@@ -255,7 +255,7 @@ class HaproxyUpdate(object):
 
         """
 
-        if sa_mode == True:
+        if self.sa_mode == True:
             updated, stats = RuntimeUpdater.update_haproxy_runtime(node_ip=self.agent_ip,
                                                             port=self.backend_port,
                                                             sock_file=self.haproxy_socket_file,
