@@ -262,6 +262,22 @@ class RuntimeUpdater(object):
         return True, stats
 
     @staticmethod
+    def get_haproxy_stats(**kwargs):
+
+        sock_file = kwargs.get("sock_file")
+        backend_name = kwargs.get("backend_name")
+        logger = kwargs.get("logger")
+
+        socketHandler = SocketHandler(sock_file=sock_file, logger=logger)
+
+        got_status, nodes = RuntimeUpdater.__get_haproxy_stats(socketHandler, backend_name, logger=logger)
+
+        if not got_status:
+            return False, None
+
+        return True, nodes
+
+    @staticmethod
     def update_haproxy_runtime(**kwargs):
         """ Method to update haproxy at runtime using the util method present above
 
