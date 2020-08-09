@@ -262,12 +262,14 @@ class HaproxyUpdate(object):
                                                             port=self.backend_port,
                                                             sock_file=self.haproxy_socket_file,
                                                             node_name=self.backend_name,
+                                                            sa_mode=self.sa_mode,
                                                             logger=self.logger)
         else:
             updated, stats = RuntimeUpdater.update_haproxy_runtime(node_ips=self.node_list,
                                                             port=self.backend_port,
                                                             sock_file=self.haproxy_socket_file,
                                                             node_name=self.backend_name,
+                                                            sa_mode=self.sa_mode,
                                                             logger=self.logger)
 
         if not updated:
