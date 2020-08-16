@@ -211,7 +211,35 @@ class HaproxyUpdate(object):
                 update via config we do not require any pool of inactive nodes. So number of
                 slots will be and should be equal to number of active backends.
             """
-            self.node_slots = len(self.node_list)
+
+            # check for sa_mode
+
+            if not self.sa_mode:
+                self.node_slots = len(self.node_list)
+
+        # check if EP2 is running in sa_mode
+
+        if self.sa_mode == True:
+            status, nodes = RuntimeUpdater.get_haproxy_stats(sock_file=self.haproxy_socket_file,
+                                                     backend_name=self.backend_name,
+                                                     logger=self.logger
+                                                    )
+            if not status:
+                return status
+
+            node_ips = nodes.get("active_nodes").keys() + [self.agent_ip]
+            self.node_slots = len(node_ips)
+
+            #update haproxy
+            updated = ConfigHandler.update_config(haproxy_config_file=self.haproxy_config_file,
+                                                template_file=self.template_file,
+                                                node_list=node_ips,
+                                                backend_port=self.backend_port,
+                                                node_slots=self.node_slots,
+                                                backend_maxconn=self.backend_maxconn,
+                                                check_interval=self.check_interval,
+                                                logger=self.logger
+                                            )
 
         # update haproxy
         updated = ConfigHandler.update_config(haproxy_config_file=self.haproxy_config_file,
