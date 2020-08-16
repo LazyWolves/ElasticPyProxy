@@ -240,17 +240,17 @@ class HaproxyUpdate(object):
                                                 check_interval=self.check_interval,
                                                 logger=self.logger
                                             )
-
-        # update haproxy
-        updated = ConfigHandler.update_config(haproxy_config_file=self.haproxy_config_file,
-                                        template_file=self.template_file,
-                                        node_list=self.node_list,
-                                        backend_port=self.backend_port,
-                                        node_slots=self.node_slots,
-                                        backend_maxconn=self.backend_maxconn,
-                                        check_interval=self.check_interval,
-                                        logger=self.logger
-                                        )
+        else:
+            # update haproxy
+            updated = ConfigHandler.update_config(haproxy_config_file=self.haproxy_config_file,
+                                            template_file=self.template_file,
+                                            node_list=self.node_list,
+                                            backend_port=self.backend_port,
+                                            node_slots=self.node_slots,
+                                            backend_maxconn=self.backend_maxconn,
+                                            check_interval=self.check_interval,
+                                            logger=self.logger
+                                            )
 
         if update_only:
 
@@ -303,15 +303,37 @@ class HaproxyUpdate(object):
         if not updated:
             return False
 
-        # Update the config after updating haproxy
-        updated = ConfigHandler.update_config(haproxy_config_file=self.haproxy_config_file,
-                                            template_file=self.template_file,
-                                            node_list=self.node_list,
-                                            backend_maxconn=self.backend_maxconn,
-                                            check_interval=self.check_interval,
-                                            backend_port=self.backend_port,
-                                            inactive_nodes_count=stats.get("inactive_nodes_count"),
-                                            logger=self.logger)
+        if self.sa_mode == True:
+            status, nodes = RuntimeUpdater.get_haproxy_stats(sock_file=self.haproxy_socket_file,
+                                                             backend_name=self.backend_name,
+                                                             logger=self.logger
+                                                            )
+            if not status:
+                return status
+
+            node_ips = nodes.get("active_nodes").keys() + [self.agent_ip]
+            inactive_nodes = len(nodes.get("inactive_nodes"))
+
+            # Update the config after updating haproxy
+            updated = ConfigHandler.update_config(haproxy_config_file=self.haproxy_config_file,
+                                                template_file=self.template_file,
+                                                node_list=node_ips,
+                                                backend_maxconn=self.backend_maxconn,
+                                                check_interval=self.check_interval,
+                                                backend_port=self.backend_port,
+                                                inactive_nodes_count=inactive_nodes,
+                                                logger=self.logger)
+
+        else:
+            # Update the config after updating haproxy
+            updated = ConfigHandler.update_config(haproxy_config_file=self.haproxy_config_file,
+                                                template_file=self.template_file,
+                                                node_list=self.node_list,
+                                                backend_maxconn=self.backend_maxconn,
+                                                check_interval=self.check_interval,
+                                                backend_port=self.backend_port,
+                                                inactive_nodes_count=stats.get("inactive_nodes_count"),
+                                                logger=self.logger)
 
         if not updated:
             '''
